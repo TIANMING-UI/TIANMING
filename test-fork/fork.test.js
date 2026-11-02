@@ -110,23 +110,6 @@ describe("Tianming on a BSC mainnet fork", function () {
     expect(await token.balanceOf(a.address)).to.equal(E(64_000_000));
   });
 
-  it("anti-sniper: a buy in the first 10 minutes keeps only 10%, 90% goes to treasury", async () => {
-    const s = agents[1];
-    await usdt.connect(s).approve(ROUTER, ethers.MaxUint256);
-    expect(await token.buyFeeBps()).to.equal(9000n);
-    const tr0 = await token.balanceOf(treasury);
-    const dl = (await ethers.provider.getBlock("latest")).timestamp + 3600;
-    await router.connect(s).swapExactTokensForTokensSupportingFeeOnTransferTokens(E(1), 0, [USDT, await token.getAddress()], s.address, dl);
-    const got = await token.balanceOf(s.address), fee = (await token.balanceOf(treasury)) - tr0;
-    expect(got).to.be.gt(0n);
-    expect(got * 100n / (got + fee)).to.equal(10n);
-    // the sniper's tokens are moved away so later checks start from zero
-    await token.connect(s).transfer(agents[0].address, got);
-    await network.provider.send("evm_increaseTime", [601]);
-    await network.provider.send("evm_mine", []);
-    expect(await token.buyFeeBps()).to.equal(200n);
-  });
-
   it("agent can buy via the real PancakeSwap router, paying 2% fee to treasury", async () => {
     const b = agents[1];
     await usdt.connect(b).approve(ROUTER, ethers.MaxUint256);

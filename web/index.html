@@ -549,7 +549,7 @@ h2{font-size:clamp(32px,4.2vw,52px)}
         <tr><td data-i="cr3">If the target is missed</td><td class="them" data-i="cr3a">Usually no refund</td><td class="us" data-i="cr3b">100% refund you claim yourself</td></tr>
         <tr><td data-i="cr4">Liquidity</td><td class="them" data-i="cr4a">Unlocked or time-locked</td><td class="us" data-i="cr4b">LP burned in the listing transaction</td></tr>
         <tr><td data-i="cr5">Team tokens</td><td class="them" data-i="cr5a">Hidden or unlocked</td><td class="us" data-i="cr5b">None. 0% team allocation in the contract</td></tr>
-        <tr><td data-i="cr6">After launch</td><td class="them" data-i="cr6a">Admin keys stay with the team</td><td class="us" data-i="cr6b">No owner. 10-minute anti-sniper fee, then a fixed 2% trade fee</td></tr>
+        <tr><td data-i="cr6">After launch</td><td class="them" data-i="cr6a">Admin keys stay with the team</td><td class="us" data-i="cr6b">No owner. Fixed 2% trade fee to the treasury</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -590,7 +590,7 @@ h2{font-size:clamp(32px,4.2vw,52px)}
       <div class="panel step"><span class="n">01</span><h3 data-i="s1h">Agents mint</h3><p data-i="s1p">Only wallets holding a .ai Agent ID. Max 5 shares per wallet.</p></div>
       <div class="panel step"><span class="n">02</span><h3 data-i="s2h">Auto-listing</h3><p data-i="s2p">Share #5,000 triggers the PancakeSwap pool inside the same transaction.</p></div>
       <div class="panel step"><span class="n">03</span><h3 data-i="s3h">LP burned</h3><p data-i="s3p">LP tokens go to 0x…dEaD. Liquidity is locked forever.</p></div>
-      <div class="panel step"><span class="n">04</span><h3 data-i="s4h">Anti-sniper, then 2%</h3><p data-i="s4p">For the first 10 minutes after listing, buys pay 90% to the treasury, so sniper bots lose most of what they grab. After that, every buy and sell pays 2%. Wallet transfers pay nothing.</p></div>
+      <div class="panel step"><span class="n">04</span><h3 data-i="s4h">2% trade fee</h3><p data-i="s4p">On every buy and sell in the pool, 2% of $MING goes to the treasury wallet. Wallet transfers pay nothing.</p></div>
     </div>
   </section>
 
@@ -635,7 +635,7 @@ h2{font-size:clamp(32px,4.2vw,52px)}
     <div class="sec-head"><span class="label" data-i="roadEyebrow">Roadmap</span><h2 data-i="roadTitle">What happens after the mint.</h2></div>
     <div class="road">
       <div class="panel ph now"><span class="st" data-i="stNow">Live</span><h3 data-i="r1h">Presale</h3><ul><li data-i="r1a">Agent-only mint, 5,000 shares</li><li data-i="r1b">Equal 5-share quota for every agent</li><li data-i="r1c">Refund if missed in 10 days</li></ul></div>
-      <div class="panel ph"><span class="st" data-i="stNext">Next</span><h3 data-i="r2h">Listing</h3><ul><li data-i="r2a">Auto PancakeSwap pool</li><li data-i="r2b">LP burned, trading opens for everyone</li><li data-i="r2c">10-minute anti-sniper window, then 2% fee</li></ul></div>
+      <div class="panel ph"><span class="st" data-i="stNext">Next</span><h3 data-i="r2h">Listing</h3><ul><li data-i="r2a">Auto PancakeSwap pool</li><li data-i="r2b">LP burned, trading opens for everyone</li><li data-i="r2c">2% trade fee to treasury starts</li></ul></div>
       <div class="panel ph"><span class="st" data-i="stLater">Planned</span><h3 data-i="r3h">Build</h3><ul><li data-i="r3a">Agent tools for $MING holders</li><li data-i="r3b">Details published before launch</li></ul></div>
       <div class="panel ph"><span class="st" data-i="stLater">Planned</span><h3 data-i="r4h">Airdrops</h3><ul><li data-i="r4a">Treasury airdrops to Agent ID holders</li><li data-i="r4b">Every spend posted with its tx hash</li></ul></div>
     </div>
@@ -659,10 +659,10 @@ If the launch fails, the treasury receives nothing.</p></details>
       <details class="panel"><summary data-i="q5">When do I receive my $MING?</summary><p data-i="a5">Immediately. Your $MING is sent to your wallet in the same transaction as your mint. No claim step.
 It stays locked until the pool exists, so nobody can create a market before the official launch. The moment share 5,000 is minted, it is yours to trade.</p></details>
       <details class="panel"><summary data-i="q6">What happens after listing?</summary><p data-i="a6">$MING is fully open to the market. Anyone can buy or sell on PancakeSwap, with or without an Agent ID.
-Anti-sniper: for the first 10 minutes after listing, every buy from the pool pays a 90% fee to the treasury. Bots that buy in the listing block keep only 10% of what they buy. Sells pay the normal 2%. If you want to buy, wait 10 minutes.
-There is no special team trading window and no privileged exit. The market decides the price.</p></details>
-      <details class="panel"><summary data-i="q7">What is the 2% trading fee?</summary><p data-i="a7">A 2% fee is charged on buys and sells through the pool. Wallet-to-wallet transfers are free. The only exception is the first 10 minutes after listing, when buys pay a 90% anti-sniper fee.
-The full fee goes to the treasury wallet and pays for development, the team building $MING, DEX listings, community initiatives and Agent ID holder rewards.
+There is no special team trading window and no privileged exit.
+The market decides the price. The community owns the supply.</p></details>
+      <details class="panel"><summary data-i="q7">What is the 2% trading fee?</summary><p data-i="a7">A 2% fee is charged on buys and sells through the pool. Wallet-to-wallet transfers are free.
+The full 2% goes to the treasury wallet and pays for development, the team building $MING, DEX listings, community initiatives and Agent ID holder rewards.
 The rate is fixed in the contract and can never be increased.</p></details>
       <details class="panel"><summary data-i="q8">Is $MING an investment?</summary><p data-i="a8">No. $MING is a community token with no promised returns.
 The price can go up or down, and you can lose everything you spend.
@@ -746,7 +746,7 @@ en: {
   connAgent:"Wallet + Agent ID", connPlain:"Try a wallet without Agent ID",
   rWallet:"Wallet", rPrice:"Price now", rQuota:"Quota used", rOwed:"$MING in your wallet", claimed:"claimed",
   total:"You pay", btnMint:"Approve & mint", btnClaim:"Claim $MING", btnRefund:"Refund {u} USDT",
-  live1:"{b} shares until auto-listing on PancakeSwap.", phPool:"Target reached. Pool created, LP burned, minting closed. Buys in the first 10 minutes pay a 90% anti-sniper fee.", phFail:"Deadline passed before 5,000 shares. Every payer can refund 100%.",
+  live1:"{b} shares until auto-listing on PancakeSwap.", phPool:"Target reached. Pool created, LP burned, minting closed.", phFail:"Deadline passed before 5,000 shares. Every payer can refund 100%.",
   passKind:"Mandate of Heaven", serialLbl:"Serial", agentLbl:"Agent", sharesLbl:"Shares",
   shareX:"Share on X",
   passNote:"Your mandate carries your first serial number. Share it on X.",
@@ -761,7 +761,7 @@ en: {
   s1h:"Agents mint", s1p:"Only wallets holding a .ai Agent ID. Max 5 shares per wallet.",
   s2h:"Auto-listing", s2p:"Share #5,000 triggers the PancakeSwap pool inside the same transaction.",
   s3h:"LP burned", s3p:"LP tokens go to 0x…dEaD. Liquidity is locked forever.",
-  s4h:"Anti-sniper, then 2%", s4p:"For the first 10 minutes after listing, buys pay 90% to the treasury, so sniper bots lose most of what they grab. After that, every buy and sell pays 2%. Wallet transfers pay nothing.",
+  s4h:"2% trade fee", s4p:"On every buy and sell in the pool, 2% of $MING goes to the treasury wallet. Wallet transfers pay nothing.",
   liveEyebrow:"Live", liveTitle:"Market, treasury and the top minters.",
   market:"PancakeSwap $MING/USDT", priceOn:"{p} USDT", priceOff:"not listed yet",
   waiting:"The chart goes live at share #5,000, when the contract creates the pool.",
@@ -778,7 +778,7 @@ en: {
   roadEyebrow:"Roadmap", roadTitle:"What happens after the mint.",
   stNow:"Live", stNext:"Next", stLater:"Planned",
   r1h:"Presale", r1a:"Agent-only mint, 5,000 shares", r1b:"Equal 5-share quota for every agent", r1c:"Refund if missed in 10 days",
-  r2h:"Listing", r2a:"Auto PancakeSwap pool", r2b:"LP burned, trading opens for everyone", r2c:"10-minute anti-sniper window, then 2% fee",
+  r2h:"Listing", r2a:"Auto PancakeSwap pool", r2b:"LP burned, trading opens for everyone", r2c:"2% trade fee to treasury starts",
   r3h:"Build", r3a:"Agent tools for $MING holders", r3b:"Details published before launch",
   r4h:"Airdrops", r4a:"Treasury airdrops to Agent ID holders", r4b:"Every spend posted with its tx hash",
   faqTitle:"Questions before you join",
@@ -787,8 +787,8 @@ en: {
   q3:"Can the team dump on the community?", a3:"There are no team-held tokens to dump.\nNo team allocation. No private sale. No hidden wallet. No team unlock.\nThe only $MING the treasury gets is the 2% trade fee. It may sell that to fund the project, and every treasury transaction is public on-chain.",
   q4:"What if the mint doesn't sell out?", a4:"Your money isn't trapped.\nIf $MING does not list within 10 days, every participant can call refund() and get 100% of their USDT back.\nIf the launch fails, the treasury receives nothing.",
   q5:"When do I receive my $MING?", a5:"Immediately. Your $MING is sent to your wallet in the same transaction as your mint. No claim step.\nIt stays locked until the pool exists, so nobody can create a market before the official launch. The moment share 5,000 is minted, it is yours to trade.",
-  q6:"What happens after listing?", a6:"$MING is fully open to the market. Anyone can buy or sell on PancakeSwap, with or without an Agent ID.\nAnti-sniper: for the first 10 minutes after listing, every buy from the pool pays a 90% fee to the treasury. Bots that buy in the listing block keep only 10% of what they buy. Sells pay the normal 2%. If you want to buy, wait 10 minutes.\nThere is no special team trading window and no privileged exit. The market decides the price.",
-  q7:"What is the 2% trading fee?", a7:"A 2% fee is charged on buys and sells through the pool. Wallet-to-wallet transfers are free. The only exception is the first 10 minutes after listing, when buys pay a 90% anti-sniper fee.\nThe full fee goes to the treasury wallet and pays for development, the team building $MING, DEX listings, community initiatives and Agent ID holder rewards.\nThe rate is fixed in the contract and can never be increased.",
+  q6:"What happens after listing?", a6:"$MING is fully open to the market. Anyone can buy or sell on PancakeSwap, with or without an Agent ID.\nThere is no special team trading window and no privileged exit.\nThe market decides the price. The community owns the supply.",
+  q7:"What is the 2% trading fee?", a7:"A 2% fee is charged on buys and sells through the pool. Wallet-to-wallet transfers are free.\nThe full 2% goes to the treasury wallet and pays for development, the team building $MING, DEX listings, community initiatives and Agent ID holder rewards.\nThe rate is fixed in the contract and can never be increased.",
   q8:"Is $MING an investment?", a8:"No. $MING is a community token with no promised returns.\nThe price can go up or down, and you can lose everything you spend.\nOnly participate with what you can afford to lose.",
   ctEyebrow:"Verify", ctTitle:"Read the contracts yourself.",
   ct1:"Mint contract", ct2:"$MING token", ct3:".ai Agent ID registry", ct4:"Treasury wallet (5% + 2% fee)", pending:"published at deploy",
@@ -801,7 +801,7 @@ en: {
   cr3:"If the target is missed", cr3a:"Usually no refund", cr3b:"100% refund you claim yourself",
   cr4:"Liquidity", cr4a:"Unlocked or time-locked", cr4b:"LP burned in the listing transaction",
   cr5:"Team tokens", cr5a:"Hidden or unlocked", cr5b:"None. 0% team allocation in the contract",
-  cr6:"After launch", cr6a:"Admin keys stay with the team", cr6b:"No owner. 10-minute anti-sniper fee, then a fixed 2% trade fee",
+  cr6:"After launch", cr6a:"Admin keys stay with the team", cr6b:"No owner. Fixed 2% trade fee to the treasury",
   agEyebrow:"For agents", agTitle:"Your agent can mint on its own.", agSub:"Copy one prompt and your agent has everything it needs: the contract, the checks and the steps to mint through Binance Agentic Wallet.",
   ag1b:"Simulate first.", ag1:"Every call is previewed before it is signed.",
   ag2b:"You confirm.", ag2:"Execution waits for your approval in the Binance app.",
@@ -857,7 +857,7 @@ zh: {
   connAgent:"钱包 + Agent ID", connPlain:"试试没有 Agent ID 的钱包",
   rWallet:"钱包", rPrice:"当前价格", rQuota:"已用额度", rOwed:"钱包中的 $MING", claimed:"已领取",
   total:"应付", btnMint:"授权并铸造", btnClaim:"领取 $MING", btnRefund:"退款 {u} USDT",
-  live1:"再 {b} 份即自动在 PancakeSwap 上线。", phPool:"目标达成。资金池已创建，LP 已销毁，铸造关闭。上线后 10 分钟内买入需支付 90% 防狙击手续费。", phFail:"截止前未达 5,000 份。所有付款人可 100% 退款。",
+  live1:"再 {b} 份即自动在 PancakeSwap 上线。", phPool:"目标达成。资金池已创建，LP 已销毁，铸造关闭。", phFail:"截止前未达 5,000 份。所有付款人可 100% 退款。",
   passKind:"天命诏", serialLbl:"编号", agentLbl:"Agent", sharesLbl:"份数",
   shareX:"分享到 X",
   passNote:"天命带有你的首个编号，分享到 X 吧。",
@@ -872,7 +872,7 @@ zh: {
   s1h:"Agent 铸造", s1p:"仅限持有 .ai Agent ID 的钱包。每个钱包最多 5 份。",
   s2h:"自动上线", s2p:"第 5,000 份在同一笔交易中触发 PancakeSwap 资金池。",
   s3h:"LP 销毁", s3p:"LP 代币发送到 0x…dEaD，流动性永久锁定。",
-  s4h:"防狙击，之后 2%", s4p:"上线后前 10 分钟内，买入需支付 90% 给金库，狙击机器人抢到的大部分都会损失。之后每笔买卖收取 2%。钱包间转账免费。",
+  s4h:"2% 交易手续费", s4p:"资金池中每笔买卖的 2% $MING 进入金库钱包。钱包间转账免费。",
   liveEyebrow:"实时", liveTitle:"市场、金库，以及领跑的 Agent。",
   market:"PancakeSwap $MING/USDT", priceOn:"{p} USDT", priceOff:"尚未上线",
   waiting:"第 5,000 份时合约创建资金池，图表随即上线。",
@@ -889,7 +889,7 @@ zh: {
   roadEyebrow:"路线图", roadTitle:"铸造之后会发生什么。",
   stNow:"进行中", stNext:"下一步", stLater:"计划中",
   r1h:"预售", r1a:"仅限 Agent 铸造 5,000 份", r1b:"每个 Agent 额度相同，均为 5 份", r1c:"10 天未达标即退款",
-  r2h:"上线", r2a:"自动创建 PancakeSwap 资金池", r2b:"销毁 LP，向所有人开放交易", r2c:"10 分钟防狙击期，之后 2% 手续费",
+  r2h:"上线", r2a:"自动创建 PancakeSwap 资金池", r2b:"销毁 LP，向所有人开放交易", r2c:"开始收取 2% 手续费（进入金库）",
   r3h:"建设", r3a:"为 $MING 持有者打造 Agent 工具", r3b:"上线前公布详情",
   r4h:"空投", r4a:"金库向 Agent ID 持有者空投", r4b:"每笔支出公布交易哈希",
   faqTitle:"参与前的常见问题",
@@ -898,8 +898,8 @@ zh: {
   q3:"团队会砸盘吗？", a3:"团队没有持币可砸。\n无团队分配、无私募、无隐藏钱包、无团队解锁。\n金库唯一获得的 $MING 是 2% 交易手续费，可能卖出以资助项目，金库的每笔交易都在链上公开。",
   q4:"如果没卖完怎么办？", a4:"你的资金不会被锁死。\n若 10 天内未上线，每位参与者都可调用 refund() 取回 100% 的 USDT。\n若发行失败，金库不获得任何资金。",
   q5:"什么时候拿到 $MING？", a5:"立即到账。$MING 在铸造的同一笔交易中直接发到你的钱包，无需领取。\n资金池建立前代币处于锁定状态，任何人都无法在正式上线前建立市场。第 5,000 份铸造完成的那一刻即可交易。",
-  q6:"上线后会怎样？", a6:"$MING 完全向市场开放。无论是否持有 Agent ID，任何人都可以在 PancakeSwap 买卖。\n防狙击：上线后前 10 分钟内，从资金池买入需支付 90% 手续费给金库，在上线区块抢买的机器人只能保留 10%。卖出仍为 2%。想买入请等待 10 分钟。\n没有团队专属交易窗口，也没有特权退出。价格由市场决定。",
-  q7:"2% 交易手续费是什么？", a7:"通过资金池买入和卖出时收取 2%，钱包间转账免费。唯一例外是上线后前 10 分钟，买入需支付 90% 防狙击手续费。\n全部手续费进入金库钱包，用于开发、建设 $MING 的团队、DEX 上架、社区活动和 Agent ID 持有者奖励。\n费率写死在合约中，永远无法上调。",
+  q6:"上线后会怎样？", a6:"$MING 完全向市场开放。无论是否持有 Agent ID，任何人都可以在 PancakeSwap 买卖。\n没有团队专属交易窗口，也没有特权退出。\n价格由市场决定，供应归社区所有。",
+  q7:"2% 交易手续费是什么？", a7:"通过资金池买入和卖出时收取 2%，钱包间转账免费。\n全部 2% 进入金库钱包，用于开发、建设 $MING 的团队、DEX 上架、社区活动和 Agent ID 持有者奖励。\n费率写死在合约中，永远无法上调。",
   q8:"$MING 是投资吗？", a8:"不是。$MING 是社区代币，不承诺任何收益。\n价格可涨可跌，你可能损失全部投入。\n请只用你能承受损失的金额参与。",
   ctEyebrow:"核查", ctTitle:"亲自阅读合约。",
   ct1:"铸造合约", ct2:"$MING 代币", ct3:".ai Agent ID 注册表", ct4:"金库钱包（5% + 2% 手续费）", pending:"部署时公布",
@@ -912,7 +912,7 @@ zh: {
   cr3:"未达目标时", cr3a:"通常不退款", cr3b:"100% 退款，自行领取",
   cr4:"流动性", cr4a:"未锁定或限时锁定", cr4b:"上线交易中直接销毁 LP",
   cr5:"团队代币", cr5a:"隐藏或未锁定", cr5b:"无。合约中团队分配为 0%",
-  cr6:"上线之后", cr6a:"管理员密钥仍在团队手中", cr6b:"无 owner。10 分钟防狙击费，之后固定 2% 交易手续费",
+  cr6:"上线之后", cr6a:"管理员密钥仍在团队手中", cr6b:"无 owner。固定 2% 交易手续费进入金库",
   agEyebrow:"面向 Agent", agTitle:"你的 Agent 可以自己铸造。", agSub:"复制一段提示词，你的 Agent 就拥有所需的一切：合约地址、检查项和通过币安 Agentic Wallet 铸造的步骤。",
   ag1b:"先模拟。", ag1:"每次调用在签名前都会预览。",
   ag2b:"由你确认。", ag2:"执行前需在币安 App 中批准。",

@@ -129,7 +129,6 @@ describe("TianmingMint", () => {
     await mint.connect(users[0]).mint(5);
     await mint.connect(users[3]).mint(5);
     const pair = await ethers.getContractAt("MockPair", await mint.pair());
-    await time.increase(601); // after the anti-sniper window
     const human = signers[16];
     await pair.swapOut(await token.getAddress(), human.address, E(100));
     expect(await token.balanceOf(human.address)).to.equal(E(98));
@@ -142,7 +141,6 @@ describe("TianmingMint", () => {
     await mint.connect(users[3]).mint(5);
     const pair = await ethers.getContractAt("MockPair", await mint.pair());
     const dev = signers[TREASURY_IDX].address;
-    await time.increase(601); // after the anti-sniper window
     const t0 = await token.balanceOf(dev);
     const supply0 = await token.totalSupply();
     // agent buys 100 tokens
@@ -160,30 +158,6 @@ describe("TianmingMint", () => {
     await token.connect(users[0]).transfer(users[2].address, E(10));
     expect(await token.balanceOf(users[2].address)).to.equal(E(10));
     expect(await token.FEE_BPS()).to.equal(200n);
-  });
-
-  it("anti-sniper: buys in the first 10 minutes pay 90% to treasury; sells pay 2%; then buys pay 2%", async () => {
-    const { mint, token, users, signers } = await setup({ target: 10 });
-    await mint.connect(users[0]).mint(5);
-    await mint.connect(users[3]).mint(5);
-    const pair = await ethers.getContractAt("MockPair", await mint.pair());
-    const tr = signers[TREASURY_IDX].address, sniper = signers[17];
-    expect(await token.buyFeeBps()).to.equal(9000n);
-    // sniper buys 100 tokens right after listing: gets 10, treasury gets 90
-    const t0 = await token.balanceOf(tr);
-    await pair.swapOut(await token.getAddress(), sniper.address, E(100));
-    expect(await token.balanceOf(sniper.address)).to.equal(E(10));
-    expect((await token.balanceOf(tr)) - t0).to.equal(E(90));
-    // a minter selling inside the window pays only 2%
-    const pb = await token.balanceOf(await pair.getAddress());
-    await token.connect(users[0]).transfer(await pair.getAddress(), E(100));
-    expect((await token.balanceOf(await pair.getAddress())) - pb).to.equal(E(98));
-    // after 10 minutes buys are back to 2%
-    await time.increase(601);
-    expect(await token.buyFeeBps()).to.equal(200n);
-    await pair.swapOut(await token.getAddress(), signers[18].address, E(100));
-    expect(await token.balanceOf(signers[18].address)).to.equal(E(98));
-    expect(await token.SNIPE_WINDOW()).to.equal(600n);
   });
 
   it("USDT donated to the pair before opening cannot block the pool", async () => {
