@@ -379,6 +379,12 @@ footer p{max-width:70ch}
 @keyframes coinSpin{from{transform:rotateY(0deg)}to{transform:rotateY(360deg)}}
 .coin .face{backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .coin .face.back{transform:rotateY(180deg)}
+
+/* calligraphy headings: brush font like the 天命 wordmark, original text color */
+.hero h1,h2{font-family:"Ma Shan Zheng","Noto Serif SC",serif;font-weight:400;letter-spacing:.01em;line-height:1.15;color:var(--fg)}
+.hero h1{font-size:clamp(34px,4.4vw,54px)}
+h2{font-size:clamp(32px,4.2vw,52px)}
+:lang(zh) .hero h1,:lang(zh) h2{letter-spacing:.04em}
 </style>
 </head>
 <body>
