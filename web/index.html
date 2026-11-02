@@ -1546,11 +1546,11 @@ function seed() {
     ["p", "$ baw wallet status --json"],
     ["k", '{ "agentId": "you.ai", "chainId": 56, "verified": true }'],
     ["c", "# 2. preview the mint (eth_call simulation)"],
-    ["p", "$ baw contract-call preview --binanceChainId 56 \\\n    --to $MINT --inputData mint(10) --json"],
+    ["p", "$ baw contract-call preview --binanceChainId 56 \\\n    --to $MINT --inputData mint(5) --json"],
     ["k", "cost 10.00 USDT · simulation ok · requestId 7f3c…a19e"],
     ["c", "# 3. execute after approval in the Binance app"],
     ["p", "$ baw contract-call execute --requestId 7f3c…a19e --json"],
-    ["ok", "✓ minted 10 shares · 160,000,000 $MING at listing · seal #04896 minted"]
+    ["ok", "✓ minted 5 shares · 80,000,000 $MING in your wallet · mandate #04896 claimed"]
   ];
   const pre = $("term");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
