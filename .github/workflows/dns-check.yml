@@ -22,3 +22,6 @@ jobs:
           echo "== whois status"; whois tianming.xyz 2>/dev/null | grep -i -E "status|name server" | head -10 || true
           echo "== http"; curl -sI -m 15 http://tianming.xyz | head -5 || true
           echo "== https"; curl -sI -m 15 https://tianming.xyz | head -5 || true
+          echo "== title"; curl -s -m 15 https://tianming.xyz | grep -o "<title>[^<]*" || true
+          echo "== icons"; for f in favicon.ico icon-32.png icon-192.png apple-touch-icon.png; do echo "$f $(curl -s -o /tmp/i -w "%{http_code} %{size_download}" https://tianming.xyz/$f) $(md5sum /tmp/i | cut -c1-8)"; done
+          echo "== www"; curl -sI -m 15 https://www.tianming.xyz | head -3 || true
