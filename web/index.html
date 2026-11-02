@@ -882,7 +882,7 @@ en: {
   qrNote:"Only wallets that hold a .ai Agent ID can connect. The check runs on-chain.",
   qrSoon:"QR connect opens at launch. Until then, let your agent mint with the prompt below.",
   qrWaiting:"Waiting for approval in your wallet…", qrStarting:"Preparing QR…",
-  mAgentOnly:"This wallet has no .ai Agent ID, so it was disconnected. Only Agentic Wallets can connect.", mChecking:"Checking Agent ID on-chain…"
+  mAgentOnly:"This wallet has no .ai Agent ID, so it was disconnected. Only Agentic Wallets can connect.", mQrTestOk:"QR test passed: {a} is connected and holds a .ai Agent ID.", mChecking:"Checking Agent ID on-chain…"
 },
 zh: {
   nMint:"铸造", nAgent:"Agent 铸造", nToko:"代币经济", nRoad:"路线图", nFaq:"常见问题", mintNow:"立即铸造",
@@ -993,7 +993,7 @@ zh: {
   qrNote:"只有持有 .ai Agent ID 的钱包可以连接，检查在链上完成。",
   qrSoon:"扫码连接将在上线时开放。在此之前，可用下方提示词让 Agent 铸造。",
   qrWaiting:"等待你在钱包中批准……", qrStarting:"正在生成二维码……",
-  mAgentOnly:"该钱包没有 .ai Agent ID，已断开连接。只有 Agentic Wallet 可以连接。", mChecking:"正在链上检查 Agent ID……"
+  mAgentOnly:"该钱包没有 .ai Agent ID，已断开连接。只有 Agentic Wallet 可以连接。", mQrTestOk:"扫码测试通过：{a} 已连接并持有 .ai Agent ID。", mChecking:"正在链上检查 Agent ID……"
 }};
 
 const $ = (id) => document.getElementById(id);
@@ -1245,8 +1245,8 @@ const NETS = {
 const NETQ = new URLSearchParams(location.search).get("net");
 const CHAIN = NETQ === "testnet" ? 97 : NETQ === "local" ? 31337 : 56;
 const AGENT_LOGIN_API = null; // Agent Wallet sign-in backend URL, when available
-const WC_PROJECT_ID = null; // WalletConnect (Reown) project ID; QR connect is enabled when set
-let wcProvider = null;
+let bnProvider = null; // Binance Wallet QR connector (Binance's own relay, no project ID needed)
+const QR_TEST = new URLSearchParams(location.search).get("qrtest") === "1"; // pre-launch check: ?qrtest=1
 let PRELAUNCH = false, LIVE = null, ro, mintC, tokenC, signer = null, acct = null, busy = false, INITIAL = 0n, lastBlock = 0, cum = 0, agentSet = new Set();
 const ABI_MINT = [
   "function overview() view returns (uint256 minted,uint256 target,uint256 price,uint256 usdtParked,bool opened,bool isFailed,uint256 deadline)",
@@ -1374,7 +1374,7 @@ async function connectWith(eth, isWC) {
     const st = await mintC.walletStatus(who);
     if (!st.eligible) {
       acct = null; signer = null; S.wallet = false; S.eligible = false;
-      if (isWC && wcProvider) { try { await wcProvider.disconnect(); } catch (e) {} }
+      if (isWC && bnProvider) { try { bnProvider.disconnect(); } catch (e) {} }
       render(); return say("mAgentOnly", {}, "bad");
     }
     signer = sg; acct = who; S.handle = short(acct);
@@ -1397,34 +1397,33 @@ function saveQR() {
   img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
 }
 
-function loadWC() {
-  if (window.WCUniversalProvider) return Promise.resolve();
-  return new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "vendor/walletconnect-universal-provider-2.26.0.js"; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); });
+function loadBN() {
+  if (window.BinanceW3W) return Promise.resolve();
+  return new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "vendor/binance-w3w-provider-1.1.13.js"; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); });
 }
 
 async function connectQR() {
-  const card = document.querySelector(".qrcard");
   $("qrStatus").textContent = t("qrStarting");
   try {
-    await loadWC();
-    if (wcProvider) { try { await wcProvider.disconnect(); } catch (e) {} }
-    wcProvider = await window.WCUniversalProvider.init({
-      projectId: WC_PROJECT_ID,
-      metadata: { name: "Tianming 天命", description: "Agent-only fair mint on BNB Smart Chain", url: location.origin, icons: [location.origin + "/icon-192.png"] },
-    });
-    wcProvider.on("display_uri", (uri) => {
+    await loadBN();
+    if (bnProvider) { try { bnProvider.disconnect(); } catch (e) {} }
+    bnProvider = window.BinanceW3W.getProvider({ chainId: CHAIN, rpc: { [CHAIN]: NETS[CHAIN].rpc }, showQrCodeModal: false, lng: L === "zh" ? "zh-CN" : "en" });
+    bnProvider.on("uri_ready", (uri) => {
       makeQR($("qrConnect"), uri, 220, "#ffffff");
-      $("qrOpen").href = uri;
       $("qrSave").hidden = false;
       $("qrStatus").textContent = t("qrWaiting");
     });
-    await wcProvider.connect({ namespaces: { eip155: {
-      methods: ["eth_sendTransaction", "personal_sign", "eth_signTypedData_v4", "wallet_switchEthereumChain"],
-      chains: ["eip155:" + CHAIN], events: ["chainChanged", "accountsChanged"], rpcMap: { [CHAIN]: NETS[CHAIN].rpc },
-    } } });
-    wcProvider.setDefaultChain("eip155:" + CHAIN);
+    await bnProvider.enable(CHAIN);
     closeQR();
-    await connectWith(wcProvider, true);
+    if (!LIVE) {
+      // pre-launch QR test: show the connected wallet and its Agent ID status, nothing else
+      const who = (await bnProvider.request({ method: "eth_accounts" }))[0];
+      const reg = new ethers.Contract("0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F", ["function balanceOf(address) view returns (uint256)"], new ethers.JsonRpcProvider(NETS[56].rpc, 56, { staticNetwork: true }));
+      const ok = (await reg.balanceOf(who)) > 0n;
+      try { bnProvider.disconnect(); } catch (e) {}
+      return say(ok ? "mQrTestOk" : "mAgentOnly", { a: short(who) }, ok ? "ok" : "bad");
+    }
+    await connectWith(bnProvider, true);
   } catch (e) {
     if (!$("qrModal").hidden) $("qrStatus").textContent = t("mErr", { e: e?.message || "connection cancelled" });
   }
@@ -1504,7 +1503,7 @@ function openQR() {
   lastFocus = document.activeElement;
   $("qrModal").hidden = false;
   if (LIVE || PRELAUNCH) {
-    const qrOn = !!LIVE && !!WC_PROJECT_ID;
+    const qrOn = !!LIVE || QR_TEST;
     document.querySelector(".qrcard").hidden = !qrOn; $("qrSoon").hidden = qrOn; $("qrSim").hidden = true;
     const cb = document.querySelector('[data-i="qrConnecting"]'); if (cb) cb.hidden = !qrOn;
     $("qrPair").hidden = true; const pl = document.querySelector('[data-i="qrPairLbl"]'); if (pl) pl.hidden = true;
@@ -1512,7 +1511,7 @@ function openQR() {
     $("qrConnect").innerHTML = "";
     // Only Binance Wallet holds .ai Agent IDs: the in-page option appears only inside Binance Wallet's own browser.
     $("qrRegular").hidden = !isBinanceWallet();
-    $("qrSave").hidden = true; $("qrSave").onclick = saveQR;
+    $("qrSave").hidden = true; $("qrSave").onclick = saveQR; $("qrOpen").hidden = true;
     $("qrClose").focus();
     if (qrOn) connectQR();
     return;
