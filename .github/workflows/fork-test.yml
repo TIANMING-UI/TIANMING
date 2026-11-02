@@ -1,0 +1,21 @@
+name: Fork test (BSC mainnet)
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths: ["contracts/**", "test-fork/**", "hardhat.config.js", ".github/workflows/fork-test.yml"]
+jobs:
+  fork:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Fork test against real PancakeSwap, USDT and .ai Agent ID registry
+        env:
+          FORK_URL: ${{ secrets.BSC_RPC != '' && secrets.BSC_RPC || 'https://bsc-rpc.publicnode.com' }}
+        run: npx hardhat test test-fork/fork.test.js

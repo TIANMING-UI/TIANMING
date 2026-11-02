@@ -1,0 +1,24 @@
+name: DNS check
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [".github/workflows/dns-check.yml"]
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for ns in 8.8.8.8 1.1.1.1; do
+            echo "== A tianming.xyz @$ns"; dig +short A tianming.xyz @$ns
+            echo "== CNAME www @$ns"; dig +short CNAME www.tianming.xyz @$ns
+          done
+          echo "== NS"; dig +short NS tianming.xyz @8.8.8.8
+          echo "== MX"; dig +short MX tianming.xyz @8.8.8.8; dig +short MX tianming.xyz @1.1.1.1
+          echo "== TXT"; dig +short TXT tianming.xyz @8.8.8.8
+          echo "== DMARC"; dig +short TXT _dmarc.tianming.xyz @8.8.8.8
+          echo "== security.txt"; curl -s -m 15 https://tianming.xyz/.well-known/security.txt | head -3
+          echo "== RDAP"; curl -s -m 20 https://rdap.centralnic.com/xyz/domain/tianming.xyz | head -c 1500; echo; curl -s -m 20 -o /dev/null -w "rdap.org: %{http_code}\n" https://rdap.org/domain/tianming.xyz
+          echo "== whois status"; whois tianming.xyz 2>/dev/null | grep -i -E "status|name server" | head -10 || true
+          echo "== http"; curl -sI -m 15 http://tianming.xyz | head -5 || true
+          echo "== https"; curl -sI -m 15 https://tianming.xyz | head -5 || true

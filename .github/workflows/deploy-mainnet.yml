@@ -1,0 +1,60 @@
+name: Deploy mainnet
+on:
+  workflow_dispatch:
+    inputs:
+      treasury:
+        description: "Treasury wallet address — receives 5% USDT + 2% trade fee"
+        required: true
+      confirm:
+        description: "Type TIANMING to deploy for real (anything else = dry run summary only)"
+        required: true
+        default: "dry-run"
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: deploy-mainnet
+  cancel-in-progress: false
+jobs:
+  fork-test:
+    uses: ./.github/workflows/fork-test.yml
+    secrets: inherit
+  deploy:
+    needs: fork-test
+    runs-on: ubuntu-latest
+    environment: mainnet
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx hardhat test
+      - name: Deploy (or dry run)
+        env:
+          DEPLOYER_KEY: ${{ secrets.DEPLOYER_KEY }}
+          BSC_RPC: ${{ secrets.BSC_RPC != '' && secrets.BSC_RPC || 'https://bsc-dataseed.bnbchain.org' }}
+          TREASURY: ${{ inputs.treasury }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          test -n "$DEPLOYER_KEY" || { echo "::error::Secret DEPLOYER_KEY is not set"; exit 1; }
+          npx hardhat run scripts/deploy-mainnet.js --network bsc
+      - name: Verify source (BscScan + Sourcify)
+        if: inputs.confirm == 'TIANMING'
+        env:
+          DEPLOYER_KEY: ${{ secrets.DEPLOYER_KEY }}
+          BSC_RPC: ${{ secrets.BSC_RPC != '' && secrets.BSC_RPC || 'https://bsc-dataseed.bnbchain.org' }}
+          BSCSCAN_API_KEY: ${{ secrets.BSCSCAN_API_KEY }}
+        run: sleep 30 && npx hardhat run scripts/verify.js --network bsc || true
+      - name: Commit addresses and publish website
+        if: inputs.confirm == 'TIANMING'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "tianming-deploy"
+          git config user.email "deploy@users.noreply.github.com"
+          git add deployments/bsc.json web/deployments.json
+          git commit -m "Deploy TIANMING to BSC mainnet"
+          git push
+          gh workflow run pages.yml --ref main
