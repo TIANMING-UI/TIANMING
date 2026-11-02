@@ -23,7 +23,7 @@ r('$("passHandle").textContent = S.wallet ? "you.ai" : "—.ai";', '$("passHandl
 r('    $("btnMint").disabled = S.paid >= QUOTA;', '    $("btnMint").disabled = S.paid >= QUOTA || (LIVE && !S.eligible) || busy;')
 r('b.textContent = t({ live: "sLive", pool: "sPool", fail: "sFail" }[S.phase]);', 'b.textContent = t({ live: "sLive", pool: "sPool", fail: "sFail", soon: "sSoon" }[S.phase]);')
 r('$("phaseTxt").textContent = S.phase === "live" ? t("live1", { b: nf(TARGET - S.minted) }) : t(S.phase === "pool" ? "phPool" : "phFail");',
-  '$("phaseTxt").textContent = S.phase === "soon" ? t("phSoon") : S.phase === "live" ? t("live1", { b: nf(TARGET - S.minted) }) : t(S.phase === "pool" ? "phPool" : "phFail");')
+  '$("phaseTxt").textContent = S.phase === "soon" ? "" : S.phase === "live" ? t("live1", { b: nf(TARGET - S.minted) }) : t(S.phase === "pool" ? "phPool" : "phFail");')
 r('$("nextTier").textContent = S.phase !== "live" ? ""', '$("nextTier").textContent = S.phase !== "live" ? (S.phase === "soon" ? t("sSoon") : "")')
 r(".state.fail{", ".state.soon{color:var(--dim)}\n.state.fail{")
 r("function tickCount() {", "function tickCount() {\n  if (!DEADLINE) { [\"d\",\"h\",\"m\",\"s\"].forEach(k => { const el = $(\"c\" + k); if (el) el.textContent = \"--\"; }); return; }")

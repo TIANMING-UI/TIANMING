@@ -1126,7 +1126,7 @@ function render() {
   $("nextTier").textContent = S.phase !== "live" ? (S.phase === "soon" ? t("sSoon") : "") : S.minted < STEP ? t("nextLive1", { a: nf(STEP - S.minted) }) : t("nextLive2");
   const b = $("stateBadge");
   b.className = "state " + S.phase; b.textContent = t({ live: "sLive", pool: "sPool", fail: "sFail", soon: "sSoon" }[S.phase]);
-  $("phaseTxt").textContent = S.phase === "soon" ? t("phSoon") : S.phase === "live" ? t("live1", { b: nf(TARGET - S.minted) }) : t(S.phase === "pool" ? "phPool" : "phFail");
+  $("phaseTxt").textContent = S.phase === "soon" ? "" : S.phase === "live" ? t("live1", { b: nf(TARGET - S.minted) }) : t(S.phase === "pool" ? "phPool" : "phFail");
 
   $("notConnected").hidden = S.wallet; $("connected").hidden = !S.wallet;
   if (S.wallet) {
