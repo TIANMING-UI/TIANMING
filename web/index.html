@@ -1595,8 +1595,7 @@ $("btnMint").onclick = () => {
     say("mMinted", { n, c: nf(r.c, 2) }, "ok"); render();
   }, 900);
 };
-$("btnClaim").onclick = () => {
-  if (LIVE) return liveTx("claim", async () => { const tx = await mintC.connect(signer).claim(); say("mPending"); await tx.wait(); say("mClaimed", {}, "ok"); }); S.claimed = true; log("mint", "you.ai", "eClaim", { t: nf(S.owed) }, true); say("mClaimed", {}, "ok"); render(); };
+$("btnClaim").onclick = () => { S.claimed = true; log("mint", "you.ai", "eClaim", { t: nf(S.owed) }, true); say("mClaimed", {}, "ok"); render(); };
 $("btnRefund").onclick = () => {
   if (LIVE) return liveTx("refund", async () => { const v = S.paidUsdt; const tx = await mintC.connect(signer).refund(); say("mPending"); await tx.wait(); say("mRefund", { u: nf(v, 2) }, "ok"); }); log("burn", "you.ai", "eRefund", { u: nf(S.paidUsdt, 2) }, true); say("mRefund", { u: nf(S.paidUsdt, 2) }, "ok"); S.paidUsdt = 0; S.owed = 0; render(); };
 document.querySelectorAll(".cp").forEach(b => b.onclick = () => copyText(b.dataset.copy, b));

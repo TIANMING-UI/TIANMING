@@ -313,8 +313,9 @@ r('''function openQR() {
   newSession();''')
 r('$("btnMint").onclick = () => {', '''$("btnMint").onclick = () => {
   if (LIVE) { const n = Math.max(1, Math.min(5, parseInt($("shares").value) || 1)); if (S.paid + n > QUOTA) return say("mQuota", { n: QUOTA - S.paid }, "bad"); if (S.minted + n > TARGET) return say("mSupply", { n: TARGET - S.minted }, "bad"); return liveTx("mint", () => liveMint(n)); }''')
-r('$("btnClaim").onclick = () => {', '$("btnClaim").onclick = () => {\n  if (LIVE) return liveTx("claim", async () => { const tx = await mintC.connect(signer).claim(); say("mPending"); await tx.wait(); say("mClaimed", {}, "ok"); });')
-r('$("btnRefund").onclick = () => {', '$("btnRefund").onclick = () => {\n  if (LIVE) return liveTx("refund", async () => { const v = S.paidUsdt; const tx = await mintC.connect(signer).refund(); say("mPending"); await tx.wait(); say("mRefund", { u: nf(v, 2) }, "ok"); });')
+# btnClaim is always hidden in live (tokens are sent at mint, no claim step).
+# No live handler is injected so the bundle never references a non-existent claim().
+r('$("btnRefund").onclick = () => {','$("btnRefund").onclick = () => {\n  if (LIVE) return liveTx("refund", async () => { const v = S.paidUsdt; const tx = await mintC.connect(signer).refund(); say("mPending"); await tx.wait(); say("mRefund", { u: nf(v, 2) }, "ok"); });')
 
 # Init: live jika ada deployment, kalau tidak demo.
 r('''fresh(); seed();
