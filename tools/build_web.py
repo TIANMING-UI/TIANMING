@@ -12,8 +12,8 @@ r("const TARGET = 5000, STEP = 5000, BASE = 2, INC = 0, TPS = 16000000, POOL_TPS
 r("const DEADLINE = Date.now()", "let DEADLINE = Date.now()")
 r('const SITE = "https://tianming.xyz"; // official site', 'let SITE = "https://tianming.xyz"; // replaced with the page origin when live')
 r("const MINT_ADDR = null;              // set after deploy", "let MINT_ADDR = null;                // loaded from deployments.json")
-r('<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>',
-  '<script src="vendor/ethers-6.17.0.umd.min.js"></script>\n<script src="vendor/qrcode-generator-1.4.4.js"></script>')
+r('<script>', '<script src="vendor/ethers-6.17.0.umd.min.js"></script>\n<script>')
+
 r('<small style="font-size:14px;color:var(--dim)"> / 5,000</small>', '<small style="font-size:14px;color:var(--dim)" id="targetLbl"> / 5,000</small>')
 r('<div class="tick" style="left:50%"><span data-i="tick1"></span></div>', '<div class="tick" id="tickMid" style="left:50%"><span id="tick1" data-i="tick1"></span></div>')
 r('<span id="tick1" data-i="tick1"></span></div>\n            <div class="tick end" style="right:0;left:auto"><span data-i="tick2"></span></div>',
@@ -28,7 +28,6 @@ r('$("nextTier").textContent = S.phase !== "live" ? ""', '$("nextTier").textCont
 r(".state.fail{", ".state.soon{color:var(--dim)}\n.state.fail{")
 r("function tickCount() {", "function tickCount() {\n  if (!DEADLINE) { [\"d\",\"h\",\"m\",\"s\"].forEach(k => { const el = $(\"c\" + k); if (el) el.textContent = \"--\"; }); return; }")
 r('  $("lb").innerHTML = "";', '  $("lb").innerHTML = rows.length ? "" : `<li><span class="r">—</span><span class="h">${t("noMints")}</span><span></span></li>`;')
-r('<button class="pri big-btn" id="qrSim" data-i="qrSim"></button>', '<p class="qhint" id="qrSoon" hidden data-i="qrSoon"></p>\n    <button class="pri big-btn" id="qrSim" data-i="qrSim"></button>')
 
 # i18n tambahan
 r('  pPend:"MINT_ADDRESS (published at deploy)"\n},', '''  pPend:"MINT_ADDRESS (published at deploy)",
@@ -70,8 +69,6 @@ const NETS = {
 const NETQ = new URLSearchParams(location.search).get("net");
 const CHAIN = NETQ === "testnet" ? 97 : NETQ === "local" ? 31337 : 56;
 const AGENT_LOGIN_API = null; // Agent Wallet sign-in backend URL, when available
-let bnProvider = null; // Binance Wallet QR connector (Binance's own relay, no project ID needed)
-const QR_TEST = new URLSearchParams(location.search).get("qrtest") === "1"; // pre-launch check: ?qrtest=1
 let PRELAUNCH = false, LIVE = null, ro, mintC, tokenC, signer = null, acct = null, busy = false, INITIAL = 0n, lastBlock = 0, cum = 0, agentSet = new Set();
 const ABI_MINT = [
   "function overview() view returns (uint256 minted,uint256 target,uint256 price,uint256 usdtParked,bool opened,bool isFailed,uint256 deadline)",
@@ -199,59 +196,13 @@ async function connectWith(eth, isWC) {
     const st = await mintC.walletStatus(who);
     if (!st.eligible) {
       acct = null; signer = null; S.wallet = false; S.eligible = false;
-      if (isWC && bnProvider) { try { bnProvider.disconnect(); } catch (e) {} }
-      render(); return say("mAgentOnly", {}, "bad");
+        render(); return say("mAgentOnly", {}, "bad");
     }
     signer = sg; acct = who; S.handle = short(acct);
     if (!S.serial) { lastBlock = 0; cum = 0; agentSet = new Set(); events = []; mqItems = []; S.top = {}; }
     await livePoll();
     say("mVerified", {}, "ok");
   } catch (e) { say("mErr", { e: e.shortMessage || e.message }, "bad"); }
-}
-
-// Save the QR as a PNG so a phone user can scan it from the gallery ("add image" in Binance Wallet's scanner).
-function saveQR() {
-  const svg = $("qrConnect").querySelector("svg"); if (!svg) return;
-  const xml = new XMLSerializer().serializeToString(svg);
-  const img = new Image();
-  img.onload = () => {
-    const c = document.createElement("canvas"); c.width = c.height = 720;
-    const g = c.getContext("2d"); g.fillStyle = "#ffffff"; g.fillRect(0, 0, 720, 720); g.drawImage(img, 0, 0, 720, 720);
-    const a = document.createElement("a"); a.download = "tianming-connect-qr.png"; a.href = c.toDataURL("image/png"); a.click();
-  };
-  img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
-}
-
-function loadBN() {
-  if (window.BinanceW3W) return Promise.resolve();
-  return new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "vendor/binance-w3w-provider-1.1.13.js"; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); });
-}
-
-async function connectQR() {
-  $("qrStatus").textContent = t("qrStarting");
-  try {
-    await loadBN();
-    if (bnProvider) { try { bnProvider.disconnect(); } catch (e) {} }
-    bnProvider = window.BinanceW3W.getProvider({ chainId: CHAIN, rpc: { [CHAIN]: NETS[CHAIN].rpc }, showQrCodeModal: false, lng: L === "zh" ? "zh-CN" : "en" });
-    bnProvider.on("uri_ready", (uri) => {
-      makeQR($("qrConnect"), uri, 220, "#ffffff");
-      $("qrSave").hidden = false;
-      $("qrStatus").textContent = t("qrWaiting");
-    });
-    await bnProvider.enable(CHAIN);
-    closeQR();
-    if (!LIVE) {
-      // pre-launch QR test: show the connected wallet and its Agent ID status, nothing else
-      const who = (await bnProvider.request({ method: "eth_accounts" }))[0];
-      const reg = new ethers.Contract("0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F", ["function balanceOf(address) view returns (uint256)"], new ethers.JsonRpcProvider(NETS[56].rpc, 56, { staticNetwork: true }));
-      const ok = (await reg.balanceOf(who)) > 0n;
-      try { bnProvider.disconnect(); } catch (e) {}
-      return say(ok ? "mQrTestOk" : "mAgentOnly", { a: short(who) }, ok ? "ok" : "bad");
-    }
-    await connectWith(bnProvider, true);
-  } catch (e) {
-    if (!$("qrModal").hidden) $("qrStatus").textContent = t("mErr", { e: e?.message || "connection cancelled" });
-  }
 }
 
 function prelaunch() {
@@ -266,7 +217,6 @@ function prelaunch() {
   $("foot").dataset.i = "footLive"; $("foot").textContent = t("footLive");
   $("connPlain").onclick = () => say("mSoon", {}, "bad");
   $("connPlain").hidden = true;
-  $("qrRegular").onclick = () => { closeQR(); say("mSoon", {}, "bad"); };
   PRELAUNCH = true;
   renderFeed(); renderBoard(); render(); tickCount();
 }
@@ -289,28 +239,7 @@ r("// ---------- events ----------", LIVE_JS + "\n// ---------- events ---------
 
 # Tombol: arahkan ke live bila aktif
 r('$("connPlain").onclick = () => say("mNoAgent", {}, "bad");', '$("connPlain").onclick = () => LIVE ? connectInjected() : say("mNoAgent", {}, "bad");')
-r('$("qrRegular").onclick = () => { closeQR(); say("mNoAgent", {}, "bad"); };', '$("qrRegular").onclick = () => { closeQR(); LIVE ? connectInjected() : say("mNoAgent", {}, "bad"); };')
-r('''function openQR() {
-  lastFocus = document.activeElement;
-  $("qrModal").hidden = false;
-  newSession();''', '''function openQR() {
-  lastFocus = document.activeElement;
-  $("qrModal").hidden = false;
-  if (LIVE || PRELAUNCH) {
-    const qrOn = !!LIVE || QR_TEST;
-    document.querySelector(".qrcard").hidden = !qrOn; $("qrSoon").hidden = qrOn; $("qrSim").hidden = true;
-    const cb = document.querySelector('[data-i="qrConnecting"]'); if (cb) cb.hidden = !qrOn;
-    $("qrPair").hidden = true; const pl = document.querySelector('[data-i="qrPairLbl"]'); if (pl) pl.hidden = true;
-    const bar = document.querySelector(".qrbar"); if (bar) bar.hidden = true;
-    $("qrConnect").innerHTML = "";
-    // Only Binance Wallet holds .ai Agent IDs: the in-page option appears only inside Binance Wallet's own browser.
-    $("qrRegular").hidden = !isBinanceWallet();
-    $("qrSave").hidden = true; $("qrSave").onclick = saveQR; $("qrOpen").hidden = true;
-    $("qrClose").focus();
-    if (qrOn) connectQR();
-    return;
-  }
-  newSession();''')
+
 r('$("btnMint").onclick = () => {', '''$("btnMint").onclick = () => {
   if (LIVE) { const n = Math.max(1, Math.min(5, parseInt($("shares").value) || 1)); if (S.paid + n > QUOTA) return say("mQuota", { n: QUOTA - S.paid }, "bad"); if (S.minted + n > TARGET) return say("mSupply", { n: TARGET - S.minted }, "bad"); return liveTx("mint", () => liveMint(n)); }''')
 # btnClaim is always hidden in live (tokens are sent at mint, no claim step).
@@ -335,8 +264,7 @@ renderPrompt();
   if (new URLSearchParams(location.search).get("demo") === "1") { setInterval(loop, 900); return; }
   prelaunch();
 })();''')
-r('<a class="qlink" id="qrOpen" href="https://www.binance.com" target="_blank" rel="noopener"><span data-i="qrOpen"></span> ↗</a>',
-  '<a class="qlink" id="qrOpen" href="https://www.binance.com" target="_blank" rel="noopener"><span data-i="qrOpen"></span> ↗</a>\n      <button class="linkbtn" id="qrSave" hidden style="align-self:center" data-i="qrSave"></button>')
+
 r('<footer>', '<footer>', 1)
 s = s.replace('<p data-i="foot"></p>', '<p id="foot" data-i="foot"></p>', 1)
 

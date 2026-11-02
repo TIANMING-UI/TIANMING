@@ -750,28 +750,6 @@ Only participate with what you can afford to lose.</p></details>
   </footer>
 </div>
 
-<div class="modal" id="qrModal" hidden role="dialog" aria-modal="true" aria-labelledby="qrTitle">
-  <div class="mbox panel">
-    <div class="mhead"><h3 id="qrTitle"><span aria-hidden="true">▣</span> <span data-i="qrTitle">Agent Wallet</span></h3><div style="display:flex;gap:8px;align-items:center"><span class="state live" data-i="qrConnecting">Connecting</span><button id="qrClose" aria-label="Close">✕</button></div></div>
-    <p class="msg" data-i="qrIntro">Connect your Binance Agent Wallet to mint and review transactions here.</p>
-    <div class="qrcard">
-      <div class="qrwrap"><div id="qrConnect" class="qr"></div></div>
-      <div class="label" style="color:var(--gold)" data-i="qrPairLbl">Pairing code</div>
-      <div class="pair mono" id="qrPair">——————</div>
-      <p class="qhint" data-i="qrHint">Scan with the Binance app, then check that the pairing code matches before you confirm.</p>
-      <a class="qlink" id="qrOpen" href="https://www.binance.com" target="_blank" rel="noopener"><span data-i="qrOpen">Open Binance sign-in</span> ↗</a>
-      <button class="linkbtn" id="qrSave" hidden style="align-self:center" data-i="qrSave">On this phone? Save the QR image, then scan it from your gallery in Binance Wallet</button>
-      <div class="qrbar"><i id="qrBar"></i></div>
-      <div class="qwait"><span class="spin" aria-hidden="true"></span><span id="qrStatus"></span></div>
-      <button class="linkbtn qcancel" id="qrCancel" data-i="qrCancel">Cancel connection</button>
-    </div>
-    <p class="qhint" id="qrSoon" hidden data-i="qrSoon">Agent Wallet QR sign-in opens soon. For now, mint through your agent with the prompt below, or use a regular wallet.</p>
-    <button class="pri big-btn" id="qrSim" data-i="qrSim">Simulate confirmation (demo)</button>
-    <button class="linkbtn" id="qrRegular" style="align-self:center" data-i="qrRegular">Use a regular wallet</button>
-    <p class="msg" style="text-align:center" data-i="qrNote">Each visitor gets a new QR and pairing code that expire after 5 minutes. Demo only.</p>
-  </div>
-</div>
-
 <div class="dock" hidden>
   <div class="dpanel" id="dpanel" hidden>
     <span class="label" data-i="demoCtl">Demo controls</span>
@@ -784,7 +762,6 @@ Only participate with what you can afford to lose.</p></details>
 </div>
 
 <script src="vendor/ethers-6.17.0.umd.min.js"></script>
-<script src="vendor/qrcode-generator-1.4.4.js"></script>
 <script>
 (() => {
 const T = {
@@ -1260,8 +1237,6 @@ const NETS = {
 const NETQ = new URLSearchParams(location.search).get("net");
 const CHAIN = NETQ === "testnet" ? 97 : NETQ === "local" ? 31337 : 56;
 const AGENT_LOGIN_API = null; // Agent Wallet sign-in backend URL, when available
-let bnProvider = null; // Binance Wallet QR connector (Binance's own relay, no project ID needed)
-const QR_TEST = new URLSearchParams(location.search).get("qrtest") === "1"; // pre-launch check: ?qrtest=1
 let PRELAUNCH = false, LIVE = null, ro, mintC, tokenC, signer = null, acct = null, busy = false, INITIAL = 0n, lastBlock = 0, cum = 0, agentSet = new Set();
 const ABI_MINT = [
   "function overview() view returns (uint256 minted,uint256 target,uint256 price,uint256 usdtParked,bool opened,bool isFailed,uint256 deadline)",
@@ -1389,59 +1364,13 @@ async function connectWith(eth, isWC) {
     const st = await mintC.walletStatus(who);
     if (!st.eligible) {
       acct = null; signer = null; S.wallet = false; S.eligible = false;
-      if (isWC && bnProvider) { try { bnProvider.disconnect(); } catch (e) {} }
-      render(); return say("mAgentOnly", {}, "bad");
+        render(); return say("mAgentOnly", {}, "bad");
     }
     signer = sg; acct = who; S.handle = short(acct);
     if (!S.serial) { lastBlock = 0; cum = 0; agentSet = new Set(); events = []; mqItems = []; S.top = {}; }
     await livePoll();
     say("mVerified", {}, "ok");
   } catch (e) { say("mErr", { e: e.shortMessage || e.message }, "bad"); }
-}
-
-// Save the QR as a PNG so a phone user can scan it from the gallery ("add image" in Binance Wallet's scanner).
-function saveQR() {
-  const svg = $("qrConnect").querySelector("svg"); if (!svg) return;
-  const xml = new XMLSerializer().serializeToString(svg);
-  const img = new Image();
-  img.onload = () => {
-    const c = document.createElement("canvas"); c.width = c.height = 720;
-    const g = c.getContext("2d"); g.fillStyle = "#ffffff"; g.fillRect(0, 0, 720, 720); g.drawImage(img, 0, 0, 720, 720);
-    const a = document.createElement("a"); a.download = "tianming-connect-qr.png"; a.href = c.toDataURL("image/png"); a.click();
-  };
-  img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
-}
-
-function loadBN() {
-  if (window.BinanceW3W) return Promise.resolve();
-  return new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "vendor/binance-w3w-provider-1.1.13.js"; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); });
-}
-
-async function connectQR() {
-  $("qrStatus").textContent = t("qrStarting");
-  try {
-    await loadBN();
-    if (bnProvider) { try { bnProvider.disconnect(); } catch (e) {} }
-    bnProvider = window.BinanceW3W.getProvider({ chainId: CHAIN, rpc: { [CHAIN]: NETS[CHAIN].rpc }, showQrCodeModal: false, lng: L === "zh" ? "zh-CN" : "en" });
-    bnProvider.on("uri_ready", (uri) => {
-      makeQR($("qrConnect"), uri, 220, "#ffffff");
-      $("qrSave").hidden = false;
-      $("qrStatus").textContent = t("qrWaiting");
-    });
-    await bnProvider.enable(CHAIN);
-    closeQR();
-    if (!LIVE) {
-      // pre-launch QR test: show the connected wallet and its Agent ID status, nothing else
-      const who = (await bnProvider.request({ method: "eth_accounts" }))[0];
-      const reg = new ethers.Contract("0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F", ["function balanceOf(address) view returns (uint256)"], new ethers.JsonRpcProvider(NETS[56].rpc, 56, { staticNetwork: true }));
-      const ok = (await reg.balanceOf(who)) > 0n;
-      try { bnProvider.disconnect(); } catch (e) {}
-      return say(ok ? "mQrTestOk" : "mAgentOnly", { a: short(who) }, ok ? "ok" : "bad");
-    }
-    await connectWith(bnProvider, true);
-  } catch (e) {
-    if (!$("qrModal").hidden) $("qrStatus").textContent = t("mErr", { e: e?.message || "connection cancelled" });
-  }
 }
 
 function prelaunch() {
@@ -1456,7 +1385,6 @@ function prelaunch() {
   $("foot").dataset.i = "footLive"; $("foot").textContent = t("footLive");
   $("connPlain").onclick = () => say("mSoon", {}, "bad");
   $("connPlain").hidden = true;
-  $("qrRegular").onclick = () => { closeQR(); say("mSoon", {}, "bad"); };
   PRELAUNCH = true;
   renderFeed(); renderBoard(); render(); tickCount();
 }
@@ -1483,65 +1411,6 @@ async function copyText(txt, btn) {
 let SITE = "https://tianming.xyz"; // replaced with the page origin when live
 let MINT_ADDR = null;                // loaded from deployments.json
 const USDT_BSC = "0x55d398326f99059fF775485246999027B3197955";
-function connectAgent() { S.wallet = true; say("mVerified", {}, "ok"); render(); renderBoard(); }
-function makeQR(el, text, size, light = "#fff6dc") {
-  el.innerHTML = "";
-  try {
-    qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
-    const q = qrcode(0, "L"); q.addData(text); q.make();
-    const n = q.getModuleCount(), cell = Math.max(2, Math.floor(size / (n + 8)));
-    el.innerHTML = q.createSvgTag({ cellSize: cell, margin: cell * 2, scalable: true });
-    const svg = el.querySelector("svg"); svg.style.width = size + "px"; svg.style.maxWidth = "100%"; svg.style.height = "auto";
-    svg.querySelectorAll("rect").forEach(r => r.setAttribute("fill", light)); svg.querySelectorAll("path").forEach(p => p.setAttribute("fill", "#1a1400"));
-  } catch (e) { el.textContent = "QR unavailable"; }
-}
-let lastFocus = null;
-// Demo flow modeled on `baw auth signin`: each visitor gets a fresh keypair -> unique qrCodeId + pairing code, valid for 300 seconds.
-const QR_TTL = 300;
-let qrTimerId = null, qrExpires = 0;
-function hex(n) { const a = new Uint8Array(n); crypto.getRandomValues(a); return [...a].map(b => b.toString(16).padStart(2, "0")).join(""); }
-function newSession() {
-  const qrCodeId = hex(16);
-  qrExpires = Date.now() + QR_TTL * 1000;
-  $("qrPair").textContent = hex(3);
-  $("qrConnect").classList.remove("fade");
-  makeQR($("qrConnect"), "https://www.binance.com/en/agent-wallet/login?qrCodeId=" + qrCodeId + "&demo=1", 200, "#ffffff");
-  tickQR();
-}
-function tickQR() {
-  const left = Math.max(0, Math.ceil((qrExpires - Date.now()) / 1000));
-  $("qrStatus").textContent = left ? t("qrWait", { s: left }) : t("qrExpired");
-  const bar = $("qrBar"); bar.style.width = (left / QR_TTL * 100) + "%"; bar.classList.toggle("low", left <= 30);
-  if (left === 0) { $("qrConnect").classList.add("fade"); setTimeout(() => { if (!$("qrModal").hidden) newSession(); }, 1200); }
-}
-function openQR() {
-  lastFocus = document.activeElement;
-  $("qrModal").hidden = false;
-  if (LIVE || PRELAUNCH) {
-    const qrOn = !!LIVE || QR_TEST;
-    document.querySelector(".qrcard").hidden = !qrOn; $("qrSoon").hidden = qrOn; $("qrSim").hidden = true;
-    const cb = document.querySelector('[data-i="qrConnecting"]'); if (cb) cb.hidden = !qrOn;
-    $("qrPair").hidden = true; const pl = document.querySelector('[data-i="qrPairLbl"]'); if (pl) pl.hidden = true;
-    const bar = document.querySelector(".qrbar"); if (bar) bar.hidden = true;
-    $("qrConnect").innerHTML = "";
-    // Only Binance Wallet holds .ai Agent IDs: the in-page option appears only inside Binance Wallet's own browser.
-    $("qrRegular").hidden = !isBinanceWallet();
-    $("qrSave").hidden = true; $("qrSave").onclick = saveQR; $("qrOpen").hidden = true;
-    $("qrClose").focus();
-    if (qrOn) connectQR();
-    return;
-  }
-  newSession();
-  clearInterval(qrTimerId); qrTimerId = setInterval(tickQR, 1000);
-  $("qrClose").focus();
-}
-function closeQR() { $("qrModal").hidden = true; clearInterval(qrTimerId); if (lastFocus) lastFocus.focus(); }
-$("qrClose").onclick = closeQR;
-$("qrModal").addEventListener("click", e => { if (e.target.id === "qrModal") closeQR(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("qrModal").hidden) closeQR(); });
-$("qrSim").onclick = () => { closeQR(); connectAgent(); };
-$("qrCancel").onclick = closeQR;
-$("qrRegular").onclick = () => { closeQR(); LIVE ? connectInjected() : say("mNoAgent", {}, "bad"); };
 
 const PROMPT = {
   en: (o) => `Mint ${o.n} shares of $MING on BNB Chain (chainId 56) with my Binance Agentic Wallet.
