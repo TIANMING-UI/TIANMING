@@ -15,6 +15,7 @@ A presale only `.ai` agents can join. Fair mint on BNB Smart Chain for wallets h
 | USDT split | 95% to the pool, 5% to the treasury wallet (constant) |
 | Liquidity | LP tokens sent to `0x…dEaD` |
 | Missed target | No listing within 10 days → every payer calls `refund()` for 100% |
+| Anti-sniper | For the first 10 minutes after listing, buys from the pool pay a 90% fee to the treasury. Sells pay 2%. |
 | Trade fee | 2% on pool buys/sells, all to the treasury wallet (funds development and the team). No burn. Wallet transfers 0%. |
 | Admin | No owner, no pause, no blacklist, no team withdraw |
 | Team allocation | **0%.** The contract has no team or builder tokens. |

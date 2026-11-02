@@ -5,8 +5,8 @@ const { time } = require("@nomicfoundation/hardhat-network-helpers");
 const E = (n) => ethers.parseEther(String(n));
 const TREASURY_IDX = 19;
 
-// Tests use small tiers: price 1U, rising 0.1U every 5 shares.
-async function setup({ target = 25, step = 5, base = E(1), inc = E("0.1") } = {}) {
+// Tests use a small target and a 1 USDT price.
+async function setup({ target = 25, price = E(1) } = {}) {
   const signers = await ethers.getSigners();
   const [deployer, builder] = signers;
   const usdt = await (await ethers.getContractFactory("MockUSDT")).deploy();
@@ -20,9 +20,7 @@ async function setup({ target = 25, step = 5, base = E(1), inc = E("0.1") } = {}
     name: "Test Agent",
     symbol: "TAG",
     targetShares: target,
-    basePrice: base,
-    stepPrice: inc,
-    stepShares: step,
+    price,
     tokensPerShare: E(50),
     poolTokensPerShare: E(40),
     duration: 30 * 86400,
@@ -50,24 +48,15 @@ describe("TianmingMint", () => {
     await expect(mint.connect(signers[15]).mint(1)).to.be.revertedWithCustomError(mint, "NoAgent");
   });
 
-  it("price rises 0.1U every 5 shares", async () => {
-    const { mint } = await setup();
-    expect(await mint.priceAt(1)).to.equal(E(1));
-    expect(await mint.priceAt(5)).to.equal(E(1));
-    expect(await mint.priceAt(6)).to.equal(E("1.1"));
-    expect(await mint.priceAt(11)).to.equal(E("1.2"));
-    expect(await mint.priceAt(25)).to.equal(E("1.4"));
-  });
-
-  it("a tx crossing a tier pays each share's own price", async () => {
-    const { mint, usdt, users } = await setup();
-    await mint.connect(users[0]).mint(3); // 3 × 1.0
-    // shares 4–5 at 1.0, 6–8 at 1.1
-    expect(await mint.costOf(5)).to.equal(E(2) + E("3.3"));
+  it("one fixed price: cost = shares x PRICE, no tiers", async () => {
+    const { mint, usdt, users } = await setup({ price: E(2) });
+    expect(await mint.PRICE()).to.equal(E(2));
+    expect(await mint.costOf(5)).to.equal(E(10));
+    await mint.connect(users[0]).mint(3);
+    expect(await mint.currentPrice()).to.equal(E(2));
     const before = await usdt.balanceOf(users[1].address);
     await mint.connect(users[1]).mint(5);
-    expect(before - (await usdt.balanceOf(users[1].address))).to.equal(E("5.3"));
-    expect(await mint.currentPrice()).to.equal(E("1.1"));
+    expect(before - (await usdt.balanceOf(users[1].address))).to.equal(E(10));
   });
 
   it("fixed quota of 5 per wallet", async () => {
@@ -93,8 +82,8 @@ describe("TianmingMint", () => {
     for (let i = 0; i < 4; i++) await mint.connect(users[i]).mint(5);
     await expect(mint.connect(users[4]).mint(5)).to.emit(mint, "PoolOpened");
 
-    // 5×1.0 + 5×1.1 + 5×1.2 + 5×1.3 + 5×1.4 = 30 USDT
-    const total = E(30);
+    // 25 shares × 1 USDT
+    const total = E(25);
     const pair = await ethers.getContractAt("MockPair", await mint.pair());
     expect(await usdt.balanceOf(await pair.getAddress())).to.equal(total * 9500n / 10000n);
     expect(await usdt.balanceOf(signers[TREASURY_IDX].address)).to.equal(total * 500n / 10000n);
@@ -108,14 +97,14 @@ describe("TianmingMint", () => {
     await expect(mint.connect(users[5]).mint(1)).to.be.revertedWithCustomError(mint, "Ended");
   });
 
-  it("fixed price (mainnet config): 2 USDT per share, one tier, pool opens at target", async () => {
-    const { mint, usdt, users, signers } = await setup({ target: 20, step: 20, base: E(2), inc: 0n });
+  it("mainnet-style config: 2 USDT per share, pool opens at target", async () => {
+    const { mint, usdt, users, signers } = await setup({ target: 20, price: E(2) });
     expect(await mint.costOf(5)).to.equal(E(10));
     expect(await mint.currentPrice()).to.equal(E(2));
     await mint.connect(users[0]).mint(5);
     expect(await mint.currentPrice()).to.equal(E(2));
     const o = await mint.overview();
-    expect(o.nextTierAt).to.equal(20n);
+    expect(o.price).to.equal(E(2));
     for (let i = 1; i < 4; i++) await mint.connect(users[i]).mint(5);
     expect(await mint.poolOpened()).to.equal(true);
     expect(await usdt.balanceOf(signers[TREASURY_IDX].address)).to.equal(E(2));
@@ -140,6 +129,7 @@ describe("TianmingMint", () => {
     await mint.connect(users[0]).mint(5);
     await mint.connect(users[3]).mint(5);
     const pair = await ethers.getContractAt("MockPair", await mint.pair());
+    await time.increase(601); // after the anti-sniper window
     const human = signers[16];
     await pair.swapOut(await token.getAddress(), human.address, E(100));
     expect(await token.balanceOf(human.address)).to.equal(E(98));
@@ -152,6 +142,7 @@ describe("TianmingMint", () => {
     await mint.connect(users[3]).mint(5);
     const pair = await ethers.getContractAt("MockPair", await mint.pair());
     const dev = signers[TREASURY_IDX].address;
+    await time.increase(601); // after the anti-sniper window
     const t0 = await token.balanceOf(dev);
     const supply0 = await token.totalSupply();
     // agent buys 100 tokens
@@ -171,6 +162,30 @@ describe("TianmingMint", () => {
     expect(await token.FEE_BPS()).to.equal(200n);
   });
 
+  it("anti-sniper: buys in the first 10 minutes pay 90% to treasury; sells pay 2%; then buys pay 2%", async () => {
+    const { mint, token, users, signers } = await setup({ target: 10 });
+    await mint.connect(users[0]).mint(5);
+    await mint.connect(users[3]).mint(5);
+    const pair = await ethers.getContractAt("MockPair", await mint.pair());
+    const tr = signers[TREASURY_IDX].address, sniper = signers[17];
+    expect(await token.buyFeeBps()).to.equal(9000n);
+    // sniper buys 100 tokens right after listing: gets 10, treasury gets 90
+    const t0 = await token.balanceOf(tr);
+    await pair.swapOut(await token.getAddress(), sniper.address, E(100));
+    expect(await token.balanceOf(sniper.address)).to.equal(E(10));
+    expect((await token.balanceOf(tr)) - t0).to.equal(E(90));
+    // a minter selling inside the window pays only 2%
+    const pb = await token.balanceOf(await pair.getAddress());
+    await token.connect(users[0]).transfer(await pair.getAddress(), E(100));
+    expect((await token.balanceOf(await pair.getAddress())) - pb).to.equal(E(98));
+    // after 10 minutes buys are back to 2%
+    await time.increase(601);
+    expect(await token.buyFeeBps()).to.equal(200n);
+    await pair.swapOut(await token.getAddress(), signers[18].address, E(100));
+    expect(await token.balanceOf(signers[18].address)).to.equal(E(98));
+    expect(await token.SNIPE_WINDOW()).to.equal(600n);
+  });
+
   it("USDT donated to the pair before opening cannot block the pool", async () => {
     const { mint, usdt, factory, token, users, signers } = await setup({ target: 10 });
     await factory.createPair(await token.getAddress(), await usdt.getAddress());
@@ -185,7 +200,7 @@ describe("TianmingMint", () => {
   it("fails by deadline -> 100% refund of the price paid, treasury gets 0", async () => {
     const { mint, usdt, token, users, signers } = await setup({ target: 100 });
     await mint.connect(users[0]).mint(5);
-    await mint.connect(users[1]).mint(3); // 5×1.0 + 3×1.1: user0 pays 5, user1 pays 3.3
+    await mint.connect(users[1]).mint(3); // user0 pays 5, user1 pays 3
     await expect(mint.connect(users[0]).refund()).to.be.revertedWithCustomError(mint, "NotFailed");
     await time.increase(31 * 86400);
     await expect(mint.connect(users[1]).mint(1)).to.be.revertedWithCustomError(mint, "Ended");
@@ -194,7 +209,7 @@ describe("TianmingMint", () => {
     expect((await usdt.balanceOf(users[0].address)) - before).to.equal(E(5));
     const b1 = await usdt.balanceOf(users[1].address);
     await mint.connect(users[1]).refund();
-    expect((await usdt.balanceOf(users[1].address)) - b1).to.equal(E("3.3"));
+    expect((await usdt.balanceOf(users[1].address)) - b1).to.equal(E(3));
     expect(await usdt.balanceOf(signers[TREASURY_IDX].address)).to.equal(0n);
     await expect(mint.connect(users[0]).refund()).to.be.revertedWithCustomError(mint, "Nothing");
     // tokens from a failed mint stay locked forever (the pool will never open)

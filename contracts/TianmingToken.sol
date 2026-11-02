@@ -8,16 +8,22 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 ///   - The entire supply is minted once to the mint contract.
 ///   - Transfers are locked until the mint contract opens the pool (not the team).
 ///   - Once the pool opens, anyone can buy/sell on PancakeSwap:
-///       * 2% fee on buys & sells, all of it to the treasury;
+///       * anti-sniper: for the first SNIPE_WINDOW seconds after the pool opens,
+///         buys from the pool pay a 90% fee to the treasury;
+///       * after that, 2% fee on buys & sells, all of it to the treasury;
 ///       * wallet-to-wallet transfers have 0% fee.
+///   - Sells never pay the anti-sniper fee.
 ///   - The fee percentage and treasury address cannot be changed after deploy.
 contract TianmingToken is ERC20 {
     uint256 public constant FEE_BPS = 200; // 2%, all to the treasury
+    uint256 public constant SNIPE_FEE_BPS = 9_000; // 90% on buys during the anti-sniper window
+    uint256 public constant SNIPE_WINDOW = 600; // 10 minutes after the pool opens
 
     address public immutable minter;
     address public immutable treasury;
     address public pair;
     bool public tradingOpen;
+    uint256 public tradingOpenedAt;
 
     error Locked();
     error OnlyMinter();
@@ -39,6 +45,13 @@ contract TianmingToken is ERC20 {
         if (msg.sender != minter || tradingOpen) revert OnlyMinter();
         pair = pair_;
         tradingOpen = true;
+        tradingOpenedAt = block.timestamp;
+    }
+
+    /// @notice Current fee on buys from the pool, in basis points.
+    function buyFeeBps() public view returns (uint256) {
+        if (!tradingOpen) return 0;
+        return block.timestamp < tradingOpenedAt + SNIPE_WINDOW ? SNIPE_FEE_BPS : FEE_BPS;
     }
 
     function _update(address from, address to, uint256 value) internal override {
@@ -53,7 +66,7 @@ contract TianmingToken is ERC20 {
 
         // Fee applies only to buys/sells; the mint contract (pool creation, claims) is exempt.
         if ((isBuy || isSell) && from != minter && to != minter) {
-            uint256 feeAmt = (value * FEE_BPS) / 10_000;
+            uint256 feeAmt = (value * (isBuy ? buyFeeBps() : FEE_BPS)) / 10_000;
             if (feeAmt > 0) super._update(from, treasury, feeAmt);
             value -= feeAmt;
         }

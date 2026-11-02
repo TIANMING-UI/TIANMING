@@ -21,8 +21,7 @@ interface IPancakePair {
 
 /// @title TianmingMint — 天命 fair mint exclusively for wallets holding a .ai Agent ID
 /// @notice No owner, no pause, no team withdraw function.
-///   Mint    : every share is paid. Price starts at BASE_PRICE and rises by
-///             STEP_PRICE every STEP_SHARES shares. All USDT is held in the contract.
+///   Mint    : every share is paid at one fixed PRICE. All USDT is held in the contract.
 ///   Token   : sent straight to the minter's wallet on mint, locked until the pool opens.
 ///   Target  : when share number TARGET_SHARES is minted, the contract creates the
 ///             PancakeSwap pool itself and sends the LP to the dead address.
@@ -41,9 +40,7 @@ contract TianmingMint is ReentrancyGuard {
     TianmingToken public immutable token;
 
     uint256 public immutable TARGET_SHARES;
-    uint256 public immutable BASE_PRICE;         // tier 1 price, USDT with 18 decimals
-    uint256 public immutable STEP_PRICE;         // increase per tier
-    uint256 public immutable STEP_SHARES;        // tier size
+    uint256 public immutable PRICE;              // price per share, USDT with 18 decimals
     uint256 public immutable TOKENS_PER_SHARE;   // to the minter
     uint256 public immutable POOL_TOKENS_PER_SHARE; // reserved for the pool
     uint256 public immutable DEADLINE;
@@ -85,9 +82,7 @@ contract TianmingMint is ReentrancyGuard {
         string name;
         string symbol;
         uint256 targetShares;
-        uint256 basePrice;
-        uint256 stepPrice;
-        uint256 stepShares;
+        uint256 price;
         uint256 tokensPerShare;
         uint256 poolTokensPerShare;
         uint256 duration;      // seconds until the deadline
@@ -95,15 +90,13 @@ contract TianmingMint is ReentrancyGuard {
     }
 
     constructor(Config memory c) {
-        require(c.targetShares > 0 && c.stepShares > 0 && c.basePrice > 0, "config");
+        require(c.targetShares > 0 && c.price > 0, "config");
         require(c.treasury != address(0), "treasury");
         agentId = IAgentIdRegistry(c.agentIdRegistry);
         usdt = IERC20(c.usdt);
         factory = IPancakeFactory(c.factory);
         TARGET_SHARES = c.targetShares;
-        BASE_PRICE = c.basePrice;
-        STEP_PRICE = c.stepPrice;
-        STEP_SHARES = c.stepShares;
+        PRICE = c.price;
         TOKENS_PER_SHARE = c.tokensPerShare;
         POOL_TOKENS_PER_SHARE = c.poolTokensPerShare;
         DEADLINE = block.timestamp + c.duration;
@@ -128,29 +121,14 @@ contract TianmingMint is ReentrancyGuard {
         _;
     }
 
-    // ---------- tiered pricing ----------
-    /// @notice Price of the share with sequence number `serial` (starting at 1).
-    function priceAt(uint256 serial) public view returns (uint256) {
-        return BASE_PRICE + ((serial - 1) / STEP_SHARES) * STEP_PRICE;
-    }
-
-    /// @notice Total cost of the next `shares` shares. A transaction that crosses
-    ///         a tier boundary pays each share's own price.
-    function costOf(uint256 shares) public view returns (uint256 cost) {
-        uint256 s = totalMinted;
-        uint256 left = shares;
-        while (left > 0) {
-            uint256 tierEnd = (s / STEP_SHARES + 1) * STEP_SHARES; // last serial of this tier
-            uint256 n = tierEnd - s;
-            if (n > left) n = left;
-            cost += n * priceAt(s + 1);
-            s += n;
-            left -= n;
-        }
+    // ---------- price (one fixed price, no tiers) ----------
+    /// @notice Total cost of `shares` shares.
+    function costOf(uint256 shares) public view returns (uint256) {
+        return shares * PRICE;
     }
 
     function currentPrice() external view returns (uint256) {
-        return priceAt(totalMinted + 1);
+        return PRICE;
     }
 
     // ---------- mint ----------
@@ -229,16 +207,13 @@ contract TianmingMint is ReentrancyGuard {
             uint256 minted,
             uint256 target,
             uint256 price,
-            uint256 nextTierAt,
             uint256 usdtParked,
             bool opened,
             bool isFailed,
             uint256 deadline
         )
     {
-        uint256 next = (totalMinted / STEP_SHARES + 1) * STEP_SHARES;
-        if (next > TARGET_SHARES) next = TARGET_SHARES;
-        return (totalMinted, TARGET_SHARES, priceAt(totalMinted + 1), next, parkedUsdt, poolOpened, failed(), DEADLINE);
+        return (totalMinted, TARGET_SHARES, PRICE, parkedUsdt, poolOpened, failed(), DEADLINE);
     }
 
     function walletStatus(address w)

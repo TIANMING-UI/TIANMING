@@ -74,10 +74,10 @@ const WC_PROJECT_ID = null; // WalletConnect (Reown) project ID; QR connect is e
 let wcProvider = null;
 let PRELAUNCH = false, LIVE = null, ro, mintC, tokenC, signer = null, acct = null, busy = false, INITIAL = 0n, lastBlock = 0, cum = 0, agentSet = new Set();
 const ABI_MINT = [
-  "function overview() view returns (uint256 minted,uint256 target,uint256 price,uint256 nextTierAt,uint256 usdtParked,bool opened,bool isFailed,uint256 deadline)",
+  "function overview() view returns (uint256 minted,uint256 target,uint256 price,uint256 usdtParked,bool opened,bool isFailed,uint256 deadline)",
   "function walletStatus(address) view returns (bool eligible,uint256 paid,uint256 quota,uint256 tokens,uint256 refundable)",
-  "function TARGET_SHARES() view returns (uint256)", "function BASE_PRICE() view returns (uint256)", "function STEP_PRICE() view returns (uint256)",
-  "function STEP_SHARES() view returns (uint256)", "function TOKENS_PER_SHARE() view returns (uint256)", "function POOL_TOKENS_PER_SHARE() view returns (uint256)",
+  "function TARGET_SHARES() view returns (uint256)", "function PRICE() view returns (uint256)",
+  "function TOKENS_PER_SHARE() view returns (uint256)", "function POOL_TOKENS_PER_SHARE() view returns (uint256)",
   "function BASE_QUOTA() view returns (uint256)", "function DEADLINE() view returns (uint256)",
   "function pair() view returns (address)", "function costOf(uint256) view returns (uint256)",
   "function usdt() view returns (address)", "function token() view returns (address)", "function agentId() view returns (address)",
@@ -106,8 +106,8 @@ async function liveInit(dep) {
   const eq = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
   if (!eq(cu, dep.usdt) || !eq(ct, dep.token)) throw new Error("deployment mismatch");
   if (CHAIN === 56 && (!eq(cu, "0x55d398326f99059fF775485246999027B3197955") || !eq(ca, "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F"))) throw new Error("not the official USDT / Agent ID registry");
-  const [tg, bp, sp, ss, tps, pt, q, dl] = await Promise.all([mintC.TARGET_SHARES(), mintC.BASE_PRICE(), mintC.STEP_PRICE(), mintC.STEP_SHARES(), mintC.TOKENS_PER_SHARE(), mintC.POOL_TOKENS_PER_SHARE(), mintC.BASE_QUOTA(), mintC.DEADLINE()]);
-  TARGET = Number(tg); BASE = fe(bp); INC = fe(sp); STEP = Number(ss); TPS = fe(tps); POOL_TPS = fe(pt); QUOTA = Number(q); DEADLINE = Number(dl) * 1000;
+  const [tg, pr, tps, pt, q, dl] = await Promise.all([mintC.TARGET_SHARES(), mintC.PRICE(), mintC.TOKENS_PER_SHARE(), mintC.POOL_TOKENS_PER_SHARE(), mintC.BASE_QUOTA(), mintC.DEADLINE()]);
+  TARGET = Number(tg); BASE = fe(pr); INC = 0; STEP = TARGET; TPS = fe(tps); POOL_TPS = fe(pt); QUOTA = Number(q); DEADLINE = Number(dl) * 1000;
   INITIAL = tg * (tps + pt);
   MINT_ADDR = dep.mint;
   $("connPlain").hidden = true;
@@ -117,17 +117,11 @@ async function liveInit(dep) {
   document.querySelectorAll(".demo-pill").forEach(p => { p.textContent = CHAIN === 56 ? "LIVE" : NETS[CHAIN].name.toUpperCase(); });
   const tp = document.querySelector(".tickpill"); if (tp) tp.textContent = "$MING · " + NETS[CHAIN].name;
   $("targetLbl").textContent = " / " + nf(TARGET);
-  $("tickMid").style.left = (STEP / TARGET * 100) + "%";
-  $("tick1").textContent = "#" + nf(STEP) + " · " + nf(BASE + INC, 2) + " U";
-  $("tick2").textContent = "#" + nf(TARGET);
+  $("tickMid").hidden = true; // one fixed price, no tier marker
+  $("tick2").textContent = "#" + nf(TARGET) + " · listing";
   $("foot").dataset.i = "footLive"; $("foot").textContent = t("footLive");
   $("tick1").removeAttribute("data-i"); $("tick2").removeAttribute("data-i");
   const pk = document.querySelector('[data-i="pick"]'); if (pk) { pk.dataset.i = "pickLive"; pk.textContent = t("pickLive"); }
-  const rows = document.querySelectorAll("#t1 td, #t2 td");
-  if (rows.length === 8) {
-    rows[1].textContent = "#1 – " + nf(STEP); rows[2].textContent = nf(BASE, 2) + " USDT"; rows[3].textContent = nf(TPS);
-    rows[5].textContent = "#" + nf(STEP + 1) + " – " + nf(TARGET); rows[6].textContent = nf(BASE + INC, 2) + " USDT"; rows[7].textContent = nf(TPS);
-  }
   setInterval(tickCount, 1000);
   await livePoll();
   setInterval(() => livePoll().catch(() => {}), 12000);

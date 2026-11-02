@@ -19,9 +19,7 @@ function mainnetParams() {
     name: "Tianming",
     symbol: "MING",
     targetShares: 5000,
-    basePrice: E(2),
-    stepPrice: 0n,
-    stepShares: 5000, // single tier: same price for every share
+    price: E(2), // one fixed price for every share
     tokensPerShare: E(16_000_000),
     poolTokensPerShare: E(4_000_000),
     duration: 10 * 86400,
@@ -36,7 +34,6 @@ function testParams() {
     name: "Tianming Test",
     symbol: "tMING",
     targetShares: target,
-    stepShares: Math.max(1, Math.floor(target / 2)),
     duration: Number(process.env.DURATION || 3 * 86400),
   };
 }

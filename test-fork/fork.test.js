@@ -84,7 +84,7 @@ describe("Tianming on a BSC mainnet fork", function () {
     mint = await (await ethers.getContractFactory("TianmingMint")).deploy({
       agentIdRegistry: REGISTRY, usdt: USDT, factory: FACTORY,
       name: "Tianming", symbol: "MING",
-      targetShares: 4, basePrice: E(2), stepPrice: 0n, stepShares: 4,
+      targetShares: 4, price: E(2),
       tokensPerShare: E(16_000_000), poolTokensPerShare: E(4_000_000), duration: 86400,
       treasury,
     });
@@ -110,11 +110,28 @@ describe("Tianming on a BSC mainnet fork", function () {
     expect(await token.balanceOf(a.address)).to.equal(E(64_000_000));
   });
 
+  it("anti-sniper: a buy in the first 10 minutes keeps only 10%, 90% goes to treasury", async () => {
+    const s = agents[1];
+    await usdt.connect(s).approve(ROUTER, ethers.MaxUint256);
+    expect(await token.buyFeeBps()).to.equal(9000n);
+    const tr0 = await token.balanceOf(treasury);
+    const dl = (await ethers.provider.getBlock("latest")).timestamp + 3600;
+    await router.connect(s).swapExactTokensForTokensSupportingFeeOnTransferTokens(E(1), 0, [USDT, await token.getAddress()], s.address, dl);
+    const got = await token.balanceOf(s.address), fee = (await token.balanceOf(treasury)) - tr0;
+    expect(got).to.be.gt(0n);
+    expect(got * 100n / (got + fee)).to.equal(10n);
+    // the sniper's tokens are moved away so later checks start from zero
+    await token.connect(s).transfer(agents[0].address, got);
+    await network.provider.send("evm_increaseTime", [601]);
+    await network.provider.send("evm_mine", []);
+    expect(await token.buyFeeBps()).to.equal(200n);
+  });
+
   it("agent can buy via the real PancakeSwap router, paying 2% fee to treasury", async () => {
     const b = agents[1];
     await usdt.connect(b).approve(ROUTER, ethers.MaxUint256);
     const supply0 = await token.totalSupply(), tr0 = await token.balanceOf(treasury);
-    const dl = Math.floor(Date.now() / 1000) + 3600;
+    const dl = (await ethers.provider.getBlock("latest")).timestamp + 3600;
     await router.connect(b).swapExactTokensForTokensSupportingFeeOnTransferTokens(E(1), 0, [USDT, await token.getAddress()], b.address, dl);
     const got = await token.balanceOf(b.address);
     expect(got).to.be.gt(0n);
@@ -127,14 +144,14 @@ describe("Tianming on a BSC mainnet fork", function () {
   it("regular (non-supporting) swap also works for agent buys", async () => {
     const b = agents[1];
     const before = await token.balanceOf(b.address);
-    const dl = Math.floor(Date.now() / 1000) + 3600;
+    const dl = (await ethers.provider.getBlock("latest")).timestamp + 3600;
     await router.connect(b).swapExactTokensForTokens(E(1), 0, [USDT, await token.getAddress()], b.address, dl);
     expect(await token.balanceOf(b.address)).to.be.gt(before);
   });
 
   it("after listing, wallets without an Agent ID can also buy from the pool", async () => {
     await usdt.connect(human).approve(ROUTER, ethers.MaxUint256);
-    const dl = Math.floor(Date.now() / 1000) + 3600;
+    const dl = (await ethers.provider.getBlock("latest")).timestamp + 3600;
     await router.connect(human).swapExactTokensForTokensSupportingFeeOnTransferTokens(E(1), 0, [USDT, await token.getAddress()], human.address, dl);
     expect(await token.balanceOf(human.address)).to.be.gt(0n);
   });
@@ -143,7 +160,7 @@ describe("Tianming on a BSC mainnet fork", function () {
     const a = agents[0];
     await token.connect(a).approve(ROUTER, ethers.MaxUint256);
     const u0 = await usdt.balanceOf(a.address);
-    const dl = Math.floor(Date.now() / 1000) + 3600;
+    const dl = (await ethers.provider.getBlock("latest")).timestamp + 3600;
     await router.connect(a).swapExactTokensForTokensSupportingFeeOnTransferTokens(E(1_000_000), 0, [await token.getAddress(), USDT], a.address, dl);
     expect(await usdt.balanceOf(a.address)).to.be.gt(u0);
   });
@@ -152,7 +169,7 @@ describe("Tianming on a BSC mainnet fork", function () {
     await token.connect(agents[0]).transfer(human.address, E(1_000_000));
     await token.connect(human).approve(ROUTER, ethers.MaxUint256);
     const u0 = await usdt.balanceOf(human.address);
-    const dl = Math.floor(Date.now() / 1000) + 3600;
+    const dl = (await ethers.provider.getBlock("latest")).timestamp + 3600;
     await router.connect(human).swapExactTokensForTokensSupportingFeeOnTransferTokens(E(500_000), 0, [await token.getAddress(), USDT], human.address, dl);
     expect(await usdt.balanceOf(human.address)).to.be.gt(u0);
   });
