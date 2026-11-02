@@ -372,6 +372,13 @@ footer p{max-width:70ch}
 @media (max-width:980px){.links{display:none}.hero,.desk,.toko,.grid2{grid-template-columns:minmax(0,1fr)}.stage{max-width:360px}.steps,.road{grid-template-columns:repeat(2,minmax(0,1fr))}.contracts{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:560px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.steps,.road{grid-template-columns:minmax(0,1fr)}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.nav .pri{display:none}.tag.t1,.tag.t2{display:none}.orbit.o2{inset:0}.connect,.pass-actions{grid-template-columns:minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+/* hero coin: slow continuous spin, two faces so the back never shows mirrored */
+.stage{perspective:1400px}
+.coin{animation:coinSpin 14s linear infinite}
+@keyframes coinSpin{from{transform:rotateY(0deg)}to{transform:rotateY(360deg)}}
+.coin .face{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.coin .face.back{transform:rotateY(180deg)}
 </style>
 </head>
 <body>
@@ -424,6 +431,15 @@ footer p{max-width:70ch}
       <div class="orbit o2"><i></i></div>
       <div class="orbit"><i></i></div>
       <div class="coin"><div class="face">
+        <svg viewBox="0 0 200 200"><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c2"/><stop offset=".4" stop-color="#ffd25a"/><stop offset=".62" stop-color="#e3a516"/><stop offset="1" stop-color="#8f6106"/></linearGradient></defs>
+          <rect x="44" y="44" width="112" height="112" rx="12" fill="none" stroke="url(#cg)" stroke-width="6"/>
+          <rect x="54" y="54" width="92" height="92" rx="6" fill="none" stroke="url(#cg)" stroke-width="1.5" stroke-opacity=".6"/>
+          <text x="102" y="102" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="44" fill="#000" fill-opacity=".5">天</text>
+          <text x="100" y="99" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="44" fill="url(#cg)">天</text>
+          <text x="102" y="145" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="44" fill="#000" fill-opacity=".5">命</text>
+          <text x="100" y="142" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="44" fill="url(#cg)">命</text></svg>
+        <div class="shine"></div>
+      </div><div class="face back" aria-hidden="true">
         <svg viewBox="0 0 200 200"><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c2"/><stop offset=".4" stop-color="#ffd25a"/><stop offset=".62" stop-color="#e3a516"/><stop offset="1" stop-color="#8f6106"/></linearGradient></defs>
           <rect x="44" y="44" width="112" height="112" rx="12" fill="none" stroke="url(#cg)" stroke-width="6"/>
           <rect x="54" y="54" width="92" height="92" rx="6" fill="none" stroke="url(#cg)" stroke-width="1.5" stroke-opacity=".6"/>
