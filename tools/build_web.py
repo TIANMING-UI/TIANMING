@@ -300,6 +300,7 @@ r('''function openQR() {
   if (LIVE || PRELAUNCH) {
     const qrOn = !!LIVE && !!WC_PROJECT_ID;
     document.querySelector(".qrcard").hidden = !qrOn; $("qrSoon").hidden = qrOn; $("qrSim").hidden = true;
+    const cb = document.querySelector('[data-i="qrConnecting"]'); if (cb) cb.hidden = !qrOn;
     $("qrPair").hidden = true; const pl = document.querySelector('[data-i="qrPairLbl"]'); if (pl) pl.hidden = true;
     const bar = document.querySelector(".qrbar"); if (bar) bar.hidden = true;
     $("qrConnect").innerHTML = "";

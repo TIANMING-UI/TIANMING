@@ -389,6 +389,47 @@ footer p{max-width:70ch}
 .hero h1{font-size:clamp(34px,4.4vw,54px)}
 h2{font-size:clamp(32px,4.2vw,52px)}
 :lang(zh) .hero h1,:lang(zh) h2{letter-spacing:.04em}
+
+/* responsive: use the full width on large desktop screens */
+.wrap{max-width:1400px;padding-left:max(clamp(16px,3vw,48px),env(safe-area-inset-left,0px));padding-right:max(clamp(16px,3vw,48px),env(safe-area-inset-right,0px))}
+@media (min-width:1400px){
+  .hero{gap:48px;padding-block:72px 40px}
+  .wordmark{width:min(100%,660px)}
+  .stage{max-width:560px}
+  .hero .sub{font-size:18.5px}
+}
+
+/* mobile polish */
+html{overflow-x:hidden}
+.stage{overflow:visible}
+@media (max-width:640px){
+  .cmp{overflow:visible}
+  .cmp table{min-width:0}
+  .cmp thead{display:none}
+  .cmp tr{display:grid;grid-template-columns:minmax(0,1fr);padding:10px 0;border-bottom:1px solid var(--line)}
+  .cmp tr:last-child{border-bottom:0}
+  .cmp td{border:0!important;padding:4px 18px!important;width:auto!important}
+  .cmp td:first-child{color:var(--fg);font-weight:600}
+  .cmp td.us{background:none}
+  .wordmark{width:100%}
+  .hero{padding-block:32px 20px}
+  .stage{max-width:300px;margin-top:8px}
+  .count .box{min-width:0;flex:1}
+  .count{flex-wrap:nowrap}
+  .ctas .btn{flex:1;padding:14px 12px}
+  .prompt{font-size:12px}
+  .sealbg{display:none}
+}
+
+@media (min-width:1700px){
+  .wrap{max-width:1600px}
+  .wordmark{width:min(100%,740px)}
+  .stage{max-width:640px}
+  .hero .sub{font-size:20px;max-width:56ch}
+  .hero h1{font-size:62px}
+  h2{font-size:58px}
+  body{font-size:16px}
+}
 </style>
 </head>
 <body>
@@ -626,7 +667,7 @@ h2{font-size:clamp(32px,4.2vw,52px)}
       <div class="panel sc"><span class="pill code" data-i="pCode">In the code</span><h3 data-i="sc1h">No owner, no admin keys</h3><p data-i="sc1p">There is no function the team can call to pause, change fees or withdraw.</p></div>
       <div class="panel sc"><span class="pill code" data-i="pCode">In the code</span><h3 data-i="sc7h">Agent-only presale</h3><p data-i="sc7p">Only wallets with a .ai Agent ID can mint. The contract checks it on every mint. After listing, trading is open to everyone.</p></div>
       <div class="panel sc"><span class="pill code" data-i="pCode">In the code</span><h3 data-i="sc2h">LP burned at listing</h3><p data-i="sc2p">The listing transaction sends every LP token to 0x…dEaD.</p></div>
-      <div class="panel sc"><span class="pill done" data-i="pDone">Done</span><h3 data-i="sc3h">Test suite passing</h3><p data-i="sc3p">13 unit tests and 7 tests against the real BSC mainnet contracts cover the mint gate, pricing, quota, pool split, fee and refund.</p></div>
+      <div class="panel sc"><span class="pill done" data-i="pDone">Done</span><h3 data-i="sc3h">Test suite passing</h3><p data-i="sc3p">12 unit tests and 7 tests against the real BSC mainnet contracts cover the mint gate, pricing, quota, pool split, fee and refund.</p></div>
       <div class="panel sc"><span class="pill" data-i="pDeploy">At deploy</span><h3 data-i="sc4h">Source verified</h3><p data-i="sc4p">Contracts will be verified on BscScan the moment they are deployed.</p></div>
       <div class="panel sc"><span class="pill" data-i="pDeploy">At deploy</span><h3 data-i="sc5h">Public treasury wallet</h3><p data-i="sc5p">The treasury (5% of USDT at listing plus the 2% trade fee) is one public wallet, fixed in the contract forever. Anyone can follow it on BscScan, and every spend is posted with its tx hash.</p></div>
       <div class="panel sc"><span class="pill" data-i="pPlanned">Planned</span><h3 data-i="sc6h">Independent review</h3><p data-i="sc6p">An outside review of the contracts before mainnet. The report will be linked here.</p></div>
@@ -814,7 +855,7 @@ en: {
   pCode:"In the code", pDone:"Done", pDeploy:"At deploy", pPlanned:"Planned",
   sc1h:"No owner, no admin keys", sc1p:"There is no function the team can call to pause, change fees or withdraw.",
   sc2h:"LP burned at listing", sc2p:"The listing transaction sends every LP token to 0x…dEaD.",
-  sc3h:"Test suite passing", sc3p:"13 unit tests and 7 tests against the real BSC mainnet contracts cover the mint gate, pricing, quota, pool split, fee and refund.",
+  sc3h:"Test suite passing", sc3p:"12 unit tests and 7 tests against the real BSC mainnet contracts cover the mint gate, pricing, quota, pool split, fee and refund.",
   sc4h:"Source verified", sc4p:"Contracts will be verified on BscScan the moment they are deployed.",
   sc5h:"Public treasury wallet", sc5p:"The treasury (5% of USDT at listing plus the 2% trade fee) is one public wallet, fixed in the contract forever. Anyone can follow it on BscScan, and every spend is posted with its tx hash.",
   sc7h:"Agent-only presale", sc7p:"Only wallets with a .ai Agent ID can mint. The contract checks it on every mint. After listing, trading is open to everyone.",
@@ -925,7 +966,7 @@ zh: {
   pCode:"已写入代码", pDone:"已完成", pDeploy:"部署时", pPlanned:"计划中",
   sc1h:"无 owner，无管理员密钥", sc1p:"团队没有任何可调用的暂停、改费率或提款函数。",
   sc2h:"上线时销毁 LP", sc2p:"上线交易会把所有 LP 代币发送到 0x…dEaD。",
-  sc3h:"测试全部通过", sc3p:"13 项单元测试和 7 项基于 BSC 主网真实合约的测试，覆盖铸造资格、定价、额度、资金池分配、手续费和退款。",
+  sc3h:"测试全部通过", sc3p:"12 项单元测试和 7 项基于 BSC 主网真实合约的测试，覆盖铸造资格、定价、额度、资金池分配、手续费和退款。",
   sc4h:"源码验证", sc4p:"合约部署后会立即在 BscScan 上验证源码。",
   sc5h:"公开金库钱包", sc5p:"金库（上线时 5% 的 USDT 加 2% 交易手续费）是一个公开钱包，地址永久写入合约。任何人都可在 BscScan 上查看，每笔支出公布交易哈希。",
   sc7h:"仅限 Agent 预售", sc7p:"只有持有 .ai Agent ID 的钱包可以铸造，合约每次铸造都会检查。上线后交易向所有人开放。",
@@ -1465,6 +1506,7 @@ function openQR() {
   if (LIVE || PRELAUNCH) {
     const qrOn = !!LIVE && !!WC_PROJECT_ID;
     document.querySelector(".qrcard").hidden = !qrOn; $("qrSoon").hidden = qrOn; $("qrSim").hidden = true;
+    const cb = document.querySelector('[data-i="qrConnecting"]'); if (cb) cb.hidden = !qrOn;
     $("qrPair").hidden = true; const pl = document.querySelector('[data-i="qrPairLbl"]'); if (pl) pl.hidden = true;
     const bar = document.querySelector(".qrbar"); if (bar) bar.hidden = true;
     $("qrConnect").innerHTML = "";

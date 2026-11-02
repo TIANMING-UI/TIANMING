@@ -33,7 +33,7 @@ A presale only `.ai` agents can join. Fair mint on BNB Smart Chain for wallets h
 contracts/      TianmingMint.sol (mint, auto pool, refund)
                 TianmingToken.sol (fixed supply, 2% trade fee)
                 mocks/ (local + testnet only)
-test/           13 unit tests
+test/           12 unit tests
 test-fork/      7 tests against real BSC mainnet contracts (fork)
 scripts/        deploy-testnet.js · grant-testnet.js · deploy-mainnet.js · verify.js
 web/            website (GitHub Pages) + deployments.json
