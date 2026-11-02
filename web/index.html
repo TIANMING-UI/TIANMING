@@ -531,9 +531,10 @@ html{overflow-x:hidden}
           </div>
         </div>
         <div id="notConnected">
-          <p class="msg" style="margin-bottom:10px" data-i="pick">Connect the wallet that holds your .ai Agent ID, or let your agent mint for you.</p>
-          <div class="connect"><button class="pri" id="connQR" data-i="connQR">Connect Agent Wallet</button><a class="btn" href="#agent-mint" data-i="connViaAgent">Mint via my agent</a></div>
-          <button class="linkbtn" id="connPlain" data-i="connPlain">Try a wallet without Agent ID</button>
+          <p class="msg" style="margin-bottom:10px" data-i="pick">Your .ai Agent ID lives in your Agentic Wallet, so you mint through your own agent. Copy the prompt and paste it into your agent.</p>
+          <a class="pri big-btn" href="#agent-mint" data-i="connViaAgent">Mint via my agent</a>
+          <button class="linkbtn" id="connPlain" data-i="connPlain" hidden>Try a wallet without Agent ID</button>
+          <p class="qhint" style="margin-top:12px" data-i="pickHint">No agent yet? Set up Binance Agentic Wallet (npx skills add …), then paste the prompt. After listing, trade $MING on PancakeSwap with any wallet.</p>
         </div>
         <div id="connected" hidden>
           <div class="rows">
@@ -787,7 +788,7 @@ en: {
   mintCard:"Mint", sLive:"Minting open", sPool:"Listed", sFail:"Target missed",
   tick1:"", tick2:"#5,000 · listing",
   nextLive1:"{a} left at 2.00 U", nextLive2:"2.00 U",
-  pick:"Connect the wallet that holds your .ai Agent ID, or let your agent mint for you. Simulation only.",
+  pick:"Your .ai Agent ID lives in your Agentic Wallet, so you mint through your own agent. Copy the prompt and paste it into your agent.", pickHint:"No agent yet? Set up Binance Agentic Wallet (npx skills add …), then paste the prompt. After listing, trade $MING on PancakeSwap with any wallet.",
   connAgent:"Wallet + Agent ID", connPlain:"Try a wallet without Agent ID",
   rWallet:"Wallet", rPrice:"Price now", rQuota:"Quota used", rOwed:"$MING in your wallet", claimed:"claimed",
   total:"You pay", btnMint:"Approve & mint", btnClaim:"Claim $MING", btnRefund:"Refund {u} USDT",
@@ -874,7 +875,7 @@ en: {
   mNoWallet:"Binance Wallet not found. Scan the QR code with the Binance Wallet app, or open this page inside it.", mWrongNet:"Switch your wallet to {n} first.",
   mNoUsdt:"Not enough USDT in this wallet.", mConfirm:"Confirm the mint in your wallet…", mErr:"Transaction failed: {e}", mPending:"Waiting for the block…",
   qrSoon:"Agent Wallet QR sign-in opens soon. For now, mint through your agent with the prompt below, or use a regular wallet.",
-  pickLive:"Connect the wallet that holds your .ai Agent ID, or let your agent mint for you.",
+  pickLive:"Your .ai Agent ID lives in your Agentic Wallet, so you mint through your own agent. Copy the prompt and paste it into your agent.",
   sSoon:"Not live yet", phSoon:"The mint contract is not deployed yet. The contract address will be published here and on X at launch.", mSoon:"Minting has not started. The contract address will be published here at launch.", noMints:"No mints yet", endsSoon:"Mint opens soon",
   footLive:"Independent project, not affiliated with Binance. Not an investment offer. Always check the contract address before you mint.", recent:"recent",
   qrIntro:"Scan with the Binance Wallet app that holds your .ai Agent ID. Wallets without an Agent ID are rejected.",
@@ -898,7 +899,7 @@ zh: {
   mintCard:"铸造", sLive:"铸造进行中", sPool:"已上线", sFail:"未达目标",
   tick1:"", tick2:"#5,000 · 上线",
   nextLive1:"2.00 U 还剩 {a} 份", nextLive2:"2.00 U",
-  pick:"连接持有 .ai Agent ID 的钱包，或让你的 Agent 替你铸造。仅为模拟。",
+  pick:"你的 .ai Agent ID 存放在 Agentic Wallet 中，因此通过你自己的 Agent 铸造。复制下方提示词并粘贴给你的 Agent。", pickHint:"还没有 Agent？先设置币安 Agentic Wallet（npx skills add …），再粘贴提示词。上线后可用任意钱包在 PancakeSwap 交易 $MING。",
   connAgent:"钱包 + Agent ID", connPlain:"试试没有 Agent ID 的钱包",
   rWallet:"钱包", rPrice:"当前价格", rQuota:"已用额度", rOwed:"钱包中的 $MING", claimed:"已领取",
   total:"应付", btnMint:"授权并铸造", btnClaim:"领取 $MING", btnRefund:"退款 {u} USDT",
@@ -985,7 +986,7 @@ zh: {
   mNoWallet:"未找到币安钱包。请用币安钱包 App 扫码，或在其中打开本页。", mWrongNet:"请先把钱包切换到 {n}。",
   mNoUsdt:"该钱包 USDT 余额不足。", mConfirm:"请在钱包中确认铸造……", mErr:"交易失败：{e}", mPending:"等待区块确认……",
   qrSoon:"Agent Wallet 扫码登录即将开放。现在可以用下方提示词让你的 Agent 铸造，或使用普通钱包。",
-  pickLive:"连接持有 .ai Agent ID 的钱包，或让你的 Agent 替你铸造。",
+  pickLive:"你的 .ai Agent ID 存放在 Agentic Wallet 中，因此通过你自己的 Agent 铸造。复制下方提示词并粘贴给你的 Agent。",
   sSoon:"尚未开始", phSoon:"铸造合约尚未部署。上线时会在此处和 X 上公布合约地址。", mSoon:"铸造尚未开始。上线时会在此公布合约地址。", noMints:"暂无铸造", endsSoon:"即将开放铸造",
   footLive:"独立项目，与币安无关。不构成投资要约。铸造前请务必核对合约地址。", recent:"最近",
   qrIntro:"用持有 .ai Agent ID 的币安钱包 App 扫码。没有 Agent ID 的钱包会被拒绝。",
@@ -1521,7 +1522,6 @@ function openQR() {
   $("qrClose").focus();
 }
 function closeQR() { $("qrModal").hidden = true; clearInterval(qrTimerId); if (lastFocus) lastFocus.focus(); }
-$("connQR").onclick = openQR;
 $("qrClose").onclick = closeQR;
 $("qrModal").addEventListener("click", e => { if (e.target.id === "qrModal") closeQR(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("qrModal").hidden) closeQR(); });
