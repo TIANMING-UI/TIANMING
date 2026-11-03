@@ -6,9 +6,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
+          set +e
           for url in "https://tianming.xyz/?cb=$RANDOM$RANDOM" "https://tianming-ui.github.io/TIANMING/?cb=$RANDOM"; do
             echo "================ $url"
-            curl -s -D /tmp/h -o /tmp/p -m 20 -H 'Cache-Control: no-cache' "$url"
+            curl -sS -D /tmp/h -o /tmp/p -m 25 -H 'Cache-Control: no-cache' -w 'curl: http=%{http_code} ip=%{remote_ip} time=%{time_total}s\n' "$url"; echo "curl exit: $?"
             grep -iE '^(HTTP|age|x-cache|last-modified|etag|x-github-request-id|cache-control|location)' /tmp/h
             echo "bytes: $(wc -c < /tmp/p)"
             for k in 'Refund if missed in 2 days' 'Refund if missed in 10 days' 'within 10 days' 'published at deploy</code>' '0xE26a505CE2Ec77140D30f7b4684b31fbB5812f2b' 'Demo</button>' 'Third-party audit' 'Independent review' 'How do I sell' '12 unit tests' '18 unit and attack tests' 'demo-pill">LIVE' 'demo-pill">SOON' 'demo-pill">DEMO'; do
