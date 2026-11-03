@@ -1,0 +1,17 @@
+name: Prelaunch rehearsal (fork)
+on:
+  workflow_dispatch:
+jobs:
+  sim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Rehearse a mint on the deployed contracts
+        env:
+          FORK_URL: ${{ secrets.BSC_RPC != '' && secrets.BSC_RPC || 'https://bsc-rpc.publicnode.com' }}
+        run: npx hardhat run scripts/prelaunch-sim.js
