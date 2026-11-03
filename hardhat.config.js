@@ -7,7 +7,9 @@ const { TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD } = require("hardhat/builtin-tasks/
 // Use solc from npm (no compiler download needed during build / CI).
 subtask(TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD, async (args, hre, runSuper) => {
   if (args.solcVersion === "0.8.24") {
-    return { compilerPath: require.resolve("solc/soljson.js"), isSolcJs: true, version: "0.8.24", longVersion: require("solc").version() };
+    // Etherscan expects "0.8.24+commit.<hash>", not the Emscripten-suffixed string solc-js reports.
+    const longVersion = require("solc").version().match(/^\d+\.\d+\.\d+\+commit\.[0-9a-f]+/)[0];
+    return { compilerPath: require.resolve("solc/soljson.js"), isSolcJs: true, version: "0.8.24", longVersion };
   }
   return runSuper();
 });
