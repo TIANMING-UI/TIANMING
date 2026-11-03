@@ -1,0 +1,1247 @@
+<title>Tianming 天命 · Agent-only fair mint on BNB Chain</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@700;900&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@900&family=Unbounded:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: sticky nav; hero = giant gold ticker + spinning coin that the live agent network flows into; stats strip; mint marquee; mint desk (mint card + collectible pass); tokenomics; flow; market + leaderboard; roadmap; FAQ; contracts. Single deliberate black/gold look. */
+:root{
+  --font-display:"Unbounded","Noto Sans SC",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans","Noto Sans SC",system-ui,-apple-system,sans-serif;
+  --font-mono:"IBM Plex Mono","Noto Sans SC",ui-monospace,Menlo,monospace;
+  --ink:#0a0a0b; --panel:rgba(22,20,15,.78); --panel-solid:#16140f; --panel2:rgba(30,27,19,.86);
+  --line:rgba(245,190,46,.14); --line2:rgba(245,190,46,.32);
+  --fg:#f4f1e8; --dim:#a8a18d; --gold:#f5be2e; --gold2:#ffd96a; --gold3:#b9860f; --gold-ink:#1a1400;
+  --good:#6fdcab; --bad:#ff806e;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--ink);scroll-behavior:smooth;overflow-x:clip}
+body{margin:0;background:var(--ink);color:var(--fg);font:15px/1.6 var(--font-body);overflow-x:clip}
+#net{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+.veil{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(900px 600px at 78% 12%,rgba(245,190,46,.16),transparent 60%),radial-gradient(700px 500px at 0% 100%,rgba(245,190,46,.06),transparent 60%)}
+.hexbg{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cpath d='M4 4H60V60H12V12H52V52H20V20H44V44H28V28H36V36' fill='none' stroke='%23f5be2e' stroke-opacity='.075' stroke-width='1.6' stroke-linecap='square'/%3E%3C/svg%3E");background-size:64px 64px;-webkit-mask-image:radial-gradient(ellipse 85% 70% at 70% 18%,#000,transparent 75%);mask-image:radial-gradient(ellipse 85% 70% at 70% 18%,#000,transparent 75%)}
+.sealbg{position:fixed;z-index:0;pointer-events:none;right:max(-6vw,-90px);top:clamp(70px,14vh,160px);width:min(46vw,560px);aspect-ratio:1;opacity:.06;transform:rotate(-8deg)}
+.sealbg svg{width:100%;height:100%;display:block}
+.ink{position:fixed;left:0;right:0;bottom:0;height:46vh;z-index:0;pointer-events:none;background:radial-gradient(60% 70% at 15% 100%,rgba(120,92,30,.22),transparent 70%),radial-gradient(50% 60% at 55% 110%,rgba(245,190,46,.10),transparent 70%),radial-gradient(45% 55% at 92% 100%,rgba(90,70,25,.20),transparent 70%);filter:blur(18px)}
+@media (max-width:700px){.sealbg{right:-30vw;opacity:.045}}
+.wrap{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.label{font:500 11px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+:lang(zh) .label{letter-spacing:.06em}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;font-weight:700}
+h2{font-size:clamp(24px,3.4vw,38px);letter-spacing:-.02em;line-height:1.1}
+h3{font-size:16px;font-weight:500;letter-spacing:-.01em}
+:lang(zh) h2,:lang(zh) h3{letter-spacing:0}
+p{margin:0}
+a{color:var(--gold)}
+button,.btn{font:500 14px var(--font-body);cursor:pointer;border-radius:12px;border:1px solid var(--line2);background:rgba(255,255,255,.02);color:var(--fg);padding:12px 16px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,border-color .15s,transform .15s}
+button:hover,.btn:hover{border-color:var(--gold)}
+button:focus-visible,.btn:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+button:disabled{opacity:.4;cursor:not-allowed}
+.pri{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--gold-ink);border-color:var(--gold);box-shadow:0 8px 30px -10px rgba(245,190,46,.7)}
+.pri:hover{transform:translateY(-1px)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);min-width:0}
+section{padding-block:72px 0}
+.sec-head{display:flex;flex-direction:column;gap:10px;margin-bottom:26px;max-width:640px}
+.sec-head p{color:var(--dim);font-size:16px}
+
+/* nav */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:rgba(10,10,11,.72);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;font:700 15px var(--font-display);text-decoration:none;color:var(--fg)}
+.brand .coin-s{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--gold2),var(--gold) 45%,var(--gold3));display:grid;place-items:center;color:var(--gold-ink);font:400 18px 'Ma Shan Zheng','Noto Serif SC',serif;line-height:1}
+.demo-pill{font:500 10px var(--font-mono);letter-spacing:.1em;padding:2px 7px;border-radius:99px;border:1px dashed var(--gold);color:var(--gold)}
+.links{display:flex;gap:22px}
+.links a{color:var(--dim);text-decoration:none;font-size:13.5px}
+.links a:hover{color:var(--fg)}
+.nav-r{display:flex;align-items:center;gap:10px}
+.lang{display:flex;padding:3px;border-radius:99px;border:1px solid var(--line2)}
+.lang button{border:0;border-radius:99px;padding:5px 12px;font-size:12.5px;background:transparent;color:var(--dim);box-shadow:none}
+.lang button[aria-pressed="true"]{background:var(--gold);color:var(--gold-ink)}
+.nav .pri{padding:9px 14px;font-size:13px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:24px;align-items:center;padding-block:56px 30px}
+.hero-l{display:flex;flex-direction:column;gap:20px;min-width:0}
+.built{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;padding:7px 14px;border-radius:99px;border:1px solid var(--line2);background:rgba(245,190,46,.08);color:var(--gold);font:500 12px var(--font-mono);letter-spacing:.04em}
+.built i{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+.ticker{font:800 clamp(52px,9.4vw,122px)/.9 var(--font-display);letter-spacing:-.04em;background:linear-gradient(180deg,var(--gold2) 10%,var(--gold) 55%,var(--gold3));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 10px 40px rgba(245,190,46,.25))}
+.wordmark{width:min(100%,560px);margin-block:-6px -4px}
+.wordmark svg{width:100%;height:auto;display:block;filter:drop-shadow(0 10px 30px rgba(245,190,46,.18))}
+.wm-reveal{transform-box:view-box;transform-origin:0 0;animation:wmReveal 1.5s cubic-bezier(.65,0,.25,1) .15s both}
+@keyframes wmReveal{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.wm-seal{transform-box:fill-box;transform-origin:center;animation:wmStamp .55s cubic-bezier(.2,.9,.3,1.25) 1.45s both}
+@keyframes wmStamp{0%{opacity:0;transform:scale(1.7) rotate(-8deg)}100%{opacity:1;transform:none}}
+.wm-shine{transform-box:view-box;animation:wmShine 5s ease-in-out 2.2s infinite}
+@keyframes wmShine{0%{transform:translateX(0) skewX(-18deg)}40%,100%{transform:translateX(640px) skewX(-18deg)}}
+.wm-sub{animation:wmSub .9s ease 1.9s both}
+@keyframes wmSub{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.wordmark svg{animation:wmGlow 5s ease-in-out 2.2s infinite}
+@keyframes wmGlow{0%,100%{filter:drop-shadow(0 10px 30px rgba(245,190,46,.18))}20%{filter:drop-shadow(0 10px 36px rgba(245,190,46,.42))}}
+.tickpill{align-self:flex-start;font-size:13px;color:var(--gold);letter-spacing:.06em;margin-top:-6px}
+.hero h1{font-size:clamp(22px,2.8vw,32px);line-height:1.15;letter-spacing:-.02em}
+:lang(zh) .hero h1{letter-spacing:0}
+.hero .sub{color:var(--dim);font-size:17px;max-width:52ch}
+.ctas{display:flex;gap:10px;flex-wrap:wrap}
+.ctas .btn{padding:14px 22px;font-size:15px}
+.count{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.count .box{min-width:62px;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--panel);text-align:center}
+.count b{display:block;font:500 22px var(--font-mono);line-height:1.1}
+.count small{font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+
+.stage{position:relative;aspect-ratio:1;max-width:460px;width:100%;justify-self:center}
+.orbit{position:absolute;inset:4%;border-radius:50%;border:1px dashed rgba(245,190,46,.22);animation:spin 40s linear infinite}
+.orbit.o2{inset:-6%;border-style:dotted;border-color:rgba(245,190,46,.14);animation-duration:70s;animation-direction:reverse}
+.orbit i{position:absolute;top:-5px;left:50%;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.coin{position:absolute;inset:18%;transform-style:preserve-3d;animation:flip 9s ease-in-out infinite}
+@keyframes flip{0%,100%{transform:rotateY(-18deg) rotateX(8deg)}50%{transform:rotateY(18deg) rotateX(-4deg)}}
+.coin .face{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 38% 30%,#2e2716 0,#14120c 55%,#0b0a07 100%);box-shadow:inset 0 0 0 10px #d6a52a,inset 0 0 0 13px #6e4c05,inset 0 0 0 14px rgba(255,230,150,.35),0 40px 90px -30px rgba(245,190,46,.6);display:grid;place-items:center}
+.coin .face::before{content:"";position:absolute;inset:11%;border-radius:50%;border:1.5px dotted rgba(245,190,46,.35)}
+.coin svg{width:72%;height:72%}
+.coin .shine{position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.35) 48%,transparent 60%);background-size:250% 100%;animation:shine 4.5s ease-in-out infinite;mix-blend-mode:overlay}
+@keyframes shine{0%{background-position:120% 0}60%,100%{background-position:-60% 0}}
+.stage .tag{position:absolute;padding:8px 12px;border-radius:12px;background:var(--panel2);border:1px solid var(--line2);font-size:12px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.stage .tag b{display:block;font:500 15px var(--font-mono);color:var(--gold)}
+.tag.t1{left:-2%;top:16%}.tag.t2{right:-2%;top:46%}.tag.t3{left:6%;bottom:8%}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.stat{background:var(--panel-solid);padding:18px 20px}
+.stat b{display:block;font:500 clamp(20px,2.6vw,28px) var(--font-mono);font-variant-numeric:tabular-nums}
+.stat span{font-size:12.5px;color:var(--dim)}
+.stat.hi b{color:var(--gold)}
+
+/* marquee */
+.marquee{margin-top:26px;border-block:1px solid var(--line);overflow:hidden;background:rgba(245,190,46,.04);position:relative;z-index:1}
+.mq-track{display:flex;gap:40px;width:max-content;padding-block:11px;animation:mq 36s linear infinite}
+.mq-track span{font:500 12.5px var(--font-mono);color:var(--dim);white-space:nowrap}
+.mq-track b{color:var(--gold);font-weight:500}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* mint desk */
+.desk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+.mintcard{padding:24px;display:flex;flex-direction:column;gap:16px;background:var(--panel2);box-shadow:0 30px 80px -40px rgba(0,0,0,.9)}
+.mc-head{display:flex;justify-content:space-between;align-items:center}
+.state{font:500 12px var(--font-mono);padding:4px 10px;border-radius:99px;border:1px solid var(--line2)}
+.state.live{color:var(--good);border-color:rgba(111,220,171,.4)}
+.state.pool{color:var(--gold)}
+.state.fail{color:var(--bad);border-color:rgba(255,128,110,.45)}
+.rows{display:flex;flex-direction:column}
+.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.row:last-child{border-bottom:0}
+.row>span:first-child{color:var(--dim)}
+.connect{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qty{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:8px}
+.qty input{width:100%;background:rgba(0,0,0,.3);color:var(--fg);border:1px solid var(--line2);border-radius:12px;text-align:center;font:500 20px var(--font-mono);padding:10px}
+.qty button{padding:0;font-size:20px}
+.presets{display:flex;gap:6px}
+.presets button{flex:1;padding:7px;font:500 12.5px var(--font-mono)}
+.costline{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.costline b{font:500 30px var(--font-mono)}
+.big-btn{width:100%;padding:16px;font-size:16px}
+.msg{font-size:13px;min-height:20px;color:var(--dim)}
+.msg.ok{color:var(--good)}.msg.bad{color:var(--bad)}
+.track{position:relative;height:14px;margin:6px 0 26px;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:99px}
+.fill{position:absolute;inset:0 auto 0 0;width:0;border-radius:99px;background:linear-gradient(90deg,var(--gold3),var(--gold),var(--gold2));box-shadow:0 0 18px rgba(245,190,46,.55);transition:width .5s ease}
+.tick{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--fg);opacity:.5}
+.tick span{position:absolute;top:22px;left:50%;transform:translateX(-50%);white-space:nowrap;font:500 10.5px var(--font-mono);color:var(--dim)}
+.tick.end span{left:auto;right:0;transform:none}
+.prog-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.prog-top b{font:500 26px var(--font-mono)}
+
+.ctlink{font:500 12px var(--font-mono);color:var(--gold);text-decoration:none;white-space:nowrap}
+.ctlink:hover{text-decoration:underline}
+.passwrap{display:flex;flex-direction:column;gap:14px}
+.pass{position:relative;aspect-ratio:1.58;border-radius:22px;padding:22px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;color:var(--gold-ink);background:linear-gradient(135deg,#fff0b8 0%,var(--gold2) 22%,var(--gold) 52%,var(--gold3) 100%);box-shadow:0 40px 90px -40px rgba(245,190,46,.75),inset 0 0 0 1px rgba(255,255,255,.35)}
+.pass::before{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='48' viewBox='0 0 28 48'%3E%3Cpath d='M14 0 28 8v16L14 32 0 24V8zM14 32v16' fill='none' stroke='%231a1400' stroke-opacity='.10'/%3E%3C/svg%3E");background-size:28px 48px}
+.pass::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.45) 45%,transparent 58%);background-size:250% 100%;animation:shine 5s ease-in-out infinite}
+.pass>*{position:relative;z-index:1}
+.pass .p-sig{position:absolute;right:-8%;top:50%;width:62%;transform:translateY(-50%);z-index:0}
+.pass .p-top{display:flex;justify-content:space-between;align-items:flex-start}
+.pass .p-brand{font:800 22px var(--font-display);letter-spacing:-.02em}
+.pass .p-kind{font:500 10.5px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;opacity:.75}
+.pass .serial{font:800 clamp(34px,5vw,52px)/1 var(--font-display);letter-spacing:-.03em}
+.pass .p-bot{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;font:500 12px var(--font-mono)}
+.pass .p-bot b{display:block;font-size:15px}
+.pass.locked{filter:grayscale(.85) brightness(.55)}
+.pass-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* tokenomics */
+.toko{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:20px}
+.donutbox{padding:26px;display:grid;place-items:center}
+.donut{width:min(100%,300px);aspect-ratio:1;position:relative}
+.donut svg{width:100%;height:100%;transform:rotate(-90deg)}
+.donut .ctr{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.donut .ctr b{display:block;font:700 26px var(--font-display)}
+.donut .ctr span{font-size:12px;color:var(--dim)}
+.legend{padding:26px;display:flex;flex-direction:column;gap:14px}
+.lg{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:12px;align-items:start;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.lg:last-of-type{border-bottom:0}
+.lg i{width:14px;height:14px;border-radius:4px;margin-top:4px}
+.lg b{font:500 20px var(--font-mono)}
+.lg p{color:var(--dim);font-size:13.5px}
+.split{display:flex;height:38px;border-radius:12px;overflow:hidden;font:500 12px var(--font-mono);margin-top:4px}
+.split div{display:flex;align-items:center;padding:0 14px;white-space:nowrap;overflow:hidden}
+.split .p{flex:95;background:var(--gold);color:var(--gold-ink)}
+.split .t{flex:5;min-width:52px;justify-content:center;background:var(--fg);color:var(--gold-ink)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.step{padding:22px;display:flex;flex-direction:column;gap:10px;position:relative}
+.step .n{font:800 34px var(--font-display);color:transparent;-webkit-text-stroke:1px var(--gold);line-height:1}
+.step p{color:var(--dim);font-size:14px}
+
+/* market + board */
+.grid2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px}
+.market{padding:22px;display:flex;flex-direction:column;gap:14px}
+.chartbox{position:relative;height:230px;border-radius:14px;background:rgba(0,0,0,.32);border:1px solid var(--line);overflow:hidden}
+.chartbox canvas{width:100%;height:100%;display:block}
+.waiting{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--dim);font-size:14px;padding:16px 28px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(0,0,0,.25);min-width:0}
+.kpi b{display:block;font:500 17px var(--font-mono);overflow-wrap:anywhere}
+.kpi span{font-size:11.5px;color:var(--dim)}
+.board{padding:22px;display:flex;flex-direction:column;gap:12px}
+.tabs{display:flex;gap:6px}
+.tabs button{padding:6px 12px;font-size:12.5px;border-radius:99px}
+.tabs button[aria-pressed="true"]{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
+.lb{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.lb li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line);font-size:13.5px}
+.lb li .r{font:500 12px var(--font-mono);color:var(--dim)}
+.lb li:nth-child(-n+3) .r{color:var(--gold)}
+.lb li .h{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-mono)}
+.lb li.me{background:rgba(245,190,46,.1);border-radius:8px}
+.feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;max-height:300px;overflow:auto}
+.feed li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 4px;border-bottom:1px solid var(--line);font-size:13px}
+.feed li .dot{width:8px;height:8px;border-radius:50%;background:var(--gold)}
+.feed li.pool .dot{background:var(--fg)}
+.feed li.burn .dot{background:var(--bad)}
+.feed li.you{background:rgba(245,190,46,.09);border-radius:8px}
+.feed li .who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.feed li time{color:var(--dim);font:400 11px var(--font-mono)}
+.invite{display:flex;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;border:1px dashed var(--line2);font:500 13px var(--font-mono);min-width:0}
+.invite code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--gold)}
+.invite button{padding:6px 10px;font-size:12px}
+
+/* roadmap */
+.road{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;position:relative}
+.ph{padding:22px;display:flex;flex-direction:column;gap:10px}
+.ph .st{align-self:flex-start;font:500 11px var(--font-mono);padding:3px 9px;border-radius:99px;border:1px solid var(--line2);color:var(--dim)}
+.ph.now{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.ph.now .st{color:var(--gold-ink);background:var(--gold);border-color:var(--gold)}
+.ph ul{margin:0;padding-left:18px;color:var(--dim);font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+
+/* faq */
+.faq{display:flex;flex-direction:column;gap:10px;max-width:820px}
+.faq details{padding:0 20px}
+.faq summary{cursor:pointer;list-style:none;padding:18px 0;font:500 15.5px var(--font-body);display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:500 20px var(--font-mono);color:var(--gold);line-height:1}
+.faq details[open] summary::after{content:"−"}
+.faq details p{color:var(--dim);padding-bottom:18px;max-width:68ch;white-space:pre-line}
+
+/* contracts + footer */
+.contracts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ct{padding:18px;display:flex;flex-direction:column;gap:8px}
+.ct .addr{display:flex;gap:8px;align-items:center;min-width:0}
+.ct code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:500 13px var(--font-mono)}
+.ct button{padding:6px 10px;font-size:12px}
+footer{margin-top:72px;padding-block:28px 48px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;color:var(--dim);font-size:12.5px}
+footer p{max-width:70ch}
+.socials{display:flex;gap:8px}
+.socials span{padding:8px 12px;border:1px solid var(--line2);border-radius:10px;color:var(--fg);font-size:13px}
+
+/* compare */
+.cmp{overflow-x:auto;border-radius:20px}
+.cmp table{width:100%;border-collapse:collapse;min-width:620px;font-size:14.5px}
+.cmp th,.cmp td{padding:16px 20px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp thead th{font:500 11px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.cmp thead th.us{color:var(--gold)}
+.cmp td:first-child{color:var(--dim);width:26%}
+.cmp td.them{color:#c9c2ad}
+.cmp td.them::before{content:"✕ ";color:var(--bad)}
+.cmp td.us{color:var(--fg);background:rgba(245,190,46,.05)}
+.cmp td.us::before{content:"✓ ";color:var(--gold)}
+.cmp tr:last-child td{border-bottom:0}
+
+/* agent terminal */
+.agents{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:28px;align-items:center}
+.agents ul{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-direction:column;gap:12px}
+.agents li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;color:var(--dim);font-size:14.5px}
+.agents li b{color:var(--fg);font-weight:500}
+.agents li::before{content:"→";color:var(--gold);font-family:var(--font-mono)}
+.term{border-radius:18px;overflow:hidden;background:#0d0c09;border:1px solid var(--line2);box-shadow:0 40px 90px -50px #000}
+.term .bar{display:flex;align-items:center;gap:7px;padding:12px 16px;border-bottom:1px solid var(--line);background:#14120d}
+.term .bar i{width:10px;height:10px;border-radius:50%;background:#3a3527}
+.term .bar span{margin-left:8px;font:500 12px var(--font-mono);color:var(--dim)}
+.term pre{margin:0;padding:18px 20px;min-height:290px;font:400 13px/1.75 var(--font-mono);color:#d9d3bf;white-space:pre-wrap;word-break:break-word}
+.term .c{color:#7d7660}.term .p{color:var(--gold)}.term .ok{color:var(--good)}.term .k{color:#ffe7a3}
+.term .cur{display:inline-block;width:8px;height:15px;background:var(--gold);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* security */
+.sec-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.sc{padding:20px;display:flex;flex-direction:column;gap:8px}
+.sc .pill{align-self:flex-start;font:500 11px var(--font-mono);padding:3px 9px;border-radius:99px;border:1px solid var(--line2);color:var(--dim)}
+.sc .pill.done{color:var(--good);border-color:rgba(111,220,171,.45)}
+.sc .pill.code{color:var(--gold);border-color:var(--line2)}
+.sc p{color:var(--dim);font-size:13.5px}
+
+/* builder */
+.builder{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:22px;align-items:center;padding:24px}
+.builder .av{width:72px;height:72px;border-radius:20px;background:radial-gradient(circle at 35% 30%,var(--gold2),var(--gold) 50%,var(--gold3));display:grid;place-items:center;font:800 22px var(--font-display);color:var(--gold-ink)}
+.builder p{color:var(--dim);font-size:14.5px;max-width:60ch}
+.builder .lk{display:flex;gap:8px;flex-wrap:wrap}
+.builder .lk span{padding:8px 12px;border:1px solid var(--line2);border-radius:10px;font-size:13px}
+
+/* footer columns */
+.fcols{display:grid;grid-template-columns:repeat(3,minmax(0,auto));gap:40px}
+.fcols div{display:flex;flex-direction:column;gap:8px}
+.fcols a,.fcols span{color:var(--fg);font-size:13.5px;text-decoration:none}
+.fcols span.soon{color:var(--dim)}
+
+/* connect modal */
+.modal{position:fixed;inset:0;z-index:20;background:rgba(5,5,6,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:grid;place-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.mbox{width:min(420px,100%);padding:22px;display:flex;flex-direction:column;gap:14px;background:var(--panel-solid);max-height:100%;overflow:auto}
+.mhead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.mhead button{padding:6px 10px}
+.qr{display:grid;place-items:center;padding:14px;border-radius:16px;background:#fff6dc;justify-self:center;min-height:120px;min-width:120px}
+.qr svg{display:block}
+.qrwrap{display:grid;place-items:center}
+.qrcard{border:1px solid var(--line2);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.qrcard .qr{background:#fff;padding:12px;border-radius:6px}
+.pair{font:500 26px var(--font-mono);letter-spacing:.14em;color:var(--fg)}
+.qhint{font-size:13.5px;color:var(--fg);margin:0}
+.qlink{align-self:center;color:var(--gold);font-size:14px}
+.qwait{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--dim)}
+.spin{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--dim);border-top-color:transparent;animation:spin 1s linear infinite}
+.qcancel{align-self:center;color:var(--fg);text-decoration:none}
+.qrtimer{display:flex;flex-direction:column;gap:6px}
+.qrbar{height:6px;border-radius:99px;background:rgba(245,190,46,.12);overflow:hidden}
+.qrbar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--gold3),var(--gold));transition:width 1s linear}
+.qrbar i.low{background:var(--bad)}
+.qrmeta{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--dim)}
+.qr.fade svg{opacity:.25;filter:blur(2px)}
+.qsteps{margin:0;padding-left:20px;color:var(--dim);font-size:14px;display:flex;flex-direction:column;gap:4px}
+.linkbtn{background:none;border:0;padding:8px 0 0;color:var(--dim);font-size:12.5px;text-decoration:underline;cursor:pointer}
+.linkbtn:hover{color:var(--fg)}
+.wc-badge{display:inline-flex;gap:6px;align-items:center;font:500 11px var(--font-mono);color:var(--dim)}
+
+/* agent mint prompt */
+.am{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;max-width:820px}
+.amL{padding:22px;display:flex;flex-direction:column;gap:14px}
+.amrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.amf{display:flex;flex-direction:column;gap:6px;min-width:0}
+.amf label{font:500 11px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.amf input{width:100%;background:rgba(0,0,0,.3);color:var(--fg);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;font:500 15px var(--font-mono)}
+.prompt{margin:0;padding:16px 18px;border-radius:14px;background:#0d0c09;border:1px solid var(--line2);font:400 13px/1.7 var(--font-mono);color:#e6dfc8;white-space:pre-wrap;word-break:break-word;max-height:360px;overflow:auto}
+.amb{display:flex;gap:8px;flex-wrap:wrap}
+.amR{padding:22px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;justify-content:center}
+@media (max-width:980px){.am{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.amrow{grid-template-columns:minmax(0,1fr)}}
+
+
+.ticker{filter:drop-shadow(0 8px 26px rgba(245,190,46,.16))}
+.pri{box-shadow:0 6px 20px -10px rgba(245,190,46,.55)}
+@media (max-width:980px){.agents,.builder{grid-template-columns:minmax(0,1fr)}.sec-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fcols{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}}
+@media (max-width:560px){.sec-grid{grid-template-columns:minmax(0,1fr)}.fcols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:980px){.links{display:none}.hero,.desk,.toko,.grid2{grid-template-columns:minmax(0,1fr)}.stage{max-width:360px}.steps,.road{grid-template-columns:repeat(2,minmax(0,1fr))}.contracts{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.steps,.road{grid-template-columns:minmax(0,1fr)}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.nav .pri{display:none}.tag.t1,.tag.t2{display:none}.orbit.o2{inset:0}.connect,.pass-actions{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+/* hero coin: slow continuous spin, two faces so the back never shows mirrored */
+.stage{perspective:1400px}
+.coin{animation:coinSpin 14s linear infinite}
+@keyframes coinSpin{from{transform:rotateY(0deg)}to{transform:rotateY(360deg)}}
+.coin .face{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.coin .face.back{transform:rotateY(180deg)}
+
+/* calligraphy headings: brush font like the 天命 wordmark, original text color */
+.hero h1,h2{font-family:"Ma Shan Zheng","Noto Serif SC",serif;font-weight:400;letter-spacing:.01em;line-height:1.15;color:var(--fg)}
+.hero h1{font-size:clamp(34px,4.4vw,54px)}
+h2{font-size:clamp(32px,4.2vw,52px)}
+:lang(zh) .hero h1,:lang(zh) h2{letter-spacing:.04em}
+
+/* responsive: use the full width on large desktop screens */
+.wrap{max-width:1400px;padding-left:max(clamp(16px,3vw,48px),env(safe-area-inset-left,0px));padding-right:max(clamp(16px,3vw,48px),env(safe-area-inset-right,0px))}
+@media (min-width:1400px){
+  .hero{gap:48px;padding-block:72px 40px}
+  .wordmark{width:min(100%,660px)}
+  .stage{max-width:560px}
+  .hero .sub{font-size:18.5px}
+}
+
+/* mobile polish */
+html{overflow-x:hidden}
+.stage{overflow:visible}
+@media (max-width:640px){
+  .cmp{overflow:visible}
+  .cmp table{min-width:0}
+  .cmp thead{display:none}
+  .cmp tr{display:grid;grid-template-columns:minmax(0,1fr);padding:10px 0;border-bottom:1px solid var(--line)}
+  .cmp tr:last-child{border-bottom:0}
+  .cmp td{border:0!important;padding:4px 18px!important;width:auto!important}
+  .cmp td:first-child{color:var(--fg);font-weight:600}
+  .cmp td.us{background:none}
+  .wordmark{width:100%}
+  .hero{padding-block:32px 20px}
+  .stage{max-width:300px;margin-top:8px}
+  .count .box{min-width:0;flex:1}
+  .count{flex-wrap:nowrap}
+  .ctas .btn{flex:1;padding:14px 12px}
+  .prompt{font-size:12px}
+  .sealbg{display:none}
+}
+
+@media (min-width:1700px){
+  .wrap{max-width:1600px}
+  .wordmark{width:min(100%,740px)}
+  .stage{max-width:640px}
+  .hero .sub{font-size:20px;max-width:56ch}
+  .hero h1{font-size:62px}
+  h2{font-size:58px}
+  body{font-size:16px}
+}
+
+/* ===== Mint desk: drop the collectible card, big live progress bar ===== */
+.passwrap{display:none!important}
+.desk{grid-template-columns:minmax(0,1fr)!important;max-width:820px;margin-inline:auto}
+.mintcard{padding:30px 32px}
+.prog-top{align-items:center}
+.prog-top b{font:600 46px/1 var(--font-display);font-variant-numeric:tabular-nums lining-nums}
+.prog-top b small{font-size:18px!important}
+.track{height:34px!important;border-radius:18px!important;margin:14px 0 36px!important;overflow:hidden}
+.track::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(100deg,transparent 30%,rgba(245,190,46,.10) 50%,transparent 70%);background-size:220% 100%;animation:barSheen 3.2s linear infinite}
+.fill{border-radius:18px!important;overflow:hidden;transition:width .9s cubic-bezier(.2,.8,.2,1)!important;min-width:0}
+.fill::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(100deg,transparent 12%,rgba(255,255,255,.45) 50%,transparent 88%);background-size:220% 100%;animation:barSheen 2.2s linear infinite}
+@keyframes barSheen{0%{background-position:130% 0}100%{background-position:-130% 0}}
+.track .tick{top:-5px;bottom:-5px}
+.track .tick span{top:40px}
+@media (prefers-reduced-motion:reduce){.track::before,.fill::after{animation:none}}
+</style>
+
+<div class="hexbg" aria-hidden="true"></div>
+<div class="sealbg" aria-hidden="true"><svg viewBox="0 0 200 200" fill="none" stroke="#f5be2e"><rect x="8" y="8" width="184" height="184" rx="14" stroke-width="7"/><rect x="22" y="22" width="156" height="156" rx="8" stroke-width="2"/><text x="100" y="98" text-anchor="middle" fill="#f5be2e" stroke="none" font-family="'Noto Serif SC', serif" font-weight="900" font-size="78">天</text><text x="100" y="176" text-anchor="middle" fill="#f5be2e" stroke="none" font-family="'Noto Serif SC', serif" font-weight="900" font-size="78">命</text></svg></div>
+<div class="ink" aria-hidden="true"></div>
+<canvas id="net" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+
+<nav class="nav"><div class="wrap">
+  <a class="brand" href="#top"><span class="coin-s">命</span>Tianming <span class="demo-pill">LIVE</span></a>
+  <div class="links"><a href="#agent-mint" data-i="nMint"></a><a href="#tokenomics" data-i="nToko"></a><a href="#roadmap" data-i="nRoad"></a><a href="#faq" data-i="nFaq"></a></div>
+  <div class="nav-r">
+    <div class="lang" role="group" aria-label="Language"><button id="lang-en" data-lang="en" aria-pressed="true">EN</button><button id="lang-zh" data-lang="zh" aria-pressed="false">中文</button></div>
+    <a class="btn pri" href="#agent-mint" data-i="mintNow"></a>
+  </div>
+</div></nav>
+
+<div class="wrap" id="top">
+  <div class="hero">
+    <div class="hero-l">
+      <div class="wordmark" role="img" aria-label="天命 Tianming">
+        <svg viewBox="0 0 440 200"><defs><linearGradient id="wmg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c2"/><stop offset=".38" stop-color="#ffd25a"/><stop offset=".55" stop-color="#e3a516"/><stop offset=".75" stop-color="#f7c843"/><stop offset="1" stop-color="#8f6106"/></linearGradient>
+          <linearGradient id="wmShine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff8dc" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+          <clipPath id="wmReveal"><rect class="wm-reveal" x="0" y="0" width="320" height="200"/></clipPath>
+          <mask id="wmMask" maskUnits="userSpaceOnUse" x="0" y="0" width="440" height="200"><text x="4" y="145" font-family="'Ma Shan Zheng', 'Noto Serif SC', serif" font-size="150" textLength="300" lengthAdjust="spacingAndGlyphs" fill="#fff">天命</text><rect x="322" y="38" width="96" height="96" rx="10" fill="none" stroke="#fff" stroke-width="4"/><text x="370" y="104" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="62" fill="#fff">命</text></mask></defs>
+          <g clip-path="url(#wmReveal)">
+          <text x="9" y="150" font-family="'Ma Shan Zheng', 'Noto Serif SC', serif" font-size="150" textLength="300" lengthAdjust="spacingAndGlyphs" fill="#3a2700">天命</text>
+          <text x="4" y="145" font-family="'Ma Shan Zheng', 'Noto Serif SC', serif" font-size="150" textLength="300" lengthAdjust="spacingAndGlyphs" fill="url(#wmg)" stroke="#5a3d00" stroke-width="1">天命</text>
+          </g>
+          <g class="wm-seal">
+          <rect x="322" y="38" width="96" height="96" rx="10" fill="none" stroke="url(#wmg)" stroke-width="4"/>
+          <text x="370" y="104" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="62" fill="url(#wmg)">命</text>
+          </g>
+          <g mask="url(#wmMask)"><rect class="wm-shine" x="-140" y="-20" width="110" height="240" fill="url(#wmShine)"/></g>
+          <text class="wm-sub" x="8" y="190" font-family="Unbounded, sans-serif" font-weight="500" font-size="17" letter-spacing="14" fill="#c9a24a">TIANMING · 天命</text>
+        </svg></div>
+      <div class="tickpill mono">$MING · BNB Smart Chain</div>
+      <h1 data-i="h1"></h1>
+      <p class="sub" data-i="sub"></p>
+      <div class="ctas"><a class="btn pri" href="#agent-mint" data-i="mintNow2"></a><a class="btn" href="#how" data-i="howBtn"></a></div>
+      <div>
+        <div class="label" style="margin-bottom:8px" data-i="endsIn"></div>
+        <div class="count" id="count"></div>
+      </div>
+    </div>
+    <div class="stage" id="stage" aria-hidden="true">
+      <div class="orbit o2"><i></i></div>
+      <div class="orbit"><i></i></div>
+      <div class="coin"><div class="face">
+        <svg viewBox="0 0 200 200"><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c2"/><stop offset=".4" stop-color="#ffd25a"/><stop offset=".62" stop-color="#e3a516"/><stop offset="1" stop-color="#8f6106"/></linearGradient></defs>
+          <rect x="44" y="44" width="112" height="112" rx="12" fill="none" stroke="url(#cg)" stroke-width="6"/>
+          <rect x="54" y="54" width="92" height="92" rx="6" fill="none" stroke="url(#cg)" stroke-width="1.5" stroke-opacity=".6"/>
+          <text x="102" y="102" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="44" fill="#000" fill-opacity=".5">天</text>
+          <text x="100" y="99" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="44" fill="url(#cg)">天</text>
+          <text x="102" y="145" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="44" fill="#000" fill-opacity=".5">命</text>
+          <text x="100" y="142" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="44" fill="url(#cg)">命</text></svg>
+        <div class="shine"></div>
+      </div><div class="face back" aria-hidden="true">
+        <svg viewBox="0 0 200 200"><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c2"/><stop offset=".4" stop-color="#ffd25a"/><stop offset=".62" stop-color="#e3a516"/><stop offset="1" stop-color="#8f6106"/></linearGradient></defs>
+          <rect x="44" y="44" width="112" height="112" rx="12" fill="none" stroke="url(#cg)" stroke-width="6"/>
+          <rect x="54" y="54" width="92" height="92" rx="6" fill="none" stroke="url(#cg)" stroke-width="1.5" stroke-opacity=".6"/>
+          <text x="102" y="102" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="44" fill="#000" fill-opacity=".5">天</text>
+          <text x="100" y="99" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="44" fill="url(#cg)">天</text>
+          <text x="102" y="145" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="44" fill="#000" fill-opacity=".5">命</text>
+          <text x="100" y="142" text-anchor="middle" font-family="'Noto Serif SC', serif" font-weight="900" font-size="44" fill="url(#cg)">命</text></svg>
+        <div class="shine"></div>
+      </div></div>
+      <div class="tag t1"><b>95%</b><span data-i="tagPool"></span></div>
+      <div class="tag t2"><b>LP</b><span data-i="tagLp"></span></div>
+      <div class="tag t3"><b>2%</b><span data-i="tagBb"></span></div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat hi"><b id="stMinted">—</b><span data-i="stMinted"></span></div>
+    <div class="stat"><b id="stPrice">—</b><span data-i="stPrice"></span></div>
+    <div class="stat"><b id="stRaised">—</b><span data-i="stRaised"></span></div>
+    <div class="stat"><b id="stAgents">—</b><span data-i="stAgents"></span></div>
+  </div>
+</div>
+
+<div class="marquee" aria-hidden="true"><div class="mq-track" id="mq"></div></div>
+
+<div class="wrap">
+  <section id="mint">
+    <div class="sec-head"><span class="label" data-i="mintEyebrow"></span><h2 data-i="mintTitle"></h2></div>
+    <div class="desk">
+      <div class="panel mintcard" aria-live="polite">
+        <div class="mc-head"><span class="label" data-i="mintCard"></span><span class="state live" id="stateBadge"></span></div>
+        <div>
+          <div class="prog-top"><b class="mono"><span id="minted">0</span><small style="font-size:14px;color:var(--dim)"> / 5,000</small></b><span class="label" id="nextTier"></span></div>
+          <div class="track" aria-hidden="true">
+            <div class="fill" id="fill"></div>
+            <div class="tick" style="left:50%"><span data-i="tick1"></span></div>
+            <div class="tick end" style="right:0;left:auto"><span data-i="tick2"></span></div>
+          </div>
+        </div>
+        <div id="notConnected">
+          <p class="msg" style="margin-bottom:10px" data-i="pick"></p>
+          <button class="linkbtn" id="connPlain" data-i="connPlain" hidden></button>
+        </div>
+        <div id="connected" hidden>
+          <div class="rows">
+            <div class="row"><span data-i="rWallet"></span><span class="mono">you.ai · 0x7a3f…c91e</span></div>
+            <div class="row"><span data-i="rPrice"></span><span class="mono" id="pNow"></span></div>
+            <div class="row"><span data-i="rQuota"></span><span class="mono" id="quota"></span></div>
+            <div class="row"><span data-i="rOwed"></span><span class="mono" id="owed"></span></div>
+          </div>
+          <div id="mintBox" style="display:flex;flex-direction:column;gap:12px;margin-top:12px">
+            <div class="qty"><button id="minus" aria-label="−">−</button><input id="shares" type="number" min="1" max="5" value="5" aria-label="Shares"><button id="plus" aria-label="+">+</button></div>
+            <div class="presets"><button data-n="1">1</button><button data-n="2">2</button><button data-n="3">3</button><button data-n="5">MAX</button></div>
+            <div class="costline"><span class="label" data-i="total"></span><b id="cost"></b></div>
+            <button class="pri big-btn" id="btnMint" data-i="btnMint"></button>
+          </div>
+          <button id="btnClaim" class="pri big-btn" hidden style="margin-top:10px" data-i="btnClaim"></button>
+          <button id="btnRefund" class="big-btn" hidden style="margin-top:10px"></button>
+        </div>
+        <div class="msg" id="msg"></div>
+        <p class="msg" id="phaseTxt"></p>
+      </div>
+
+      <div class="passwrap">
+        <div class="pass locked" id="pass"><svg class="p-sig" viewBox="0 0 200 200" aria-hidden="true"><text x="100" y="168" text-anchor="middle" font-family=\"'Noto Serif SC', serif\" font-weight="900" font-size="170" fill="#1a1400" fill-opacity=".14">命</text></svg>
+          <div class="p-top"><div><div class="p-kind" data-i="passKind"></div><div class="p-brand">天命 Tianming</div></div><div class="p-kind" id="passTier">BNB CHAIN</div></div>
+          <div><div class="p-kind" data-i="serialLbl"></div><div class="serial" id="passSerial">#—</div></div>
+          <div class="p-bot"><div><span data-i="agentLbl"></span><b id="passHandle">—.ai</b></div><div style="text-align:right"><span data-i="sharesLbl"></span><b id="passShares">0</b></div></div>
+        </div>
+        <div class="pass-actions">
+          <a class="btn pri" id="shareX" href="https://x.com/intent/tweet" target="_blank" rel="noopener" data-i="shareX" style="grid-column:1/-1"></a>
+        </div>
+        <p class="msg" data-i="passNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="agent-mint">
+    <div class="sec-head"><span class="label" data-i="amEyebrow"></span><h2 data-i="amTitle"></h2><p data-i="amSub"></p></div>
+    <div class="am">
+      <div class="panel amL">
+        <div class="amrow">
+          <div class="amf"><label for="amShares" data-i="amShares"></label><input id="amShares" type="number" min="1" max="5" value="5"></div>
+          <div class="amf"><label for="amMax" data-i="amMax"></label><input id="amMax" type="number" min="1" step="1" value="10"></div>
+        </div>
+        <pre class="prompt" id="amPrompt" aria-live="polite"></pre>
+        <div class="amb"><button class="pri" id="amCopy" data-i="amCopy"></button></div>
+        <p class="msg" id="amMsg" data-i="amHint"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="why">
+    <div class="sec-head"><span class="label" data-i="whyEyebrow"></span><h2 data-i="whyTitle"></h2><p data-i="whySub"></p></div>
+    <div class="panel cmp"><table>
+      <thead><tr><th></th><th data-i="cmpThem"></th><th class="us">$MING</th></tr></thead>
+      <tbody>
+        <tr><td data-i="cr1"></td><td class="them" data-i="cr1a"></td><td class="us" data-i="cr1b"></td></tr>
+        <tr><td data-i="cr2"></td><td class="them" data-i="cr2a"></td><td class="us" data-i="cr2b"></td></tr>
+        <tr><td data-i="cr3"></td><td class="them" data-i="cr3a"></td><td class="us" data-i="cr3b"></td></tr>
+        <tr><td data-i="cr4"></td><td class="them" data-i="cr4a"></td><td class="us" data-i="cr4b"></td></tr>
+        <tr><td data-i="cr5"></td><td class="them" data-i="cr5a"></td><td class="us" data-i="cr5b"></td></tr>
+        <tr><td data-i="cr6"></td><td class="them" data-i="cr6a"></td><td class="us" data-i="cr6b"></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="agents">
+    <div class="agents">
+      <div>
+        <div class="sec-head" style="margin-bottom:0"><span class="label" data-i="agEyebrow"></span><h2 data-i="agTitle"></h2><p data-i="agSub"></p></div>
+        <ul><li><span><b data-i="ag1b"></b> <span data-i="ag1"></span></span></li><li><span><b data-i="ag2b"></b> <span data-i="ag2"></span></span></li><li><span><b data-i="ag3b"></b> <span data-i="ag3"></span></span></li></ul>
+      </div>
+      <div class="term" aria-label="Agent terminal example"><div class="bar"><i></i><i></i><i></i><span>agent@bsc ~ baw</span></div><pre id="term"></pre></div>
+    </div>
+  </section>
+
+  <section id="tokenomics">
+    <div class="sec-head"><span class="label" data-i="tokoEyebrow"></span><h2 data-i="tokoTitle"></h2><p data-i="tokoSub"></p></div>
+    <div class="toko">
+      <div class="panel donutbox">
+        <div class="donut">
+          <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="78" fill="none" stroke="rgba(245,190,46,.08)" stroke-width="26"/>
+            <circle cx="100" cy="100" r="78" fill="none" stroke="#f5be2e" stroke-width="26" stroke-dasharray="390.1 490.1" stroke-dashoffset="0"/>
+            <circle cx="100" cy="100" r="78" fill="none" stroke="#ffe7a3" stroke-width="26" stroke-dasharray="96.0 490.1" stroke-dashoffset="-392.1"/></svg>
+          <div class="ctr"><div><b>100B</b><span data-i="supply"></span></div></div>
+        </div>
+      </div>
+      <div class="panel legend">
+        <div class="lg"><i style="background:#f5be2e"></i><div><h3 data-i="lg1h"></h3><p data-i="lg1p"></p></div><b>80%</b></div>
+        <div class="lg"><i style="background:#ffe7a3"></i><div><h3 data-i="lg2h"></h3><p data-i="lg2p"></p></div><b>20%</b></div>
+        <div class="lg"><i style="background:transparent;border:1px dashed var(--line2)"></i><div><h3 data-i="lg3h"></h3><p data-i="lg3p"></p></div><b>0%</b></div>
+        <div><div class="label" style="margin-bottom:8px" data-i="usdtSplit"></div><div class="split"><div class="p" data-i="split"></div><div class="t">5%</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="sec-head"><span class="label" data-i="howEyebrow"></span><h2 data-i="howTitle"></h2></div>
+    <div class="steps">
+      <div class="panel step"><span class="n">01</span><h3 data-i="s1h"></h3><p data-i="s1p"></p></div>
+      <div class="panel step"><span class="n">02</span><h3 data-i="s2h"></h3><p data-i="s2p"></p></div>
+      <div class="panel step"><span class="n">03</span><h3 data-i="s3h"></h3><p data-i="s3p"></p></div>
+      <div class="panel step"><span class="n">04</span><h3 data-i="s4h"></h3><p data-i="s4p"></p></div>
+    </div>
+  </section>
+
+  <section id="live">
+    <div class="sec-head"><span class="label" data-i="liveEyebrow"></span><h2 data-i="liveTitle"></h2></div>
+    <div class="grid2">
+      <div class="panel market">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3 data-i="market"></h3><span class="label" id="priceLbl"></span></div>
+        <div class="chartbox"><canvas id="chart" aria-label="Price chart"></canvas><div class="waiting" id="waiting" data-i="waiting"></div></div>
+        <div class="kpis">
+          <div class="kpi"><b id="kPool">—</b><span data-i="kPool"></span></div>
+          <div class="kpi"><b id="kVault">—</b><span data-i="kVault"></span></div>
+          <div class="kpi"><b id="kBurn">0</b><span data-i="kBurn"></span></div>
+          <div class="kpi"><b id="kTreas">—</b><span data-i="kTreas"></span></div>
+        </div>
+      </div>
+      <div class="panel board">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="boardTitle"></h3>
+          <div class="tabs" role="group"><button id="tabLb" aria-pressed="true" data-i="tabLb"></button><button id="tabFeed" aria-pressed="false" data-i="tabFeed"></button></div></div>
+        <ol class="lb" id="lb"></ol>
+        <ul class="feed" id="feed" hidden></ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="security">
+    <div class="sec-head"><span class="label" data-i="scEyebrow"></span><h2 data-i="scTitle"></h2><p data-i="scSub"></p></div>
+    <div class="sec-grid">
+      <div class="panel sc"><span class="pill code" data-i="pCode"></span><h3 data-i="sc1h"></h3><p data-i="sc1p"></p></div>
+      <div class="panel sc"><span class="pill code" data-i="pCode"></span><h3 data-i="sc7h"></h3><p data-i="sc7p"></p></div>
+      <div class="panel sc"><span class="pill code" data-i="pCode"></span><h3 data-i="sc2h"></h3><p data-i="sc2p"></p></div>
+      <div class="panel sc"><span class="pill done" data-i="pDone"></span><h3 data-i="sc3h"></h3><p data-i="sc3p"></p></div>
+      <div class="panel sc"><span class="pill" data-i="pDeploy"></span><h3 data-i="sc4h"></h3><p data-i="sc4p"></p></div>
+      <div class="panel sc"><span class="pill" data-i="pDeploy"></span><h3 data-i="sc5h"></h3><p data-i="sc5p"></p></div>
+      <div class="panel sc"><span class="pill" data-i="pPlanned"></span><h3 data-i="sc6h"></h3><p data-i="sc6p"></p></div>
+      <div class="panel sc"><span class="pill" data-i="pPlanned"></span><h3 data-i="sc8h"></h3><p data-i="sc8p"></p></div>
+      <div class="panel sc"><span class="pill code" data-i="pCode"></span><h3 data-i="sc9h"></h3><p data-i="sc9p"></p></div>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <div class="sec-head"><span class="label" data-i="roadEyebrow"></span><h2 data-i="roadTitle"></h2></div>
+    <div class="road">
+      <div class="panel ph now"><span class="st" data-i="stNow"></span><h3 data-i="r1h"></h3><ul><li data-i="r1a"></li><li data-i="r1b"></li><li data-i="r1c"></li></ul></div>
+      <div class="panel ph"><span class="st" data-i="stNext"></span><h3 data-i="r2h"></h3><ul><li data-i="r2a"></li><li data-i="r2b"></li><li data-i="r2c"></li></ul></div>
+      <div class="panel ph"><span class="st" data-i="stLater"></span><h3 data-i="r3h"></h3><ul><li data-i="r3a"></li><li data-i="r3b"></li></ul></div>
+      <div class="panel ph"><span class="st" data-i="stLater"></span><h3 data-i="r4h"></h3><ul><li data-i="r4a"></li><li data-i="r4b"></li></ul></div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="sec-head"><span class="label">FAQ</span><h2 data-i="faqTitle"></h2></div>
+    <div class="faq">
+      <details class="panel" open><summary data-i="q1"></summary><p data-i="a1"></p></details>
+      <details class="panel"><summary data-i="q2"></summary><p data-i="a2"></p></details>
+      <details class="panel"><summary data-i="q3"></summary><p data-i="a3"></p></details>
+      <details class="panel"><summary data-i="q4"></summary><p data-i="a4"></p></details>
+      <details class="panel"><summary data-i="q5"></summary><p data-i="a5"></p></details>
+      <details class="panel"><summary data-i="q6"></summary><p data-i="a6"></p></details>
+      <details class="panel"><summary data-i="q7"></summary><p data-i="a7"></p></details>
+      <details class="panel"><summary data-i="q8"></summary><p data-i="a8"></p></details>
+    </div>
+  </section>
+
+  <section id="contracts">
+    <div class="sec-head"><span class="label" data-i="ctEyebrow"></span><h2 data-i="ctTitle"></h2></div>
+    <div class="contracts">
+      <div class="panel ct"><span class="label" data-i="ct1"></span><div class="addr"><code>0xE26a505CE2Ec77140D30f7b4684b31fbB5812f2b</code><button class="cp" data-copy="0xE26a505CE2Ec77140D30f7b4684b31fbB5812f2b" data-i="copy"></button><a class="ctlink" href="https://bscscan.com/address/0xE26a505CE2Ec77140D30f7b4684b31fbB5812f2b" target="_blank" rel="noopener">BscScan ↗</a></div></div>
+      <div class="panel ct"><span class="label" data-i="ct2"></span><div class="addr"><code>0xFED9Eab43aFa900BD24055CDef39d0F5b7d34844</code><button class="cp" data-copy="0xFED9Eab43aFa900BD24055CDef39d0F5b7d34844" data-i="copy"></button><a class="ctlink" href="https://bscscan.com/address/0xFED9Eab43aFa900BD24055CDef39d0F5b7d34844" target="_blank" rel="noopener">BscScan ↗</a></div></div>
+      <div class="panel ct"><span class="label" data-i="ct3"></span><div class="addr"><code>0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F</code><button class="cp" data-copy="0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F" data-i="copy"></button><a class="ctlink" href="https://bscscan.com/address/0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F" target="_blank" rel="noopener">BscScan ↗</a></div></div>
+      <div class="panel ct"><span class="label" data-i="ct4"></span><div class="addr"><code>0x38Bdc5CD54A7E112682F60aDcF4614843e65FAd8</code><button class="cp" data-copy="0x38Bdc5CD54A7E112682F60aDcF4614843e65FAd8" data-i="copy"></button><a class="ctlink" href="https://bscscan.com/address/0x38Bdc5CD54A7E112682F60aDcF4614843e65FAd8" target="_blank" rel="noopener">BscScan ↗</a></div></div>
+    </div>
+  </section>
+
+  <footer>
+    <div style="display:flex;flex-direction:column;gap:10px"><a class="brand" href="#top"><span class="coin-s">命</span>Tianming</a><p data-i="foot"></p></div>
+    <div class="fcols">
+      <div><span class="label" data-i="fProject"></span><a href="#agent-mint" data-i="nMint"></a><a href="#tokenomics" data-i="nToko"></a><a href="#roadmap" data-i="nRoad"></a><a href="#faq" data-i="nFaq"></a></div>
+      <div><span class="label" data-i="fDev"></span><a href="#contracts" data-i="fContracts"></a></div>
+      <div><span class="label" data-i="fComm"></span><span class="soon">X · soon</span></div>
+    </div>
+  </footer>
+</div>
+
+
+
+<script>
+(() => {
+const T = {
+en: {
+  nMint:"Mint", nAgent:"Mint by prompt", nToko:"Tokenomics", nRoad:"Roadmap", nFaq:"FAQ", mintNow:"Mint now",
+  built:"Built for Binance Agentic Wallet",
+  h1:"Only agents hold the mandate.",
+  sub:"A presale only .ai agents can join. 2 USDT per share. At 5,000 shares the contract lists itself on PancakeSwap for everyone, burns the LP forever, and a 2% trade fee goes to the treasury.",
+  mintNow2:"Mint $MING", howBtn:"How it works", endsIn:"Presale closes in",
+  d:"days", h:"hrs", m:"min", s:"sec",
+  tagPool:"USDT to liquidity", tagLp:"burned forever", tagBb:"trade fee · 100% to treasury",
+  stMinted:"Shares minted", stPrice:"Current price", stRaised:"USDT raised", stAgents:"Agents joined",
+  mqMint:"minted", mqShares:"shares",
+  mintEyebrow:"Mint desk", mintTitle:"Mint your shares, claim the mandate.",
+  mintCard:"Mint", sLive:"Minting open", sPool:"Listed", sFail:"Target missed",
+  tick1:"", tick2:"#5,000 · listing",
+  nextLive1:"{a} left at 2.00 U", nextLive2:"2.00 U",
+  pick:"Your .ai Agent ID lives in your Agentic Wallet, so you mint through your own agent. Copy the prompt and paste it into your agent.", pickHint:"No agent yet? Set up Binance Agentic Wallet (npx skills add …), then paste the prompt. After listing, trade $MING on PancakeSwap with any wallet.",
+  connAgent:"Wallet + Agent ID", connPlain:"Try a wallet without Agent ID",
+  rWallet:"Wallet", rPrice:"Price now", rQuota:"Quota used", rOwed:"$MING in your wallet", claimed:"claimed",
+  total:"You pay", btnMint:"Approve & mint", btnClaim:"Claim $MING", btnRefund:"Refund {u} USDT",
+  live1:"{b} shares until auto-listing on PancakeSwap.", phPool:"Target reached. Pool created, LP burned, minting closed.", phFail:"Deadline passed before 5,000 shares. Every payer can refund 100%.",
+  passKind:"Mandate of Heaven", serialLbl:"Serial", agentLbl:"Agent", sharesLbl:"Shares",
+  shareX:"Share on X",
+  passNote:"Your mandate carries your first serial number. Share it on X.",
+  tweet:"I just claimed mandate 天命 #{s} with {n} shares of $MING. Only .ai agents hold the mandate.",
+  tokoEyebrow:"Tokenomics", tokoTitle:"100,000,000,000 $MING. No hidden bags.", tokoSub:"Every allocation is set in the contract at deploy and can be checked on BscScan.",
+  supply:"total supply",
+  lg1h:"Minters", lg1p:"16,000,000 $MING per share, sent to your wallet at mint. Tradable the moment the pool opens.",
+  lg2h:"Liquidity pool", lg2p:"Paired with 95% of the USDT raised. LP tokens burned.",
+  lg3h:"Team", lg3p:"None. The contract mints no tokens for the team or builder.",
+  usdtSplit:"Where the USDT goes", split:"95% → LIQUIDITY POOL",
+  howEyebrow:"How it works", howTitle:"Four steps. Zero team buttons.",
+  s1h:"Agents mint", s1p:"Only wallets holding a .ai Agent ID. Max 5 shares per wallet.",
+  s2h:"Auto-listing", s2p:"Share #5,000 triggers the PancakeSwap pool inside the same transaction.",
+  s3h:"LP burned", s3p:"LP tokens go to 0x…dEaD. Liquidity is locked forever.",
+  s4h:"2% trade fee", s4p:"On every buy and sell in the pool, 2% of $MING goes to the treasury wallet. Wallet transfers pay nothing.",
+  liveEyebrow:"Live", liveTitle:"Market, treasury and the top minters.",
+  market:"PancakeSwap $MING/USDT", priceOn:"{p} USDT", priceOff:"not listed yet",
+  waiting:"The chart goes live at share #5,000, when the contract creates the pool.",
+  kPool:"USDT in pool", kVault:"Fee to treasury", kBurn:"$MING fixed supply", kTreas:"Treasury",
+  boardLb:"Top minters", boardFeed:"Activity", tabLb:"Top", tabFeed:"Activity",
+  invites:"{n} shares", copy:"Copy", copied:"Copied",
+  eMint:"minted {n} shares · {c} USDT", ePool:"pool created · {u} USDT", eLp:"LP burned to 0x…dEaD", eTreas:"{u} USDT to treasury",
+  eBb:"{t} $MING trade fees sent to treasury", eClaim:"claimed {t} $MING", eRefund:"refunded {u} USDT", eDead:"deadline passed · refunds open",
+  wContract:"contract", wVault:"trade fee", wMany:"agents",
+  mVerified:"Agent ID verified on-chain. You can mint.", mNoAgent:"No .ai Agent ID in this wallet. The contract rejects it.",
+  mQuota:"You have {n} shares of quota left.", mSupply:"Only {n} shares left before listing.", mApprove:"Approving USDT… confirm the mint in your wallet.",
+  mMinted:"Minted {n} shares for {c} USDT. Your $MING is already in your wallet and unlocks at listing.", mClaimed:"$MING is in your wallet.", mRefund:"Refunded {u} USDT.", maxN:"max {n}",
+  mConnectFirst:"Connect an Agent ID wallet first.",
+  roadEyebrow:"Roadmap", roadTitle:"What happens after the mint.",
+  stNow:"Live", stNext:"Next", stLater:"Planned",
+  r1h:"Presale", r1a:"Agent-only mint, 5,000 shares", r1b:"Equal 5-share quota for every agent", r1c:"Refund if missed in 10 days",
+  r2h:"Listing", r2a:"Auto PancakeSwap pool", r2b:"LP burned, trading opens for everyone", r2c:"2% trade fee to treasury starts",
+  r3h:"Build", r3a:"Agent tools for $MING holders", r3b:"Details published before launch",
+  r4h:"Airdrops", r4a:"Treasury airdrops to Agent ID holders", r4b:"Every spend posted with its tx hash",
+  faqTitle:"Questions before you join",
+  q1:"Does the team own any $MING?", a1:"No. Team allocation: 0%.\nThere are no team tokens, no private allocation and no reserved supply. The team does not receive any of the minted $MING.\n$MING starts with the community.",
+  q2:"Where does the mint money go?", a2:"95% goes directly into the liquidity pool, and the LP is burned.\nThe other 5% goes to the treasury wallet for development, listings, community initiatives and ecosystem activity.\nThe contract has no owner and no withdraw function, so nobody can touch the pool funds.",
+  q3:"Can the team dump on the community?", a3:"There are no team-held tokens to dump.\nNo team allocation. No private sale. No hidden wallet. No team unlock.\nThe only $MING the treasury gets is the 2% trade fee. It may sell that to fund the project, and every treasury transaction is public on-chain.",
+  q4:"What if the mint doesn't sell out?", a4:"Your money isn't trapped.\nIf $MING does not list within 10 days, every participant can call refund() and get 100% of their USDT back.\nIf the launch fails, the treasury receives nothing.",
+  q5:"When do I receive my $MING?", a5:"Immediately. Your $MING is sent to your wallet in the same transaction as your mint. No claim step.\nIt stays locked until the pool exists, so nobody can create a market before the official launch. The moment share 5,000 is minted, it is yours to trade.",
+  q6:"What happens after listing?", a6:"$MING is fully open to the market. Anyone can buy or sell on PancakeSwap, with or without an Agent ID.\nThere is no special team trading window and no privileged exit.\nThe market decides the price. The community owns the supply.",
+  q7:"What is the 2% trading fee?", a7:"A 2% fee is charged on buys and sells through the pool. Wallet-to-wallet transfers are free.\nThe full 2% goes to the treasury wallet and pays for development, the team building $MING, DEX listings, community initiatives and Agent ID holder rewards.\nThe rate is fixed in the contract and can never be increased.",
+  q8:"Is $MING an investment?", a8:"No. $MING is a community token with no promised returns.\nThe price can go up or down, and you can lose everything you spend.\nOnly participate with what you can afford to lose.",
+  ctEyebrow:"Verify", ctTitle:"Read the contracts yourself.",
+  ct1:"Mint contract", ct2:"$MING token", ct3:".ai Agent ID registry", ct4:"Treasury wallet (5% + 2% fee)", pending:"published at deploy",
+  foot:"Independent project, not affiliated with Binance. Not an investment offer. Always check the contract address before you mint.",
+  
+  whyEyebrow:"Why $MING", whyTitle:"Built so the dev can't be the risk.", whySub:"Most presales ask you to trust a team wallet. This one moves every rule into the contract.",
+  cmpThem:"Typical presale",
+  cr1:"Who can buy", cr1a:"Anyone, including sniper bots", cr1b:"Presale: only .ai Agent ID wallets. After listing: open to everyone",
+  cr2:"Where your USDT goes", cr2a:"Straight to a team wallet", cr2b:"Held by the contract, 95% into the pool",
+  cr3:"If the target is missed", cr3a:"Usually no refund", cr3b:"100% refund you claim yourself",
+  cr4:"Liquidity", cr4a:"Unlocked or time-locked", cr4b:"LP burned in the listing transaction",
+  cr5:"Team tokens", cr5a:"Hidden or unlocked", cr5b:"None. 0% team allocation in the contract",
+  cr6:"After launch", cr6a:"Admin keys stay with the team", cr6b:"No owner. Fixed 2% trade fee to the treasury",
+  agEyebrow:"For agents", agTitle:"Your agent can mint on its own.", agSub:"Copy one prompt and your agent has everything it needs: the contract, the checks and the steps to mint through Binance Agentic Wallet.",
+  ag1b:"Simulate first.", ag1:"Every call is previewed before it is signed.",
+  ag2b:"You confirm.", ag2:"Execution waits for your approval in the Binance app.",
+  ag3b:"Machine-readable.", ag3:"The prompt carries the contract address and every step.",
+  scEyebrow:"Security", scTitle:"What protects your USDT.", scSub:"Each item shows its real status. Nothing is marked done until it is.",
+  pCode:"In the code", pDone:"Done", pDeploy:"At deploy", pPlanned:"Planned",
+  sc1h:"No owner, no admin keys", sc1p:"There is no function the team can call to pause, change fees or withdraw.",
+  sc2h:"LP burned at listing", sc2p:"The listing transaction sends every LP token to 0x…dEaD.",
+  sc3h:"Test suite passing", sc3p:"12 unit tests and 7 tests against the real BSC mainnet contracts cover the mint gate, pricing, quota, pool split, fee and refund.",
+  sc4h:"Source verified", sc4p:"Contracts will be verified on BscScan the moment they are deployed.",
+  sc5h:"Public treasury wallet", sc5p:"The treasury (5% of USDT at listing plus the 2% trade fee) is one public wallet, fixed in the contract forever. Anyone can follow it on BscScan, and every spend is posted with its tx hash.",
+  sc7h:"Agent-only presale", sc7p:"Only wallets with a .ai Agent ID can mint. The contract checks it on every mint. After listing, trading is open to everyone.",
+  sc6h:"Independent review", sc6p:"An outside review of the contracts before mainnet. The report will be linked here.",
+  sc8h:"Agentic Wallet test", sc8p:"Mint, buy and sell tested with real Agentic Wallets on testnet before launch.",
+  sc9h:"Refund if missed", sc9p:"No listing within 10 days means every payer can pull 100% of their USDT back.",
+  bdEyebrow:"Builder", bdTitle:"Who is building this.", bdP:"Independent developer building AI agents and on-chain tooling for BNB Chain. Contracts are verified on-chain (BscScan).",
+  fProject:"Project", fDev:"Developers", fComm:"Community", fDocs:"Docs · soon", fContracts:"Contracts",
+  
+  amEyebrow:"Agent mint", amTitle:"Let your agent mint for you.", amSub:"Set the amount, copy the prompt, paste it into your agent. It already includes the contract and the steps.",
+  amShares:"Shares (1-5)", amMax:"Max spend (USDT)",
+  amCopy:"Copy prompt", amHint:"Works with Claude, Codex, or any agent that has the Binance Agentic Wallet skill.",
+  amCopied:"Prompt copied. Paste it into your agent.",
+  amQrLbl:"Prompt as QR", amQrNote:"Scan with your phone to send the prompt to an agent you run on Telegram or mobile. The QR always holds the English prompt.",
+  pPend:"MINT_ADDRESS (published at deploy)"
+},
+zh: {
+  nMint:"铸造", nAgent:"提示词铸造", nToko:"代币经济", nRoad:"路线图", nFaq:"常见问题", mintNow:"立即铸造",
+  built:"为币安 Agentic Wallet 打造",
+  h1:"天命，唯授 Agent。",
+  sub:"只有 .ai Agent 能参与的预售。每份 2 USDT。满 5,000 份时合约自动在 PancakeSwap 上线并向所有人开放、永久销毁 LP，2% 交易手续费进入金库。",
+  mintNow2:"铸造 $MING", howBtn:"运作方式", endsIn:"预售倒计时",
+  d:"天", h:"时", m:"分", s:"秒",
+  tagPool:"USDT 进入流动性", tagLp:"永久销毁", tagBb:"交易手续费 · 全部进入金库",
+  stMinted:"已铸造份数", stPrice:"当前价格", stRaised:"已募集 USDT", stAgents:"参与 Agent",
+  mqMint:"铸造了", mqShares:"份",
+  mintEyebrow:"铸造台", mintTitle:"铸造份额，领受天命。",
+  mintCard:"铸造", sLive:"铸造进行中", sPool:"已上线", sFail:"未达目标",
+  tick1:"", tick2:"#5,000 · 上线",
+  nextLive1:"2.00 U 还剩 {a} 份", nextLive2:"2.00 U",
+  pick:"你的 .ai Agent ID 存放在 Agentic Wallet 中，因此通过你自己的 Agent 铸造。复制下方提示词并粘贴给你的 Agent。", pickHint:"还没有 Agent？先设置币安 Agentic Wallet（npx skills add …），再粘贴提示词。上线后可用任意钱包在 PancakeSwap 交易 $MING。",
+  connAgent:"钱包 + Agent ID", connPlain:"试试没有 Agent ID 的钱包",
+  rWallet:"钱包", rPrice:"当前价格", rQuota:"已用额度", rOwed:"钱包中的 $MING", claimed:"已领取",
+  total:"应付", btnMint:"授权并铸造", btnClaim:"领取 $MING", btnRefund:"退款 {u} USDT",
+  live1:"再 {b} 份即自动在 PancakeSwap 上线。", phPool:"目标达成。资金池已创建，LP 已销毁，铸造关闭。", phFail:"截止前未达 5,000 份。所有付款人可 100% 退款。",
+  passKind:"天命诏", serialLbl:"编号", agentLbl:"Agent", sharesLbl:"份数",
+  shareX:"分享到 X",
+  passNote:"天命带有你的首个编号，分享到 X 吧。",
+  tweet:"我刚用 {n} 份 $MING 领受天命 #{s}。天命，唯授 .ai Agent。",
+  tokoEyebrow:"代币经济", tokoTitle:"总量 1000 亿 $MING，没有隐藏筹码。", tokoSub:"所有分配在部署时写入合约，可在 BscScan 上核查。",
+  supply:"总供应量",
+  lg1h:"铸造者", lg1p:"每份 16,000,000 $MING，铸造时直接发到你的钱包，资金池开启即可交易。",
+  lg2h:"流动性池", lg2p:"与 95% 的募集 USDT 配对，LP 代币销毁。",
+  lg3h:"团队", lg3p:"无。合约不为团队或开发者铸造任何代币。",
+  usdtSplit:"USDT 去向", split:"95% → 流动性池",
+  howEyebrow:"运作方式", howTitle:"四个步骤，团队没有任何按钮。",
+  s1h:"Agent 铸造", s1p:"仅限持有 .ai Agent ID 的钱包。每个钱包最多 5 份。",
+  s2h:"自动上线", s2p:"第 5,000 份在同一笔交易中触发 PancakeSwap 资金池。",
+  s3h:"LP 销毁", s3p:"LP 代币发送到 0x…dEaD，流动性永久锁定。",
+  s4h:"2% 交易手续费", s4p:"资金池中每笔买卖的 2% $MING 进入金库钱包。钱包间转账免费。",
+  liveEyebrow:"实时", liveTitle:"市场、金库，以及领跑的 Agent。",
+  market:"PancakeSwap $MING/USDT", priceOn:"{p} USDT", priceOff:"尚未上线",
+  waiting:"第 5,000 份时合约创建资金池，图表随即上线。",
+  kPool:"池中 USDT", kVault:"手续费入金库", kBurn:"$MING 固定总量", kTreas:"金库",
+  boardLb:"铸造排行", boardFeed:"动态", tabLb:"排行", tabFeed:"动态",
+  invites:"{n} 份", copy:"复制", copied:"已复制",
+  eMint:"铸造 {n} 份 · {c} USDT", ePool:"资金池已创建 · {u} USDT", eLp:"LP 已销毁至 0x…dEaD", eTreas:"{u} USDT 转入金库",
+  eBb:"{t} $MING 交易手续费进入金库", eClaim:"领取 {t} $MING", eRefund:"退款 {u} USDT", eDead:"已过截止时间 · 开放退款",
+  wContract:"合约", wVault:"交易手续费", wMany:"众多 Agent",
+  mVerified:"Agent ID 链上验证通过，可以铸造。", mNoAgent:"该钱包没有 .ai Agent ID，合约会拒绝。",
+  mQuota:"你的剩余额度为 {n} 份。", mSupply:"距离上线仅剩 {n} 份。", mApprove:"正在授权 USDT……请在钱包中确认铸造。",
+  mMinted:"已铸造 {n} 份，花费 {c} USDT。$MING 已在你的钱包中，上线后解锁。", mClaimed:"$MING 已到账。", mRefund:"已退款 {u} USDT。", maxN:"最多 {n}",
+  mConnectFirst:"请先连接持有 Agent ID 的钱包。",
+  roadEyebrow:"路线图", roadTitle:"铸造之后会发生什么。",
+  stNow:"进行中", stNext:"下一步", stLater:"计划中",
+  r1h:"预售", r1a:"仅限 Agent 铸造 5,000 份", r1b:"每个 Agent 额度相同，均为 5 份", r1c:"10 天未达标即退款",
+  r2h:"上线", r2a:"自动创建 PancakeSwap 资金池", r2b:"销毁 LP，向所有人开放交易", r2c:"开始收取 2% 手续费（进入金库）",
+  r3h:"建设", r3a:"为 $MING 持有者打造 Agent 工具", r3b:"上线前公布详情",
+  r4h:"空投", r4a:"金库向 Agent ID 持有者空投", r4b:"每笔支出公布交易哈希",
+  faqTitle:"参与前的常见问题",
+  q1:"团队持有 $MING 吗？", a1:"不持有。团队分配：0%。\n没有团队代币、没有私募分配、没有预留供应。团队不获得任何铸造出的 $MING。\n$MING 从社区开始。",
+  q2:"铸造资金去哪里？", a2:"95% 直接进入流动性池，LP 永久销毁。\n其余 5% 进入金库钱包，用于开发、上架、社区活动和生态建设。\n合约没有 owner，也没有提款函数，任何人都无法动用池中资金。",
+  q3:"团队会砸盘吗？", a3:"团队没有持币可砸。\n无团队分配、无私募、无隐藏钱包、无团队解锁。\n金库唯一获得的 $MING 是 2% 交易手续费，可能卖出以资助项目，金库的每笔交易都在链上公开。",
+  q4:"如果没卖完怎么办？", a4:"你的资金不会被锁死。\n若 10 天内未上线，每位参与者都可调用 refund() 取回 100% 的 USDT。\n若发行失败，金库不获得任何资金。",
+  q5:"什么时候拿到 $MING？", a5:"立即到账。$MING 在铸造的同一笔交易中直接发到你的钱包，无需领取。\n资金池建立前代币处于锁定状态，任何人都无法在正式上线前建立市场。第 5,000 份铸造完成的那一刻即可交易。",
+  q6:"上线后会怎样？", a6:"$MING 完全向市场开放。无论是否持有 Agent ID，任何人都可以在 PancakeSwap 买卖。\n没有团队专属交易窗口，也没有特权退出。\n价格由市场决定，供应归社区所有。",
+  q7:"2% 交易手续费是什么？", a7:"通过资金池买入和卖出时收取 2%，钱包间转账免费。\n全部 2% 进入金库钱包，用于开发、建设 $MING 的团队、DEX 上架、社区活动和 Agent ID 持有者奖励。\n费率写死在合约中，永远无法上调。",
+  q8:"$MING 是投资吗？", a8:"不是。$MING 是社区代币，不承诺任何收益。\n价格可涨可跌，你可能损失全部投入。\n请只用你能承受损失的金额参与。",
+  ctEyebrow:"核查", ctTitle:"亲自阅读合约。",
+  ct1:"铸造合约", ct2:"$MING 代币", ct3:".ai Agent ID 注册表", ct4:"金库钱包（5% + 2% 手续费）", pending:"部署时公布",
+  foot:"界面与流程演示。页面上的数字、钱包和交易均在浏览器中模拟。独立项目，与币安无关。不构成投资要约。",
+  
+  whyEyebrow:"为什么选 $MING", whyTitle:"让开发者不再是风险来源。", whySub:"大多数预售要求你信任团队钱包。这里把每条规则都写进了合约。",
+  cmpThem:"普通预售",
+  cr1:"谁可以买", cr1a:"任何人，包括狙击机器人", cr1b:"预售：仅限 .ai Agent ID 钱包。上线后：向所有人开放",
+  cr2:"USDT 去向", cr2a:"直接进入团队钱包", cr2b:"由合约保管，95% 进入资金池",
+  cr3:"未达目标时", cr3a:"通常不退款", cr3b:"100% 退款，自行领取",
+  cr4:"流动性", cr4a:"未锁定或限时锁定", cr4b:"上线交易中直接销毁 LP",
+  cr5:"团队代币", cr5a:"隐藏或未锁定", cr5b:"无。合约中团队分配为 0%",
+  cr6:"上线之后", cr6a:"管理员密钥仍在团队手中", cr6b:"无 owner。固定 2% 交易手续费进入金库",
+  agEyebrow:"面向 Agent", agTitle:"你的 Agent 可以自己铸造。", agSub:"复制一段提示词，你的 Agent 就拥有所需的一切：合约地址、检查项和通过币安 Agentic Wallet 铸造的步骤。",
+  ag1b:"先模拟。", ag1:"每次调用在签名前都会预览。",
+  ag2b:"由你确认。", ag2:"执行前需在币安 App 中批准。",
+  ag3b:"机器可读。", ag3:"提示词包含合约地址和每一个步骤。",
+  scEyebrow:"安全", scTitle:"保护你 USDT 的机制。", scSub:"每一项都显示真实状态，未完成的不会标为完成。",
+  pCode:"已写入代码", pDone:"已完成", pDeploy:"部署时", pPlanned:"计划中",
+  sc1h:"无 owner，无管理员密钥", sc1p:"团队没有任何可调用的暂停、改费率或提款函数。",
+  sc2h:"上线时销毁 LP", sc2p:"上线交易会把所有 LP 代币发送到 0x…dEaD。",
+  sc3h:"测试全部通过", sc3p:"12 项单元测试和 7 项基于 BSC 主网真实合约的测试，覆盖铸造资格、定价、额度、资金池分配、手续费和退款。",
+  sc4h:"源码验证", sc4p:"合约部署后会立即在 BscScan 上验证源码。",
+  sc5h:"公开金库钱包", sc5p:"金库（上线时 5% 的 USDT 加 2% 交易手续费）是一个公开钱包，地址永久写入合约。任何人都可在 BscScan 上查看，每笔支出公布交易哈希。",
+  sc7h:"仅限 Agent 预售", sc7p:"只有持有 .ai Agent ID 的钱包可以铸造，合约每次铸造都会检查。上线后交易向所有人开放。",
+  sc6h:"独立审查", sc6p:"主网上线前进行外部合约审查，报告将在此链接。",
+  sc8h:"Agentic Wallet 测试", sc8p:"上线前在测试网用真实 Agentic Wallet 测试铸造、买入和卖出。",
+  sc9h:"未达标即退款", sc9p:"10 天内未上线，所有付款人都可取回 100% 的 USDT。",
+  bdEyebrow:"开发者", bdTitle:"谁在构建。", bdP:"独立开发者，为 BNB 链构建 AI Agent 与链上工具。合约已在链上验证（BscScan）。",
+  fProject:"项目", fDev:"开发者", fComm:"社区", fDocs:"文档 · 即将推出", fContracts:"合约",
+  
+  amEyebrow:"Agent 铸造", amTitle:"让你的 Agent 替你铸造。", amSub:"设置数量，复制提示词，粘贴给你的 Agent。合约和步骤都已包含在内。",
+  amShares:"份数（1-5）", amMax:"最高花费（USDT）",
+  amCopy:"复制提示词", amHint:"适用于 Claude、Codex 或任何安装了币安 Agentic Wallet 技能的 Agent。",
+  amCopied:"提示词已复制，粘贴给你的 Agent 即可。",
+  amQrLbl:"提示词二维码", amQrNote:"用手机扫码，把提示词发给你在 Telegram 或手机上运行的 Agent。二维码内始终为英文提示词。",
+  pPend:"MINT_ADDRESS（部署时公布）"
+}};
+
+const $ = (id) => document.getElementById(id);
+let L = "en";
+const t = (k, v = {}) => (T[L][k] ?? T.en[k] ?? k).replace(/\{(\w)\}/g, (_, x) => v[x] ?? "");
+const nf = (n, d = 0) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+
+const TARGET = 5000, STEP = 5000, BASE = 2, INC = 0, TPS = 16000000, POOL_TPS = 4000000, QUOTA = 5, FEE = 0.01;
+const handles = ["nova","kirin","bayu","atlas","mira","zeta","raka","luna","orbit","dewa","sora","pixel","garuda","echo","tanu","vega","rimba","halo","shen","lin","juno","kai"];
+const priceAt = (s) => BASE + Math.floor((s - 1) / STEP) * INC;
+const costOf = (from, n) => { let c = 0; for (let i = 1; i <= n; i++) c += priceAt(from + i); return Math.round(c * 100) / 100; };
+let DEADLINE = 1793890800 * 1000; // 2026-11-05 15:00 UTC: refund window end (re-read on-chain)
+
+let S, events = [], msgState = null, tab = "lb";
+function fresh() {
+  S = { minted: 0, collected: 0, agents: 0, phase: "preopen", wallet: false, paid: 0, paidUsdt: 0, owed: 0, claimed: false,
+        serial: null, auto: false, pool: null, vault: 0, burnLog: 0, burned: 0, treasury: 0, prices: [], tick: 0,
+        top: {} };
+  events = []; msgState = null;
+}
+
+// ---------- i18n ----------
+function applyLang(lang) {
+  L = lang;
+  document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+  document.querySelectorAll("[data-i]").forEach(el => { el.textContent = t(el.dataset.i); });
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  try { localStorage.setItem("am-lang", lang); } catch (e) {}
+  buildCount(); renderFeed(); renderMsg(); renderBoard(); renderMarquee(); render();
+  if (typeof renderPrompt === "function") renderPrompt();
+}
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => applyLang(b.dataset.lang)));
+
+// ---------- countdown ----------
+function buildCount() {
+  $("count").innerHTML = ["d","h","m","s"].map(k => `<div class="box"><b id="c${k}">00</b><small>${t(k)}</small></div>`).join("");
+  tickCount();
+}
+function tickCount() {
+  let s = Math.max(0, Math.floor((DEADLINE - Date.now()) / 1000));
+  const v = { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 };
+  for (const k in v) { const el = $("c" + k); if (el) el.textContent = String(v[k]).padStart(2, "0"); }
+}
+
+// ---------- feed / marquee / board ----------
+function log(cls, who, key, vars = {}, you = false) {
+  events.unshift({ cls, who, key, vars, you, time: new Date() });
+  if (events.length > 40) events.pop();
+  renderFeed();
+}
+function whoName(w) { return w.startsWith("@") ? t(w.slice(1)) : w; }
+function renderFeed() {
+  const ul = $("feed"); ul.innerHTML = "";
+  events.forEach(e => {
+    const li = document.createElement("li");
+    li.className = e.cls + (e.you ? " you" : "");
+    li.innerHTML = `<span class="dot"></span><span class="who"><b class="mono"></b> <span></span></span><time></time>`;
+    li.querySelector("b").textContent = whoName(e.who);
+    li.querySelector(".who span").textContent = t(e.key, e.vars);
+    li.querySelector("time").textContent = e.time.toLocaleTimeString("en-GB", { hour12: false });
+    ul.appendChild(li);
+  });
+}
+let mqItems = [];
+function pushMarquee(h, n) { mqItems.unshift([h, n]); mqItems = mqItems.slice(0, 14); }
+function renderMarquee() {
+  const items = mqItems.map(([h, n]) => `<span><b>${h}</b> ${t("mqMint")} ${n} ${t("mqShares")}</span>`).join("");
+  $("mq").innerHTML = items + items;
+}
+function renderBoard() {
+  $("boardTitle").textContent = t(tab === "lb" ? "boardLb" : "boardFeed");
+  $("tabLb").setAttribute("aria-pressed", String(tab === "lb")); $("tabFeed").setAttribute("aria-pressed", String(tab === "feed"));
+  $("lb").hidden = tab !== "lb"; $("feed").hidden = tab !== "feed";
+  const rows = Object.entries(S.top).filter(([h]) => h !== "you.ai");
+  if (S.wallet && S.paid) rows.push(["you.ai", S.paid]);
+  rows.sort((a, b) => b[1] - a[1]);
+  $("lb").innerHTML = "";
+  rows.slice(0, 8).forEach(([h, n], i) => {
+    const li = document.createElement("li"); if (h === "you.ai") li.className = "me";
+    li.innerHTML = `<span class="r">${String(i + 1).padStart(2, "0")}</span><span class="h"></span><span class="mono"></span>`;
+    li.querySelector(".h").textContent = h; li.querySelector(".mono").textContent = t("invites", { n });
+    $("lb").appendChild(li);
+  });
+}
+function say(key, vars = {}, cls = "") { msgState = key ? { key, vars, cls } : null; renderMsg(); }
+function renderMsg() { const m = $("msg"); m.textContent = msgState ? t(msgState.key, msgState.vars) : ""; m.className = "msg " + (msgState ? msgState.cls : ""); }
+
+// ---------- mint / pool / trade ----------
+function doMint(n, who, you = false) {
+  n = Math.min(n, TARGET - S.minted);
+  if (n <= 0) return 0;
+  const c = costOf(S.minted, n), first = S.minted + 1;
+  S.minted += n; S.collected += c;
+  if (!you && Math.random() < .35) S.agents++;
+  log("mint", who, "eMint", { n: nf(n), c: nf(c, 2) }, you);
+  pushMarquee(who, n);
+  if (!you) S.top[who] = Math.min(5, (S.top[who] || 0) + n);
+  net.packet(you);
+  if (S.minted >= TARGET) openPool();
+  return { c, first };
+}
+function openPool() {
+  S.phase = "pool";
+  const usdt = S.collected * .95; S.treasury = S.collected * .05;
+  S.pool = { usdt, tok: TARGET * POOL_TPS }; S.prices = [price()];
+  log("pool", "@wContract", "ePool", { u: nf(usdt, 0) }); log("pool", "@wContract", "eLp"); log("pool", "@wContract", "eTreas", { u: nf(S.treasury, 0) });
+  net.burst();
+}
+const price = () => S.pool.usdt / S.pool.tok;
+function trade(isBuy, size) {
+  const p = S.pool, k = p.usdt * p.tok;
+  if (isBuy) { const before = p.tok; p.usdt += size; p.tok = k / p.usdt; const out = before - p.tok; S.vault += out * 2 * FEE; S.burnLog += out * 2 * FEE; }
+  else { const tokIn = size / price(), net = tokIn * (1 - 2 * FEE); S.vault += tokIn * 2 * FEE; S.burnLog += tokIn * 2 * FEE; const nt = p.tok + net, out = p.usdt - k / nt; p.tok = nt; p.usdt -= out; }
+}
+function buyback() {
+  if (S.burnLog < 1) return;
+  log("burn", "@wVault", "eBb", { t: nf(S.burnLog, 0) }); S.burnLog = 0;
+}
+
+// ---------- render ----------
+function render() {
+  $("minted").textContent = nf(S.minted);
+  $("fill").style.width = (S.minted / TARGET * 100) + "%";
+  $("stMinted").textContent = nf(S.minted);
+  $("stPrice").textContent = S.phase === "pool" ? price().toPrecision(3) : nf(priceAt(Math.min(S.minted + 1, TARGET)), 2) + " U";
+  $("stRaised").textContent = nf(S.collected, 0);
+  $("stAgents").textContent = nf(S.agents);
+  document.querySelectorAll(".track .tick:not(.end)").forEach(el => { el.hidden = STEP >= TARGET; });
+  $("nextTier").textContent = S.phase !== "live" ? "" : S.minted < STEP ? t("nextLive1", { a: nf(STEP - S.minted) }) : t("nextLive2");
+  const b = $("stateBadge");
+  b.className = "state " + S.phase; b.textContent = t({ live: "sLive", pool: "sPool", fail: "sFail" }[S.phase]);
+  $("phaseTxt").textContent = S.phase === "live" ? t("live1", { b: nf(TARGET - S.minted) }) : t(S.phase === "pool" ? "phPool" : "phFail");
+
+  $("notConnected").hidden = S.wallet; $("connected").hidden = !S.wallet;
+  if (S.wallet) {
+    $("pNow").textContent = S.phase === "live" ? nf(priceAt(S.minted + 1), 2) + " USDT" : "—";
+    $("quota").textContent = `${S.paid} / ${QUOTA}`;
+    $("owed").textContent = nf(S.owed);
+    $("mintBox").hidden = S.phase !== "live";
+    $("btnMint").disabled = S.paid >= QUOTA;
+    $("btnClaim").hidden = true;
+    $("btnRefund").hidden = !(S.phase === "fail" && S.paidUsdt > 0);
+    $("btnRefund").textContent = t("btnRefund", { u: nf(S.paidUsdt, 2) });
+    updateCost();
+  }
+  // pass
+  const has = S.serial != null;
+  $("pass").classList.toggle("locked", !has);
+  $("passSerial").textContent = has ? "#" + String(S.serial).padStart(5, "0") : "#—";
+  $("passHandle").textContent = S.wallet ? "you.ai" : "—.ai";
+  $("passShares").textContent = S.paid;
+  $("passTier").textContent = "BNB CHAIN";
+  $("shareX").href = "https://x.com/intent/tweet?text=" + encodeURIComponent(t("tweet", { n: S.paid || 1, s: has ? String(S.serial).padStart(5, "0") : "00000" }));
+
+
+  const on = S.phase === "pool";
+  $("waiting").hidden = on;
+  $("kPool").textContent = on ? nf(S.pool.usdt, 0) : "—";
+  $("kVault").textContent = on ? nf(S.vault, 0) : "—";
+  $("kBurn").textContent = "100B";
+  $("kTreas").textContent = on ? nf(S.treasury, 0) + " U" : "—";
+  $("priceLbl").textContent = on ? t("priceOn", { p: price().toPrecision(3) }) : t("priceOff");
+  drawChart();
+}
+function updateCost() {
+  const n = Math.max(1, Math.min(5, parseInt($("shares").value) || 1));
+  const left = Math.min(QUOTA - S.paid, TARGET - S.minted, 5);
+  $("cost").textContent = n > left ? t("maxN", { n: Math.max(0, left) }) : nf(costOf(S.minted, n), 2) + " USDT";
+}
+
+// ---------- chart ----------
+function drawChart() {
+  const cv = $("chart"), r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  if (!r.width) return;
+  cv.width = r.width * dpr; cv.height = r.height * dpr;
+  const g = cv.getContext("2d"); g.scale(dpr, dpr);
+  const W = r.width, H = r.height, pad = 14;
+  g.strokeStyle = "rgba(245,190,46,.08)"; g.lineWidth = 1;
+  for (let i = 1; i < 4; i++) { const y = H * i / 4; g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+  const P = S && S.prices; if (!P || P.length < 2) return;
+  const min = Math.min(...P) * .995, max = Math.max(...P) * 1.005;
+  const x = i => pad + (W - pad * 2) * i / (P.length - 1), y = v => H - pad - (H - pad * 2) * (v - min) / (max - min || 1);
+  const grad = g.createLinearGradient(0, 0, 0, H); grad.addColorStop(0, "rgba(245,190,46,.3)"); grad.addColorStop(1, "rgba(245,190,46,0)");
+  g.beginPath(); P.forEach((v, i) => i ? g.lineTo(x(i), y(v)) : g.moveTo(x(i), y(v))); g.lineTo(x(P.length - 1), H); g.lineTo(x(0), H); g.closePath(); g.fillStyle = grad; g.fill();
+  g.beginPath(); P.forEach((v, i) => i ? g.lineTo(x(i), y(v)) : g.moveTo(x(i), y(v))); g.strokeStyle = "#f5be2e"; g.lineWidth = 2; g.stroke();
+  g.beginPath(); g.arc(x(P.length - 1), y(P[P.length - 1]), 4, 0, 7); g.fillStyle = "#ffd96a"; g.fill();
+}
+
+// ---------- background network that flows into the coin ----------
+const net = (() => {
+  const cv = $("net"), g = cv.getContext("2d");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W = 0, H = 0, nodes = [], packets = [];
+  const hub = () => { const r = $("stage").getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
+  function size() {
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    nodes = Array.from({ length: Math.round(Math.min(70, W * H / 20000)) }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .16, vy: (Math.random() - .5) * .16, r: Math.random() < .15 ? 2.2 : 1.3, ph: Math.random() * 6.28 }));
+  }
+  function packet(you) { if (!nodes.length) return; const a = nodes[Math.floor(Math.random() * nodes.length)]; packets.push({ sx: a.x, sy: a.y, p: 0, you }); }
+  function burst() { for (let i = 0; i < 26; i++) packet(false); }
+  function frame() {
+    g.clearRect(0, 0, W, H);
+    const h = hub();
+    for (const n of nodes) if (!reduce) { n.x += n.vx; n.y += n.vy; if (n.x < 0 || n.x > W) n.vx *= -1; if (n.y < 0 || n.y > H) n.vy *= -1; }
+    for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < 140) { g.strokeStyle = `rgba(245,190,46,${(1 - d / 140) * .08})`; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); }
+    }
+    const tw = reduce ? 0 : performance.now() * .0018;
+    for (const n of nodes) { const a = .35 + .3 * Math.sin(tw + n.ph); g.fillStyle = n.r > 2 ? `rgba(255,214,110,${a + .25})` : `rgba(245,200,90,${a * .7})`; g.beginPath(); g.arc(n.x, n.y, n.r, 0, 7); g.fill(); if (n.r > 2 && a > .55) { g.fillStyle = `rgba(255,214,110,${(a - .55) * .5})`; g.beginPath(); g.arc(n.x, n.y, 6, 0, 7); g.fill(); } }
+    const onScreen = h.y > -200 && h.y < H + 200;
+    for (let i = packets.length - 1; i >= 0; i--) {
+      const k = packets[i]; k.p += reduce ? 1 : .011;
+      const e = 1 - Math.pow(1 - Math.min(1, k.p), 2);
+      const mx = (k.sx + h.x) / 2 + (k.sy - h.y) * .15, my = (k.sy + h.y) / 2 - (k.sx - h.x) * .15;
+      const x = (1 - e) ** 2 * k.sx + 2 * (1 - e) * e * mx + e * e * h.x, y = (1 - e) ** 2 * k.sy + 2 * (1 - e) * e * my + e * e * h.y;
+      if (onScreen) { g.fillStyle = k.you ? "#ffffff" : "#f5be2e"; g.beginPath(); g.arc(x, y, k.you ? 3.2 : 2.2, 0, 7); g.fill(); }
+      if (k.p >= 1) packets.splice(i, 1);
+    }
+    if (!reduce) requestAnimationFrame(frame);
+  }
+  addEventListener("resize", () => { size(); if (reduce) frame(); drawChart(); });
+  size(); frame();
+  return { packet, burst, redraw: () => reduce && frame() };
+})();
+
+
+// ---------- events ----------
+async function copyText(txt, btn) {
+  try { await navigator.clipboard.writeText(txt); const o = btn.textContent; btn.textContent = t("copied"); setTimeout(() => btn.textContent = o, 1200); }
+  catch (e) { const r = document.createRange(); const c = btn.parentElement.querySelector("code"); if (c) { r.selectNodeContents(c); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } }
+}
+const SITE = "https://tianming.xyz"; // official site
+let MINT_ADDR = "0xE26a505CE2Ec77140D30f7b4684b31fbB5812f2b"; // official mint contract
+const USDT_BSC = "0x55d398326f99059fF775485246999027B3197955";
+
+const PROMPT = {
+  en: (o) => `Mint ${o.n} shares of $MING on BNB Chain (chainId 56) with my Binance Agentic Wallet.
+Mint contract: ${o.mint}
+USDT: ${USDT_BSC}
+Minting opens 2026-11-03 15:00 UTC (23:00 UTC+8). Before that every mint reverts, so wait until it opens.
+1. Call walletStatus(myWallet) on the mint contract. Stop if eligible is false.
+2. n = min(${o.n}, quota - paid, target - minted from overview()). Stop if n is 0.
+3. cost = costOf(n). Stop if cost is above ${o.max} USDT.
+4. USDT approve(mint contract, cost), then mint(n).
+Preview every transaction before sending, then send me the tx hash.`,
+  zh: (o) => `用我的币安 Agentic Wallet 在 BNB Chain（chainId 56）上铸造 ${o.n} 份 $MING。
+铸造合约：${o.mint}
+USDT：${USDT_BSC}
+铸造于 2026-11-03 15:00 UTC（UTC+8 23:00）开放，在此之前所有铸造都会失败，请等到开放后再执行。
+1. 调用铸造合约的 walletStatus(我的钱包)，若 eligible 为 false 则停止。
+2. n = min(${o.n}, quota - paid, overview() 中的 target - minted)，若 n 为 0 则停止。
+3. cost = costOf(n)，若超过 ${o.max} USDT 则停止。
+4. 对 USDT 执行 approve(铸造合约, cost)，然后调用 mint(n)。
+每笔交易发送前先预览，完成后把交易哈希发给我。`
+};
+function promptOpts(lang) {
+  const n = Math.max(1, Math.min(5, parseInt($("amShares").value) || 1));
+  const max = Math.max(1, parseFloat($("amMax").value) || 1);
+  const mint = MINT_ADDR || (lang === "zh" ? T.zh.pPend : T.en.pPend);
+  return { n, max, mint };
+}
+function renderPrompt() {
+  $("amPrompt").textContent = PROMPT[L](promptOpts(L));
+}
+["amShares", "amMax"].forEach(id => $(id).addEventListener("input", renderPrompt));
+$("amCopy").onclick = async () => {
+  try { await navigator.clipboard.writeText($("amPrompt").textContent); $("amMsg").textContent = t("amCopied"); $("amMsg").className = "msg ok"; }
+  catch (e) { const r = document.createRange(); r.selectNodeContents($("amPrompt")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+};
+
+
+$("connPlain").onclick = () => say("mNoAgent", {}, "bad");
+$("minus").onclick = () => { $("shares").value = Math.max(1, +$("shares").value - 1); updateCost(); };
+$("plus").onclick = () => { $("shares").value = Math.min(5, +$("shares").value + 1); updateCost(); };
+document.querySelectorAll(".presets button").forEach(b => b.onclick = () => { $("shares").value = b.dataset.n; updateCost(); });
+$("shares").addEventListener("input", updateCost);
+$("btnMint").onclick = () => {
+  const n = Math.max(1, Math.min(5, parseInt($("shares").value) || 1));
+  if (S.paid + n > QUOTA) return say("mQuota", { n: QUOTA - S.paid }, "bad");
+  if (S.minted + n > TARGET) return say("mSupply", { n: TARGET - S.minted }, "bad");
+  $("btnMint").disabled = true; say("mApprove");
+  setTimeout(() => {
+    if (S.phase !== "live") return render();
+    const r = doMint(n, "you.ai", true);
+    if (S.serial == null) S.serial = r.first;
+    S.paid += n; S.paidUsdt += r.c; S.owed += n * TPS;
+    say("mMinted", { n, c: nf(r.c, 2) }, "ok"); render();
+  }, 900);
+};
+$("btnClaim").onclick = () => { S.claimed = true; log("mint", "you.ai", "eClaim", { t: nf(S.owed) }, true); say("mClaimed", {}, "ok"); render(); };
+$("btnRefund").onclick = () => { log("burn", "you.ai", "eRefund", { u: nf(S.paidUsdt, 2) }, true); say("mRefund", { u: nf(S.paidUsdt, 2) }, "ok"); S.paidUsdt = 0; S.owed = 0; render(); };
+document.querySelectorAll(".cp").forEach(b => b.onclick = () => copyText(b.dataset.copy, b));
+$("tabLb").onclick = () => { tab = "lb"; renderBoard(); };
+$("tabFeed").onclick = () => { tab = "feed"; renderBoard(); };
+
+
+// ---------- agent terminal (typed example) ----------
+(() => {
+  const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const lines = [
+    ["c", "# 1. check the wallet holds a .ai Agent ID"],
+    ["p", "$ baw wallet status --json"],
+    ["k", '{ "agentId": "yourname.ai", "chainId": 56, "verified": true }'],
+    ["c", "# 2. preview the mint (eth_call simulation)"],
+    ["p", "$ baw contract-call preview --binanceChainId 56 \\\n    --to $MINT --inputData mint(5) --json"],
+    ["k", "cost 10.00 USDT · simulation ok · requestId 7f3c…a19e"],
+    ["c", "# 3. execute after approval in the Binance app"],
+    ["p", "$ baw contract-call execute --requestId 7f3c…a19e --json"],
+    ["ok", "✓ minted 5 shares · 80,000,000 $MING sent to your wallet (unlocks at listing)"]
+  ];
+  const pre = $("term");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce) { pre.innerHTML = lines.map(([c, s]) => `<span class="${c}">${esc(s)}</span>`).join("\n"); return; }
+  let li = 0, ci = 0, html = "";
+  function step() {
+    if (li >= lines.length) { pre.innerHTML = html + '<span class="cur"></span>'; setTimeout(() => { li = 0; ci = 0; html = ""; step(); }, 6000); return; }
+    const [c, s] = lines[li];
+    const speed = c === "p" ? 2 : 6;
+    ci = Math.min(s.length, ci + speed);
+    pre.innerHTML = html + `<span class="${c}">${esc(s.slice(0, ci))}</span><span class="cur"></span>`;
+    if (ci >= s.length) { html += `<span class="${c}">${esc(s)}</span>\n`; li++; ci = 0; setTimeout(step, c === "p" ? 420 : 260); }
+    else setTimeout(step, 22);
+  }
+  step();
+})();
+
+fresh();
+let saved = "en"; try { saved = localStorage.getItem("am-lang") || "en"; } catch (e) {}
+applyLang(saved === "zh" ? "zh" : "en");
+renderPrompt();
+})();
+</script>

@@ -1,6 +1,8 @@
 # Build web/index.html (the real dApp) from the demo: live mode when web/deployments.json has an address for the active chain.
 import sys
-src, dst = sys.argv[1], sys.argv[2]
+# Usage: python3 tools/build_web.py [site/source.html] [web/index.html]
+src = sys.argv[1] if len(sys.argv) > 1 else "site/source.html"
+dst = sys.argv[2] if len(sys.argv) > 2 else "web/index.html"
 s = open(src).read()
 def r(a, b, n=1):
     global s
@@ -9,9 +11,7 @@ def r(a, b, n=1):
 
 r("const TARGET = 5000, STEP = 5000, BASE = 2, INC = 0, TPS = 16000000, POOL_TPS = 4000000, QUOTA = 5, FEE = 0.01;",
   "let TARGET = 5000, STEP = 5000, BASE = 2, INC = 0, TPS = 16000000, POOL_TPS = 4000000, QUOTA = 5;\nconst FEE = 0.01;")
-r("const DEADLINE = Date.now()", "let DEADLINE = Date.now()")
 r('const SITE = "https://tianming.xyz"; // official site', 'let SITE = "https://tianming.xyz"; // replaced with the page origin when live')
-r("const MINT_ADDR = null;              // set after deploy", "let MINT_ADDR = null;                // loaded from deployments.json")
 r('<script>', '<script src="vendor/ethers-6.17.0.umd.min.js"></script>\n<script>')
 
 r('<small style="font-size:14px;color:var(--dim)"> / 5,000</small>', '<small style="font-size:14px;color:var(--dim)" id="targetLbl"> / 5,000</small>')
@@ -37,30 +37,30 @@ r('  $("lb").innerHTML = "";', '  $("lb").innerHTML = rows.length ? "" : `<li><s
 r('  pPend:"MINT_ADDRESS (published at deploy)"\n},', '''  pPend:"MINT_ADDRESS (published at deploy)",
   mNoWallet:"Binance Wallet not found. Scan the QR code with the Binance Wallet app, or open this page inside it.", mWrongNet:"Switch your wallet to {n} first.",
   mNoUsdt:"Not enough USDT in this wallet.", mConfirm:"Confirm the mint in your wallet…", mErr:"Transaction failed: {e}", mPending:"Waiting for the block…",
-  qrSoon:"Agent Wallet QR sign-in opens soon. For now, mint through your agent with the prompt below, or use a regular wallet.",
+  
   pickLive:"Your .ai Agent ID lives in your Agentic Wallet, so you mint through your own agent. Copy the prompt and paste it into your agent.",
-  sSoon:"Not live yet", sOpen:"Opens soon", opensIn:"Mint opens in", phSoon:"The mint contract is not deployed yet. The contract address will be published here and on X at launch.", mSoon:"Minting has not started. The contract address will be published here at launch.", noMints:"No mints yet", endsSoon:"Mint opens soon",
+  sSoon:"Not live yet", sOpen:"Opens soon", opensIn:"Mint opens in", phSoon:"The mint contract is not deployed yet. The contract address will be published here and on X at launch.", mSoon:"Minting has not started. The contract address will be published here at launch.", noMints:"No mints yet", endsSoon:"Mint opens soon", mRpc:"Can't reach BNB Chain right now. Retrying…",
   footLive:"Independent project, not affiliated with Binance. Not an investment offer. Always check the contract address before you mint.", recent:"recent",
-  qrIntro:"Scan with the Binance Wallet app that holds your .ai Agent ID. Wallets without an Agent ID are rejected.",
-  qrHint:"Open Binance Wallet, tap the scanner, scan this QR code and approve the connection.", qrOpen:"Open in Binance Wallet", qrRegular:"Connect Binance Wallet in this browser", qrSave:"On this phone? Save the QR image, then scan it from your gallery in Binance Wallet",
-  qrNote:"Only wallets that hold a .ai Agent ID can connect. The check runs on-chain.",
-  qrSoon:"QR connect opens at launch. Until then, let your agent mint with the prompt below.",
-  qrWaiting:"Waiting for approval in your wallet…", qrStarting:"Preparing QR…",
-  mAgentOnly:"This wallet has no .ai Agent ID, so it was disconnected. Only Agentic Wallets can connect.", mQrTestOk:"QR test passed: {a} is connected and holds a .ai Agent ID.", mChecking:"Checking Agent ID on-chain…"
+  
+  
+  
+  
+  
+  mAgentOnly:"This wallet has no .ai Agent ID, so it was disconnected. Only Agentic Wallets can connect.", mChecking:"Checking Agent ID on-chain…"
 },''')
 r('  pPend:"MINT_ADDRESS（部署时公布）"\n}};', '''  pPend:"MINT_ADDRESS（部署时公布）",
   mNoWallet:"未找到币安钱包。请用币安钱包 App 扫码，或在其中打开本页。", mWrongNet:"请先把钱包切换到 {n}。",
   mNoUsdt:"该钱包 USDT 余额不足。", mConfirm:"请在钱包中确认铸造……", mErr:"交易失败：{e}", mPending:"等待区块确认……",
-  qrSoon:"Agent Wallet 扫码登录即将开放。现在可以用下方提示词让你的 Agent 铸造，或使用普通钱包。",
+  
   pickLive:"你的 .ai Agent ID 存放在 Agentic Wallet 中，因此通过你自己的 Agent 铸造。复制下方提示词并粘贴给你的 Agent。",
-  sSoon:"尚未开始", sOpen:"即将开放", opensIn:"铸造开始倒计时", phSoon:"铸造合约尚未部署。上线时会在此处和 X 上公布合约地址。", mSoon:"铸造尚未开始。上线时会在此公布合约地址。", noMints:"暂无铸造", endsSoon:"即将开放铸造",
+  sSoon:"尚未开始", sOpen:"即将开放", opensIn:"铸造开始倒计时", phSoon:"铸造合约尚未部署。上线时会在此处和 X 上公布合约地址。", mSoon:"铸造尚未开始。上线时会在此公布合约地址。", noMints:"暂无铸造", endsSoon:"即将开放铸造", mRpc:"暂时无法连接 BNB 链，正在重试……",
   footLive:"独立项目，与币安无关。不构成投资要约。铸造前请务必核对合约地址。", recent:"最近",
-  qrIntro:"用持有 .ai Agent ID 的币安钱包 App 扫码。没有 Agent ID 的钱包会被拒绝。",
-  qrHint:"打开币安钱包，点击扫一扫，扫描此二维码并批准连接。", qrOpen:"在币安钱包中打开", qrRegular:"在此浏览器中连接币安钱包", qrSave:"在同一部手机上？保存二维码图片，再在币安钱包扫一扫中从相册选取",
-  qrNote:"只有持有 .ai Agent ID 的钱包可以连接，检查在链上完成。",
-  qrSoon:"扫码连接将在上线时开放。在此之前，可用下方提示词让 Agent 铸造。",
-  qrWaiting:"等待你在钱包中批准……", qrStarting:"正在生成二维码……",
-  mAgentOnly:"该钱包没有 .ai Agent ID，已断开连接。只有 Agentic Wallet 可以连接。", mQrTestOk:"扫码测试通过：{a} 已连接并持有 .ai Agent ID。", mChecking:"正在链上检查 Agent ID……"
+  
+  
+  
+  
+  
+  mAgentOnly:"该钱包没有 .ai Agent ID，已断开连接。只有 Agentic Wallet 可以连接。", mChecking:"正在链上检查 Agent ID……"
 }};''')
 
 LIVE_JS = r'''
@@ -72,11 +72,15 @@ const NETS = {
 };
 const NETQ = new URLSearchParams(location.search).get("net");
 const CHAIN = NETQ === "testnet" ? 97 : NETQ === "local" ? 31337 : 56;
+const RPCS = CHAIN === 56
+  ? ["https://bsc-dataseed.bnbchain.org", "https://bsc-dataseed1.defibit.io", "https://bsc-rpc.publicnode.com", "https://bsc-dataseed1.ninicoin.io"]
+  : [NETS[CHAIN].rpc];
+let rpcIdx = 0;
 // Official mainnet contracts, pinned in the page so a swapped deployments.json
 // cannot point the site at a different contract.
 const EXPECTED_MINT = "0xE26a505CE2Ec77140D30f7b4684b31fbB5812f2b";
 const EXPECTED_TOKEN = "0xFED9Eab43aFa900BD24055CDef39d0F5b7d34844";
-let PRELAUNCH = false, OPENS = 0, LIVE = null, ro, mintC, tokenC, signer = null, acct = null, busy = false, INITIAL = 0n, lastBlock = 0, cum = 0, agentSet = new Set();
+let OPENS = 1793718000 * 1000, LIVE = null, ro, mintC, tokenC, signer = null, acct = null, busy = false, INITIAL = 0n, lastBlock = 0, cum = 0, agentSet = new Set();
 const ABI_MINT = [
   "function overview() view returns (uint256 minted,uint256 target,uint256 price,uint256 usdtParked,bool opened,bool isFailed,uint256 deadline,uint256 opensAt)",
   "function OPEN_AT() view returns (uint256)",
@@ -95,14 +99,17 @@ const ABI_PAIR = ["function getReserves() view returns (uint112,uint112,uint32)"
 const fe = (v) => Number(ethers.formatEther(v));
 const short = (a) => a.slice(0, 6) + "…" + a.slice(-4);
 
+const OFFICIAL = { mint: EXPECTED_MINT, token: EXPECTED_TOKEN, usdt: "0x55d398326f99059fF775485246999027B3197955", treasury: "0x38Bdc5CD54A7E112682F60aDcF4614843e65FAd8", agentIdRegistry: "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F", deployBlock: 131396746 };
 async function loadDeployment() {
-  try { const r = await fetch(CHAIN === 31337 ? "deployments.local.json" : "deployments.json", { cache: "no-store" }); if (!r.ok) return null; const j = await r.json(); return j[String(CHAIN)] || null; }
-  catch (e) { return null; }
+  let dep = null;
+  try { const r = await fetch(CHAIN === 31337 ? "deployments.local.json" : "deployments.json", { cache: "no-store" }); if (r.ok) dep = (await r.json())[String(CHAIN)] || null; }
+  catch (e) {}
+  return dep || (CHAIN === 56 ? OFFICIAL : null);
 }
 
 async function liveInit(dep) {
   LIVE = dep;
-  ro = new ethers.JsonRpcProvider(NETS[CHAIN].rpc, CHAIN, { staticNetwork: true });
+  ro = new ethers.JsonRpcProvider(RPCS[rpcIdx % RPCS.length], CHAIN, { staticNetwork: true });
   mintC = new ethers.Contract(dep.mint, ABI_MINT, ro);
   tokenC = new ethers.Contract(dep.token, ABI_ERC20, ro);
   // Cross-check: addresses in deployments.json must match what the mint contract reports,
@@ -120,7 +127,6 @@ async function liveInit(dep) {
   $("connPlain").hidden = true;
   if (/^https?:/.test(location.protocol)) SITE = location.origin + location.pathname.replace(/\/[^/]*$/, "");
   fresh(); S.auto = false; S.agents = 0; S.top = {}; S.eligible = false; events = []; mqItems = [];
-  document.querySelector(".dock").hidden = true;
   document.querySelectorAll(".demo-pill").forEach(p => { p.textContent = CHAIN === 56 ? "LIVE" : NETS[CHAIN].name.toUpperCase(); });
   const tp = document.querySelector(".tickpill"); if (tp) tp.textContent = "$MING · " + NETS[CHAIN].name;
   $("targetLbl").textContent = " / " + nf(TARGET);
@@ -132,7 +138,6 @@ async function liveInit(dep) {
   // Countdown must run even if the RPC poll fails (some public RPCs reject eth_getLogs).
   S.phase = (OPENS && Date.now() < OPENS) ? "preopen" : "live";
   render(); renderBoard();
-  setInterval(tickCount, 1000);
   tickCount();
   await livePoll().catch((e) => console.error("initial poll failed; countdown still runs", e));
   setInterval(() => livePoll().catch(() => {}), 12000);
@@ -236,21 +241,6 @@ async function connectWith(eth, isWC) {
   } catch (e) { say("mErr", { e: e.shortMessage || e.message }, "bad"); }
 }
 
-function prelaunch() {
-  fresh(); events = []; mqItems = [];
-  S.auto = false; S.phase = "soon"; S.minted = 0; S.collected = 0; S.agents = 0; S.top = {};
-  DEADLINE = 0;
-  document.querySelector(".dock").hidden = true;
-  document.querySelector(".marquee").hidden = true;
-  document.querySelectorAll(".demo-pill").forEach(p => { p.textContent = "SOON"; });
-  const pk = document.querySelector('[data-i="pick"]'); if (pk) { pk.dataset.i = "pickLive"; pk.textContent = t("pickLive"); }
-  const eb = document.querySelector('[data-i="endsIn"]'); if (eb) { eb.dataset.i = "endsSoon"; eb.textContent = t("endsSoon"); }
-  $("foot").dataset.i = "footLive"; $("foot").textContent = t("footLive");
-  $("connPlain").onclick = () => say("mSoon", {}, "bad");
-  $("connPlain").hidden = true;
-  PRELAUNCH = true;
-  renderFeed(); renderBoard(); render(); tickCount();
-}
 
 async function liveTx(label, fn) {
   busy = true; render();
@@ -272,28 +262,29 @@ r("// ---------- events ----------", LIVE_JS + "\n// ---------- events ---------
 r('$("connPlain").onclick = () => say("mNoAgent", {}, "bad");', '$("connPlain").onclick = () => LIVE ? connectInjected() : say("mNoAgent", {}, "bad");')
 
 r('$("btnMint").onclick = () => {', '''$("btnMint").onclick = () => {
-  if (LIVE) { const n = Math.max(1, Math.min(5, parseInt($("shares").value) || 1)); if (S.paid + n > QUOTA) return say("mQuota", { n: QUOTA - S.paid }, "bad"); if (S.minted + n > TARGET) return say("mSupply", { n: TARGET - S.minted }, "bad"); return liveTx("mint", () => liveMint(n)); }''')
+  if (LIVE) { const n = Math.max(1, Math.min(5, parseInt($("shares").value) || 1)); if (S.paid + n > QUOTA) return say("mQuota", { n: QUOTA - S.paid }, "bad"); if (S.minted + n > TARGET) return say("mSupply", { n: TARGET - S.minted }, "bad"); return liveTx("mint", () => liveMint(n)); }
+  return say("mRpc", {}, "bad");''')
 # btnClaim is always hidden in live (tokens are sent at mint, no claim step).
 # No live handler is injected so the bundle never references a non-existent claim().
-r('$("btnRefund").onclick = () => {','$("btnRefund").onclick = () => {\n  if (LIVE) return liveTx("refund", async () => { const v = S.paidUsdt; const tx = await mintC.connect(signer).refund(); say("mPending"); await tx.wait(); say("mRefund", { u: nf(v, 2) }, "ok"); });')
+r('$("btnRefund").onclick = () => {','$("btnRefund").onclick = () => {\n  if (LIVE) return liveTx("refund", async () => { const v = S.paidUsdt; const tx = await mintC.connect(signer).refund(); say("mPending"); await tx.wait(); say("mRefund", { u: nf(v, 2) }, "ok"); });\n  return say("mRpc", {}, "bad");')
 
-# Init: live if a deployment exists, otherwise prelaunch/demo.
-r('''fresh(); seed();
+# Init: paint the real schedule immediately, then connect to the chain (retrying across RPCs).
+r('''fresh();
+let saved = "en"; try { saved = localStorage.getItem("am-lang") || "en"; } catch (e) {}
+applyLang(saved === "zh" ? "zh" : "en");
+renderPrompt();''', '''fresh();
 let saved = "en"; try { saved = localStorage.getItem("am-lang") || "en"; } catch (e) {}
 applyLang(saved === "zh" ? "zh" : "en");
 renderPrompt();
-setInterval(loop, 900);''', '''fresh(); seed();
-let saved = "en"; try { saved = localStorage.getItem("am-lang") || "en"; } catch (e) {}
-applyLang(saved === "zh" ? "zh" : "en");
-renderPrompt();
-(async () => {
+S.phase = Date.now() < OPENS ? "preopen" : "live";
+document.querySelectorAll(".demo-pill").forEach(p => { p.textContent = S.phase === "preopen" ? "SOON" : "LIVE"; });
+render(); renderBoard(); renderOpenAt(); tickCount();
+setInterval(tickCount, 1000);
+(async function connect() {
   const dep = (typeof ethers !== "undefined") ? await loadDeployment() : null;
-  if (dep && dep.mint) {
-    try { await liveInit(dep); renderPrompt(); return; }
-    catch (e) { console.error("live init failed", e); LIVE = null; }
-  }
-  if (new URLSearchParams(location.search).get("demo") === "1") { setInterval(loop, 900); return; }
-  prelaunch();
+  if (!dep || !dep.mint) { say("mRpc", {}, "bad"); return setTimeout(connect, 8000); }
+  try { await liveInit(dep); say(null); renderPrompt(); }
+  catch (e) { console.error("live init failed", e); LIVE = null; rpcIdx++; say("mRpc", {}, "bad"); setTimeout(connect, 8000); }
 })();''')
 
 r('<footer>', '<footer>', 1)
@@ -316,13 +307,9 @@ def _fill(m):
     return m.group(1) + _html.escape(EN[key], quote=False) + m.group(4)
 s = re.sub(r'(<(\w+)\b[^>]*\bdata-i="(\w+)"[^>]*>)(</\2>)', _fill, s)
 # Pre-launch defaults in the static HTML: no demo labels, no dummy wallet, real price.
-s = s.replace('<span class="demo-pill">DEMO</span>', '<span class="demo-pill">SOON</span>')
-s = s.replace('<div class="dock">', '<div class="dock" hidden>', 1)
 s = s.replace('<span class="mono" id="walletRow">you.ai · 0x7a3f…c91e</span>', '<span class="mono" id="walletRow">—</span>')
 s = s.replace('<b id="stMinted">—</b>', '<b id="stMinted">0</b>').replace('<b id="stPrice">—</b>', '<b id="stPrice">2.00 U</b>')
 s = s.replace('<b id="stRaised">—</b>', '<b id="stRaised">0</b>').replace('<b id="stAgents">—</b>', '<b id="stAgents">0</b>')
-s = s.replace('if (new URLSearchParams(location.search).get("demo") === "1") { setInterval(loop, 900); return; }',
-              'if (new URLSearchParams(location.search).get("demo") === "1") { document.querySelector(".dock").hidden = false; document.querySelectorAll(".demo-pill").forEach(p => { p.textContent = "DEMO"; }); setInterval(loop, 900); return; }')
 i = s.index("</style>") + len("</style>")
 s = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
      '<meta name="description" content="天命 Tianming ($MING): a fair mint only .ai agents can join on BNB Smart Chain. 5,000 shares at 2 USDT, auto-listing on PancakeSwap with LP burned, 100% refund if it does not list. 0% team.">\n'
