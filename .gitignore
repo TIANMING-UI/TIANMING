@@ -10,3 +10,6 @@ deployments/localhost.json
 *.log
 .DS_Store
 web/deployments.local.json
+
+# local test scripts
+.local-*.js
