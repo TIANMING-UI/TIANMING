@@ -1239,7 +1239,10 @@ const NETS = {
 };
 const NETQ = new URLSearchParams(location.search).get("net");
 const CHAIN = NETQ === "testnet" ? 97 : NETQ === "local" ? 31337 : 56;
-const AGENT_LOGIN_API = null; // Agent Wallet sign-in backend URL, when available
+// Official mainnet contracts, pinned in the page so a swapped deployments.json
+// cannot point the site at a different contract.
+const EXPECTED_MINT = "0xE26a505CE2Ec77140D30f7b4684b31fbB5812f2b";
+const EXPECTED_TOKEN = "0xFED9Eab43aFa900BD24055CDef39d0F5b7d34844";
 let PRELAUNCH = false, OPENS = 0, LIVE = null, ro, mintC, tokenC, signer = null, acct = null, busy = false, INITIAL = 0n, lastBlock = 0, cum = 0, agentSet = new Set();
 const ABI_MINT = [
   "function overview() view returns (uint256 minted,uint256 target,uint256 price,uint256 usdtParked,bool opened,bool isFailed,uint256 deadline,uint256 opensAt)",
@@ -1275,6 +1278,7 @@ async function liveInit(dep) {
   const eq = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
   if (!eq(cu, dep.usdt) || !eq(ct, dep.token)) throw new Error("deployment mismatch");
   if (CHAIN === 56 && (!eq(cu, "0x55d398326f99059fF775485246999027B3197955") || !eq(ca, "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F"))) throw new Error("not the official USDT / Agent ID registry");
+  if (CHAIN === 56 && (!eq(dep.mint, EXPECTED_MINT) || !eq(dep.token, EXPECTED_TOKEN))) throw new Error("unexpected contract address");
   const [tg, pr, tps, pt, q, dl, oa] = await Promise.all([mintC.TARGET_SHARES(), mintC.PRICE(), mintC.TOKENS_PER_SHARE(), mintC.POOL_TOKENS_PER_SHARE(), mintC.BASE_QUOTA(), mintC.DEADLINE(), mintC.OPEN_AT()]);
   TARGET = Number(tg); BASE = fe(pr); INC = 0; STEP = TARGET; TPS = fe(tps); POOL_TPS = fe(pt); QUOTA = Number(q); DEADLINE = Number(dl) * 1000; OPENS = Number(oa) * 1000;
   renderOpenAt();
