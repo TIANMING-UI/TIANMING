@@ -1,0 +1,20 @@
+name: Verify diag
+on:
+  workflow_dispatch:
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe Etherscan v2 with the stored key
+        env:
+          K: ${{ secrets.BSCSCAN_API_KEY }}
+        run: |
+          echo "key length: ${#K}"
+          printf '%s' "$K" | od -c | head -3 | sed 's/[0-9a-zA-Z]\{3,\}/XXX/g'
+          for A in 0xE26a505CE2Ec77140D30f7b4684b31fbB5812f2b 0xFED9Eab43aFa900BD24055CDef39d0F5b7d34844; do
+            echo "== $A =="
+            curl -s "https://api.etherscan.io/v2/api?chainid=56&module=contract&action=getsourcecode&address=$A&apikey=$K" \
+              | python3 -c 'import sys,json;d=json.load(sys.stdin);r=d.get("result");print("status",d.get("status"),"message",d.get("message"));print("ContractName:", (r[0].get("ContractName") if isinstance(r,list) else r))'
+          done
+          echo "== no-key probe (should say missing/invalid) =="
+          curl -s "https://api.etherscan.io/v2/api?chainid=56&module=contract&action=getsourcecode&address=0xE26a505CE2Ec77140D30f7b4684b31fbB5812f2b" | head -c 300; echo
