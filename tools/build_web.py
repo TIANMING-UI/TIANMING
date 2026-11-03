@@ -129,8 +129,12 @@ async function liveInit(dep) {
   $("foot").dataset.i = "footLive"; $("foot").textContent = t("footLive");
   $("tick1").removeAttribute("data-i"); $("tick2").removeAttribute("data-i");
   const pk = document.querySelector('[data-i="pick"]'); if (pk) { pk.dataset.i = "pickLive"; pk.textContent = t("pickLive"); }
+  // Countdown must run even if the RPC poll fails (some public RPCs reject eth_getLogs).
+  S.phase = (OPENS && Date.now() < OPENS) ? "preopen" : "live";
+  render(); renderBoard();
   setInterval(tickCount, 1000);
-  await livePoll();
+  tickCount();
+  await livePoll().catch((e) => console.error("initial poll failed; countdown still runs", e));
   setInterval(() => livePoll().catch(() => {}), 12000);
 }
 
@@ -189,7 +193,7 @@ async function livePoll() {
     S.prices.push(S.pool.usdt / S.pool.tok); if (S.prices.length > 80) S.prices.shift();
     S.treasury = costOf(0, TARGET) * 0.05; S.vault = fe(tv); S.burned = fe(INITIAL - sup);
   }
-  await liveLogs();
+  try { await liveLogs(); } catch (e) { console.error("log scan failed (feed only)", e); }
   if (acct) {
     const w = await mintC.walletStatus(acct);
     S.wallet = true; S.eligible = w.eligible; S.paid = Number(w.paid); S.owed = fe(w.tokens); S.paidUsdt = fe(w.refundable);
