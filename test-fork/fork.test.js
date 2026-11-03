@@ -81,11 +81,13 @@ describe("Tianming on a BSC mainnet fork", function () {
     const reg = new ethers.Contract(REGISTRY, ["function balanceOf(address) view returns (uint256)"], ethers.provider);
     expect(await reg.balanceOf(human.address)).to.equal(0n);
 
+    const now = (await ethers.provider.getBlock("latest")).timestamp;
     mint = await (await ethers.getContractFactory("TianmingMint")).deploy({
       agentIdRegistry: REGISTRY, usdt: USDT, factory: FACTORY,
       name: "Tianming", symbol: "MING",
       targetShares: 4, price: E(2),
-      tokensPerShare: E(16_000_000), poolTokensPerShare: E(4_000_000), duration: 86400,
+      tokensPerShare: E(16_000_000), poolTokensPerShare: E(4_000_000),
+      openAt: now, duration: 86400,
       treasury,
     });
     token = await ethers.getContractAt("TianmingToken", await mint.token());
