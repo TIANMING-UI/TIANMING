@@ -6,7 +6,7 @@ const E = (n) => ethers.parseEther(String(n));
 const TREASURY_IDX = 19;
 
 // Tests use a small target and a 1 USDT price.
-async function setup({ target = 25, price = E(1) } = {}) {
+async function setup({ target = 25, price = E(1), openAt } = {}) {
   const signers = await ethers.getSigners();
   const [deployer, builder] = signers;
   const usdt = await (await ethers.getContractFactory("MockUSDT")).deploy();
@@ -23,6 +23,7 @@ async function setup({ target = 25, price = E(1) } = {}) {
     price,
     tokensPerShare: E(50),
     poolTokensPerShare: E(40),
+    openAt: openAt ?? (await time.latest()), // open immediately unless a future time is given
     duration: 30 * 86400,
     treasury: signers[TREASURY_IDX].address,
   });
@@ -46,6 +47,17 @@ describe("TianmingMint", () => {
   it("rejects wallets without an Agent ID", async () => {
     const { mint, signers } = await setup();
     await expect(mint.connect(signers[15]).mint(1)).to.be.revertedWithCustomError(mint, "NoAgent");
+  });
+
+  it("mint is gated until OPEN_AT, then opens; deadline counts from OPEN_AT", async () => {
+    const openAt = (await time.latest()) + 3600; // opens in 1 hour
+    const { mint, users } = await setup({ target: 100, openAt });
+    await expect(mint.connect(users[0]).mint(1)).to.be.revertedWithCustomError(mint, "NotOpen");
+    expect(await mint.OPEN_AT()).to.equal(openAt);
+    expect(await mint.DEADLINE()).to.equal(openAt + 30 * 86400); // openAt + duration, not deploy time
+    await time.increaseTo(openAt);
+    await mint.connect(users[0]).mint(2); // now allowed
+    expect(await mint.totalMinted()).to.equal(2);
   });
 
   it("one fixed price: cost = shares x PRICE, no tiers", async () => {

@@ -1,4 +1,4 @@
-# Membuat web/index.html (dApp asli) dari demo: mode live jika web/deployments.json punya alamat untuk chain aktif.
+# Build web/index.html (the real dApp) from the demo: live mode when web/deployments.json has an address for the active chain.
 import sys
 src, dst = sys.argv[1], sys.argv[2]
 s = open(src).read()
@@ -21,21 +21,25 @@ r('<span id="tick1" data-i="tick1"></span></div>\n            <div class="tick e
 r('<div class="row"><span data-i="rWallet"></span><span class="mono">you.ai · 0x7a3f…c91e</span></div>', '<div class="row"><span data-i="rWallet"></span><span class="mono" id="walletRow">you.ai · 0x7a3f…c91e</span></div>')
 r('$("passHandle").textContent = S.wallet ? "you.ai" : "—.ai";', '$("passHandle").textContent = S.wallet ? (S.handle || "you.ai") : "—";')
 r('    $("btnMint").disabled = S.paid >= QUOTA;', '    $("btnMint").disabled = S.paid >= QUOTA || (LIVE && !S.eligible) || busy;')
-r('b.textContent = t({ live: "sLive", pool: "sPool", fail: "sFail" }[S.phase]);', 'b.textContent = t({ live: "sLive", pool: "sPool", fail: "sFail", soon: "sSoon" }[S.phase]);')
+r('b.textContent = t({ live: "sLive", pool: "sPool", fail: "sFail" }[S.phase]);', 'b.textContent = t({ live: "sLive", pool: "sPool", fail: "sFail", soon: "sSoon", preopen: "sOpen" }[S.phase]);')
 r('$("phaseTxt").textContent = S.phase === "live" ? t("live1", { b: nf(TARGET - S.minted) }) : t(S.phase === "pool" ? "phPool" : "phFail");',
-  '$("phaseTxt").textContent = S.phase === "soon" ? "" : S.phase === "live" ? t("live1", { b: nf(TARGET - S.minted) }) : t(S.phase === "pool" ? "phPool" : "phFail");')
-r('$("nextTier").textContent = S.phase !== "live" ? ""', '$("nextTier").textContent = S.phase !== "live" ? (S.phase === "soon" ? t("sSoon") : "")')
-r(".state.fail{", ".state.soon{color:var(--dim)}\n.state.fail{")
+  '$("phaseTxt").textContent = (S.phase === "soon" || S.phase === "preopen") ? "" : S.phase === "live" ? t("live1", { b: nf(TARGET - S.minted) }) : t(S.phase === "pool" ? "phPool" : "phFail");')
+r('$("nextTier").textContent = S.phase !== "live" ? ""', '$("nextTier").textContent = S.phase !== "live" ? (S.phase === "soon" ? t("sSoon") : S.phase === "preopen" ? t("sOpen") : "")')
+r(".state.fail{", ".state.soon{color:var(--dim)}\n.state.preopen{color:var(--gold)}\n.state.fail{")
 r("function tickCount() {", "function tickCount() {\n  if (!DEADLINE) { [\"d\",\"h\",\"m\",\"s\"].forEach(k => { const el = $(\"c\" + k); if (el) el.textContent = \"--\"; }); return; }")
+r("  let s = Math.max(0, Math.floor((DEADLINE - Date.now()) / 1000));",
+  '''  const _tgt = (OPENS && Date.now() < OPENS) ? OPENS : DEADLINE;
+  if (OPENS) { const _lab = document.querySelector('[data-i="endsIn"]'); if (_lab) _lab.textContent = (Date.now() < OPENS) ? t("opensIn") : t("endsIn"); const _o = document.getElementById("openAtLine"); if (_o) _o.hidden = !(Date.now() < OPENS); }
+  let s = Math.max(0, Math.floor((_tgt - Date.now()) / 1000));''')
 r('  $("lb").innerHTML = "";', '  $("lb").innerHTML = rows.length ? "" : `<li><span class="r">—</span><span class="h">${t("noMints")}</span><span></span></li>`;')
 
-# i18n tambahan
+# extra i18n
 r('  pPend:"MINT_ADDRESS (published at deploy)"\n},', '''  pPend:"MINT_ADDRESS (published at deploy)",
   mNoWallet:"Binance Wallet not found. Scan the QR code with the Binance Wallet app, or open this page inside it.", mWrongNet:"Switch your wallet to {n} first.",
   mNoUsdt:"Not enough USDT in this wallet.", mConfirm:"Confirm the mint in your wallet…", mErr:"Transaction failed: {e}", mPending:"Waiting for the block…",
   qrSoon:"Agent Wallet QR sign-in opens soon. For now, mint through your agent with the prompt below, or use a regular wallet.",
   pickLive:"Your .ai Agent ID lives in your Agentic Wallet, so you mint through your own agent. Copy the prompt and paste it into your agent.",
-  sSoon:"Not live yet", phSoon:"The mint contract is not deployed yet. The contract address will be published here and on X at launch.", mSoon:"Minting has not started. The contract address will be published here at launch.", noMints:"No mints yet", endsSoon:"Mint opens soon",
+  sSoon:"Not live yet", sOpen:"Opens soon", opensIn:"Mint opens in", phSoon:"The mint contract is not deployed yet. The contract address will be published here and on X at launch.", mSoon:"Minting has not started. The contract address will be published here at launch.", noMints:"No mints yet", endsSoon:"Mint opens soon",
   footLive:"Independent project, not affiliated with Binance. Not an investment offer. Always check the contract address before you mint.", recent:"recent",
   qrIntro:"Scan with the Binance Wallet app that holds your .ai Agent ID. Wallets without an Agent ID are rejected.",
   qrHint:"Open Binance Wallet, tap the scanner, scan this QR code and approve the connection.", qrOpen:"Open in Binance Wallet", qrRegular:"Connect Binance Wallet in this browser", qrSave:"On this phone? Save the QR image, then scan it from your gallery in Binance Wallet",
@@ -49,7 +53,7 @@ r('  pPend:"MINT_ADDRESS（部署时公布）"\n}};', '''  pPend:"MINT_ADDRESS�
   mNoUsdt:"该钱包 USDT 余额不足。", mConfirm:"请在钱包中确认铸造……", mErr:"交易失败：{e}", mPending:"等待区块确认……",
   qrSoon:"Agent Wallet 扫码登录即将开放。现在可以用下方提示词让你的 Agent 铸造，或使用普通钱包。",
   pickLive:"你的 .ai Agent ID 存放在 Agentic Wallet 中，因此通过你自己的 Agent 铸造。复制下方提示词并粘贴给你的 Agent。",
-  sSoon:"尚未开始", phSoon:"铸造合约尚未部署。上线时会在此处和 X 上公布合约地址。", mSoon:"铸造尚未开始。上线时会在此公布合约地址。", noMints:"暂无铸造", endsSoon:"即将开放铸造",
+  sSoon:"尚未开始", sOpen:"即将开放", opensIn:"铸造开始倒计时", phSoon:"铸造合约尚未部署。上线时会在此处和 X 上公布合约地址。", mSoon:"铸造尚未开始。上线时会在此公布合约地址。", noMints:"暂无铸造", endsSoon:"即将开放铸造",
   footLive:"独立项目，与币安无关。不构成投资要约。铸造前请务必核对合约地址。", recent:"最近",
   qrIntro:"用持有 .ai Agent ID 的币安钱包 App 扫码。没有 Agent ID 的钱包会被拒绝。",
   qrHint:"打开币安钱包，点击扫一扫，扫描此二维码并批准连接。", qrOpen:"在币安钱包中打开", qrRegular:"在此浏览器中连接币安钱包", qrSave:"在同一部手机上？保存二维码图片，再在币安钱包扫一扫中从相册选取",
@@ -69,9 +73,10 @@ const NETS = {
 const NETQ = new URLSearchParams(location.search).get("net");
 const CHAIN = NETQ === "testnet" ? 97 : NETQ === "local" ? 31337 : 56;
 const AGENT_LOGIN_API = null; // Agent Wallet sign-in backend URL, when available
-let PRELAUNCH = false, LIVE = null, ro, mintC, tokenC, signer = null, acct = null, busy = false, INITIAL = 0n, lastBlock = 0, cum = 0, agentSet = new Set();
+let PRELAUNCH = false, OPENS = 0, LIVE = null, ro, mintC, tokenC, signer = null, acct = null, busy = false, INITIAL = 0n, lastBlock = 0, cum = 0, agentSet = new Set();
 const ABI_MINT = [
-  "function overview() view returns (uint256 minted,uint256 target,uint256 price,uint256 usdtParked,bool opened,bool isFailed,uint256 deadline)",
+  "function overview() view returns (uint256 minted,uint256 target,uint256 price,uint256 usdtParked,bool opened,bool isFailed,uint256 deadline,uint256 opensAt)",
+  "function OPEN_AT() view returns (uint256)",
   "function walletStatus(address) view returns (bool eligible,uint256 paid,uint256 quota,uint256 tokens,uint256 refundable)",
   "function TARGET_SHARES() view returns (uint256)", "function PRICE() view returns (uint256)",
   "function TOKENS_PER_SHARE() view returns (uint256)", "function POOL_TOKENS_PER_SHARE() view returns (uint256)",
@@ -103,8 +108,9 @@ async function liveInit(dep) {
   const eq = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
   if (!eq(cu, dep.usdt) || !eq(ct, dep.token)) throw new Error("deployment mismatch");
   if (CHAIN === 56 && (!eq(cu, "0x55d398326f99059fF775485246999027B3197955") || !eq(ca, "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F"))) throw new Error("not the official USDT / Agent ID registry");
-  const [tg, pr, tps, pt, q, dl] = await Promise.all([mintC.TARGET_SHARES(), mintC.PRICE(), mintC.TOKENS_PER_SHARE(), mintC.POOL_TOKENS_PER_SHARE(), mintC.BASE_QUOTA(), mintC.DEADLINE()]);
-  TARGET = Number(tg); BASE = fe(pr); INC = 0; STEP = TARGET; TPS = fe(tps); POOL_TPS = fe(pt); QUOTA = Number(q); DEADLINE = Number(dl) * 1000;
+  const [tg, pr, tps, pt, q, dl, oa] = await Promise.all([mintC.TARGET_SHARES(), mintC.PRICE(), mintC.TOKENS_PER_SHARE(), mintC.POOL_TOKENS_PER_SHARE(), mintC.BASE_QUOTA(), mintC.DEADLINE(), mintC.OPEN_AT()]);
+  TARGET = Number(tg); BASE = fe(pr); INC = 0; STEP = TARGET; TPS = fe(tps); POOL_TPS = fe(pt); QUOTA = Number(q); DEADLINE = Number(dl) * 1000; OPENS = Number(oa) * 1000;
+  renderOpenAt();
   INITIAL = tg * (tps + pt);
   MINT_ADDR = dep.mint;
   $("connPlain").hidden = true;
@@ -122,6 +128,22 @@ async function liveInit(dep) {
   setInterval(tickCount, 1000);
   await livePoll();
   setInterval(() => livePoll().catch(() => {}), 12000);
+}
+
+// Open-time line under the hero countdown, shown in UTC+8 and UTC (never a local zone).
+function fmtHM(ms, offsetH) { const d = new Date(ms + offsetH * 3600 * 1000); return String(d.getUTCHours()).padStart(2, "0") + ":" + String(d.getUTCMinutes()).padStart(2, "0"); }
+function renderOpenAt() {
+  if (!OPENS) return;
+  let el = document.getElementById("openAtLine");
+  if (!el) {
+    const c = document.getElementById("count");
+    if (!c || !c.parentNode) return;
+    el = document.createElement("div"); el.id = "openAtLine"; el.className = "mono";
+    el.style.cssText = "margin-top:8px;color:var(--gold);font-size:13px;letter-spacing:.03em";
+    c.parentNode.appendChild(el);
+  }
+  el.textContent = fmtHM(OPENS, 8) + " UTC+8 · " + fmtHM(OPENS, 0) + " UTC";
+  el.hidden = Date.now() >= OPENS;
 }
 
 async function liveLogs() {
@@ -152,7 +174,8 @@ async function liveLogs() {
 async function livePoll() {
   const o = await mintC.overview();
   S.minted = Number(o.minted);
-  S.phase = o.opened ? "pool" : o.isFailed ? "fail" : "live";
+  S.phase = o.opened ? "pool" : o.isFailed ? "fail" : (OPENS && Date.now() < OPENS ? "preopen" : "live");
+  if (CHAIN === 56) document.querySelectorAll(".demo-pill").forEach(p => { p.textContent = S.phase === "preopen" ? "SOON" : S.phase === "fail" ? "ENDED" : "LIVE"; });
   S.collected = o.opened ? costOf(0, TARGET) : fe(o.usdtParked);
   if (o.opened) {
     const pairAddr = await mintC.pair(); const pair = new ethers.Contract(pairAddr, ABI_PAIR, ro);
@@ -237,7 +260,7 @@ async function liveMint(n) {
 '''
 r("// ---------- events ----------", LIVE_JS + "\n// ---------- events ----------")
 
-# Tombol: arahkan ke live bila aktif
+# Buttons: route to live mode when a deployment is active
 r('$("connPlain").onclick = () => say("mNoAgent", {}, "bad");', '$("connPlain").onclick = () => LIVE ? connectInjected() : say("mNoAgent", {}, "bad");')
 
 r('$("btnMint").onclick = () => {', '''$("btnMint").onclick = () => {
@@ -246,7 +269,7 @@ r('$("btnMint").onclick = () => {', '''$("btnMint").onclick = () => {
 # No live handler is injected so the bundle never references a non-existent claim().
 r('$("btnRefund").onclick = () => {','$("btnRefund").onclick = () => {\n  if (LIVE) return liveTx("refund", async () => { const v = S.paidUsdt; const tx = await mintC.connect(signer).refund(); say("mPending"); await tx.wait(); say("mRefund", { u: nf(v, 2) }, "ok"); });')
 
-# Init: live jika ada deployment, kalau tidak demo.
+# Init: live if a deployment exists, otherwise prelaunch/demo.
 r('''fresh(); seed();
 let saved = "en"; try { saved = localStorage.getItem("am-lang") || "en"; } catch (e) {}
 applyLang(saved === "zh" ? "zh" : "en");

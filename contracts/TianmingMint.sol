@@ -43,7 +43,8 @@ contract TianmingMint is ReentrancyGuard {
     uint256 public immutable PRICE;              // price per share, USDT with 18 decimals
     uint256 public immutable TOKENS_PER_SHARE;   // to the minter
     uint256 public immutable POOL_TOKENS_PER_SHARE; // reserved for the pool
-    uint256 public immutable DEADLINE;
+    uint256 public immutable OPEN_AT;            // unix time minting opens; mint reverts before it
+    uint256 public immutable DEADLINE;           // OPEN_AT + duration; refund window end
 
     address public immutable treasury;
     uint256 public constant TREASURY_BPS = 500; // 5%, immutable
@@ -71,6 +72,7 @@ contract TianmingMint is ReentrancyGuard {
     error BadShares();
     error SoldOut();
     error Quota();
+    error NotOpen();
     error Ended();
     error NotFailed();
     error Nothing();
@@ -85,13 +87,15 @@ contract TianmingMint is ReentrancyGuard {
         uint256 price;
         uint256 tokensPerShare;
         uint256 poolTokensPerShare;
-        uint256 duration;      // seconds until the deadline
+        uint256 openAt;        // unix time minting opens
+        uint256 duration;      // seconds from openAt to the refund deadline
         address treasury;      // fixed forever at deploy
     }
 
     constructor(Config memory c) {
         require(c.targetShares > 0 && c.price > 0, "config");
         require(c.treasury != address(0), "treasury");
+        require(c.openAt > 0 && c.duration > 0, "schedule");
         agentId = IAgentIdRegistry(c.agentIdRegistry);
         usdt = IERC20(c.usdt);
         factory = IPancakeFactory(c.factory);
@@ -99,7 +103,8 @@ contract TianmingMint is ReentrancyGuard {
         PRICE = c.price;
         TOKENS_PER_SHARE = c.tokensPerShare;
         POOL_TOKENS_PER_SHARE = c.poolTokensPerShare;
-        DEADLINE = block.timestamp + c.duration;
+        OPEN_AT = c.openAt;
+        DEADLINE = c.openAt + c.duration;
         treasury = c.treasury;
 
         uint256 supply = c.targetShares * (c.tokensPerShare + c.poolTokensPerShare);
@@ -117,6 +122,7 @@ contract TianmingMint is ReentrancyGuard {
     }
 
     modifier live() {
+        if (block.timestamp < OPEN_AT) revert NotOpen();
         if (poolOpened || block.timestamp > DEADLINE) revert Ended();
         _;
     }
@@ -210,10 +216,11 @@ contract TianmingMint is ReentrancyGuard {
             uint256 usdtParked,
             bool opened,
             bool isFailed,
-            uint256 deadline
+            uint256 deadline,
+            uint256 opensAt
         )
     {
-        return (totalMinted, TARGET_SHARES, PRICE, parkedUsdt, poolOpened, failed(), DEADLINE);
+        return (totalMinted, TARGET_SHARES, PRICE, parkedUsdt, poolOpened, failed(), DEADLINE, OPEN_AT);
     }
 
     function walletStatus(address w)

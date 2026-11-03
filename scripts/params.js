@@ -22,7 +22,8 @@ function mainnetParams() {
     price: E(2), // one fixed price for every share
     tokensPerShare: E(16_000_000),
     poolTokensPerShare: E(4_000_000),
-    duration: 10 * 86400,
+    openAt: 1793718000, // 2026-11-03 15:00 UTC (23:00 UTC+8) — minting opens
+    duration: 2 * 86400, // refund window: 2 days from openAt
   };
 }
 
@@ -34,6 +35,7 @@ function testParams() {
     name: "Tianming Test",
     symbol: "tMING",
     targetShares: target,
+    openAt: Number(process.env.OPEN_AT || Math.floor(Date.now() / 1000)), // immediate by default
     duration: Number(process.env.DURATION || 3 * 86400),
   };
 }

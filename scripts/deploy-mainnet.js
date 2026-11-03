@@ -18,7 +18,11 @@ async function main() {
 
   const cfg = { ...ADDR[56], treasury: TREASURY, ...mainnetParams() };
   const bal = await ethers.provider.getBalance(deployer.address);
+  const openUTC = new Date(cfg.openAt * 1000);
+  const openCN = new Date((cfg.openAt + 8 * 3600) * 1000);
   console.log("=== Mainnet deploy summary ===");
+  console.log(`Mint opens: ${openUTC.toISOString().slice(0, 16).replace("T", " ")} UTC  (${openCN.toISOString().slice(11, 16)} UTC+8)`);
+  console.log(`Refund deadline: openAt + ${cfg.duration / 86400} day(s)`);
   console.log(JSON.stringify(toJSON(cfg), null, 2));
   console.log(`Deployer ${deployer.address} · balance ${ethers.formatEther(bal)} BNB`);
 
