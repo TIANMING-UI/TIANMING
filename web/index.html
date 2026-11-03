@@ -1307,29 +1307,61 @@ function renderOpenAt() {
   el.hidden = Date.now() >= OPENS;
 }
 
+// Mint activity. bsc-dataseed often rejects eth_getLogs, so logs use their own RPC list.
+// Every load scans from the deploy block, so early minters never drop off the board,
+// and each minter is shown by their .ai Agent ID handle (registry handleOf, soulbound).
+const LOG_RPCS = CHAIN === 56 ? ["https://bsc-rpc.publicnode.com", "https://bsc-dataseed1.defibit.io", "https://bsc-dataseed1.ninicoin.io", "https://bsc-dataseed.bnbchain.org"] : null;
+let lro = null, lrpcIdx = 0, logsBusy = false, minters = new Map(), handleMap = new Map();
+function logProvider() {
+  if (!LOG_RPCS) return ro;
+  if (!lro) lro = new ethers.JsonRpcProvider(LOG_RPCS[lrpcIdx % LOG_RPCS.length], CHAIN, { staticNetwork: true });
+  return lro;
+}
+const label = (a) => handleMap.get(String(a).toLowerCase()) || short(a);
+async function resolveHandles() {
+  if (!LIVE.agentIdRegistry) return;
+  const reg = new ethers.Contract(LIVE.agentIdRegistry, ["function handleOf(address) view returns (string)"], ro);
+  const todo = [...minters.keys()].filter((a) => !handleMap.has(a)).slice(0, 25);
+  await Promise.all(todo.map(async (a) => {
+    try { const h = await reg.handleOf(a); handleMap.set(a, h ? h + ".ai" : short(a)); } catch (e) {}
+  }));
+}
 async function liveLogs() {
-  const latest = await ro.getBlockNumber();
-  let from = lastBlock ? lastBlock + 1 : Math.max(Number(LIVE.deployBlock || 0), latest - 50000);
-  const complete = !lastBlock && from === Number(LIVE.deployBlock || 0);
-  while (from <= latest) {
-    const to = Math.min(latest, from + 4999);
-    const logs = await mintC.queryFilter("*", from, to);
-    for (const l of logs) {
-      if (l.fragment?.name === "Minted") {
-        const [user, shares, cost] = l.args; const n = Number(shares), h = short(user);
-        if (complete || lastBlock) { if (acct && user.toLowerCase() === acct.toLowerCase() && S.serial == null) S.serial = cum + 1; }
-        cum += n; agentSet.add(user.toLowerCase());
-        S.top[h] = (S.top[h] || 0) + n;
-        log("mint", h, "eMint", { n: nf(n), c: nf(fe(cost), 2) }, acct && user.toLowerCase() === acct.toLowerCase());
-        pushMarquee(h, n);
-      } else if (l.fragment?.name === "PoolOpened") {
-        log("pool", "@wContract", "ePool", { u: nf(fe(l.args[1]), 0) }); log("pool", "@wContract", "eLp");
+  if (logsBusy) return;
+  logsBusy = true;
+  try {
+    if (!lastBlock) { cum = 0; agentSet = new Set(); minters = new Map(); }
+    const lp = logProvider();
+    const mc = mintC.connect(lp);
+    const latest = await lp.getBlockNumber();
+    let from = lastBlock ? lastBlock + 1 : Number(LIVE.deployBlock || 0);
+    try {
+      while (from <= latest) {
+        const to = Math.min(latest, from + 1999);
+        const logs = await mc.queryFilter("*", from, to);
+        for (const l of logs) {
+          if (l.fragment?.name === "Minted") {
+            const [user, shares, cost] = l.args; const n = Number(shares), k = user.toLowerCase(), me = !!(acct && k === acct.toLowerCase());
+            if (me && S.serial == null) S.serial = cum + 1;
+            cum += n; agentSet.add(k);
+            minters.set(k, (minters.get(k) || 0) + n);
+            log("mint", label(user), "eMint", { n: nf(n), c: nf(fe(cost), 2) }, me);
+            pushMarquee(label(user), n);
+          } else if (l.fragment?.name === "PoolOpened") {
+            log("pool", "@wContract", "ePool", { u: nf(fe(l.args[1]), 0) }); log("pool", "@wContract", "eLp");
+          }
+        }
+        lastBlock = to; from = to + 1;
       }
+    } catch (e) { lro = null; lrpcIdx++; throw e; }
+    S.agents = agentSet.size;
+    try { await resolveHandles(); } catch (e) {}
+    S.top = {};
+    for (const [a, n] of minters) {
+      if (acct && a === acct.toLowerCase()) continue; // shown as the "you" row
+      const h = label(a); S.top[h] = (S.top[h] || 0) + n;
     }
-    from = to + 1;
-  }
-  lastBlock = latest;
-  S.agents = agentSet.size;
+  } finally { logsBusy = false; }
 }
 
 async function livePoll() {
