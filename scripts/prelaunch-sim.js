@@ -4,6 +4,7 @@ const MINT = "0xE26a505CE2Ec77140D30f7b4684b31fbB5812f2b";
 const HOLDER = "0xA7cc8Bb1f76FE6D33d58744eEb7EE274526a1688"; // EOA holding a .ai Agent ID (from the registry probe)
 const say = (...a) => console.log("SIM:", ...a);
 async function main() {
+  await network.provider.send("hardhat_mine", ["0x1"]); // execute on a fresh block, not the fork block
   const mint = await ethers.getContractAt("TianmingMint", MINT);
   const token = await ethers.getContractAt("TianmingToken", await mint.token());
   const usdtAddr = await mint.usdt();
