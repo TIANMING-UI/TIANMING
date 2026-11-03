@@ -1,0 +1,16 @@
+name: Domain status
+on:
+  workflow_dispatch:
+jobs:
+  rdap:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          set +e
+          echo "== RDAP registry (CentralNic)"
+          curl -s -m 20 https://rdap.centralnic.com/xyz/domain/tianming.xyz | python3 -c 'import sys,json;d=json.load(sys.stdin);print("class:",d.get("objectClassName"),"| errorCode:",d.get("errorCode"),"| title:",d.get("title"),"| desc:",d.get("description"));print("status:",d.get("status"));print("events:",[(e.get("eventAction"),e.get("eventDate")) for e in d.get("events",[])]);print("ns:",[n.get("ldhName") for n in d.get("nameservers",[])])'
+          echo "== whois"
+          whois tianming.xyz 2>&1 | grep -iE "domain name|status|registrar:|creation|expir|updated|name server|no match|not found" | head -15
+          echo "== NS via TLD servers"
+          dig +short NS xyz. | head -2
+          dig +norecurse NS tianming.xyz @$(dig +short NS xyz. | head -1) | grep -iE "status|AUTHORITY|tianming" | head -6
