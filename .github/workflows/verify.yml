@@ -1,0 +1,21 @@
+name: Verify source (BscScan)
+on:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verify mint + token on BscScan / Sourcify
+        env:
+          DEPLOYER_KEY: ${{ secrets.DEPLOYER_KEY }}
+          BSC_RPC: ${{ secrets.BSC_RPC != '' && secrets.BSC_RPC || 'https://bsc-dataseed.bnbchain.org' }}
+          BSCSCAN_API_KEY: ${{ secrets.BSCSCAN_API_KEY }}
+        run: |
+          test -n "$BSCSCAN_API_KEY" || { echo "::error::Secret BSCSCAN_API_KEY is not set"; exit 1; }
+          npx hardhat run scripts/verify.js --network bsc
