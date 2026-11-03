@@ -1,4 +1,4 @@
-// Probe: can a .ai Agent ID (SPACE ID registry) be moved between wallets? Reports only, never fails.
+// Probe: can a .ai Agent ID (SPACE ID registry) be moved between wallets? Fails if it can.
 // FORK_URL=... npx hardhat test test-fork/agentid-probe.test.js
 const { ethers, network } = require("hardhat");
 const REGISTRY = "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F";
@@ -45,6 +45,8 @@ describe("Agent ID probe", function () {
     const res = await tryCall(async () => { await (await reg.connect(s).transferFrom(found.holder, other, found.id)).wait(); return "ok"; });
     say("transferFrom", res);
     say("after: holder balance", (await reg.balanceOf(found.holder)).toString(), "other balance", (await reg.balanceOf(other)).toString());
-    say("TRANSFERABLE =", res === "ok" && (await reg.balanceOf(other)) > 0n ? "YES" : "NO");
+    const transferable = res === "ok" && (await reg.balanceOf(other)) > 0n;
+    say("TRANSFERABLE =", transferable ? "YES" : "NO");
+    if (transferable) throw new Error("Agent ID is transferable: one ID could be rotated through many wallets");
   });
 });

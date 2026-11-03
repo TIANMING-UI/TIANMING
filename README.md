@@ -2,7 +2,17 @@
 
 A presale only `.ai` agents can join. Fair mint on BNB Smart Chain for wallets holding a Binance `.ai` Agent ID, automatic PancakeSwap listing at share 5,000, LP burned forever.
 
-> Independent project, not affiliated with Binance. Not an investment offer. Contracts are not audited yet.
+> Independent project, not affiliated with Binance. Not an investment offer. Not audited by a third party: the contracts had internal reviews and attack tests with no critical or high findings.
+
+## Deployed (BNB Smart Chain, chainId 56)
+
+| | Address |
+|---|---|
+| Mint contract | [`0xE26a505CE2Ec77140D30f7b4684b31fbB5812f2b`](https://bscscan.com/address/0xE26a505CE2Ec77140D30f7b4684b31fbB5812f2b#code) |
+| $MING token | [`0xFED9Eab43aFa900BD24055CDef39d0F5b7d34844`](https://bscscan.com/address/0xFED9Eab43aFa900BD24055CDef39d0F5b7d34844#code) |
+| Treasury (single-key wallet) | [`0x38Bdc5CD54A7E112682F60aDcF4614843e65FAd8`](https://bscscan.com/address/0x38Bdc5CD54A7E112682F60aDcF4614843e65FAd8) |
+
+Source verified on BscScan. Mint opens **2026-11-03 15:00 UTC** (23:00 UTC+8); refund deadline **2026-11-05 15:00 UTC**.
 
 ## How it works
 
@@ -10,12 +20,14 @@ A presale only `.ai` agents can join. Fair mint on BNB Smart Chain for wallets h
 |---|---|
 | Who can mint | Only wallets holding a `.ai` Agent ID. After listing, anyone can buy and sell on PancakeSwap. |
 | Price | 2 USDT per share, the same for every share |
-| Quota | 5 shares per wallet, max 5 per transaction. No referral. |
+| Quota | 5 shares per wallet, max 5 per transaction. No referral. A `.ai` Agent ID cannot be transferred (tested against the live registry), so one ID cannot be rotated through wallets; a person with several IDs in several wallets can mint in each. |
 | Listing | Share 5,000 creates the PancakeSwap $MING/USDT pool in the same transaction |
 | USDT split | 95% to the pool, 5% to the treasury wallet (constant) |
 | Liquidity | LP tokens sent to `0x…dEaD` |
-| Missed target | No listing within 10 days → every payer calls `refund()` for 100% |
-| Trade fee | 2% on pool buys/sells, all to the treasury wallet (funds development and the team). No burn. Wallet transfers 0%. |
+| Schedule | Minting opens at `OPEN_AT` (fixed in the contract); before that every mint reverts |
+| Missed target | 5,000 shares not reached within 2 days of opening → every minter calls `refund()` for 100% |
+| Trade fee | 2% on pool buys/sells, all to the treasury wallet. No burn. Wallet transfers 0%. Sells must use the router's `...SupportingFeeOnTransferTokens` functions; adding liquidity also pays 2% on the $MING side. |
+| Developer income | 0% of tokens. The developer is paid only from the treasury: 5% of mint USDT at listing and the 2% trade fee. |
 | Admin | No owner, no pause, no blacklist, no team withdraw |
 | Team allocation | **0%.** The contract has no team or builder tokens. |
 
@@ -33,18 +45,19 @@ A presale only `.ai` agents can join. Fair mint on BNB Smart Chain for wallets h
 contracts/      TianmingMint.sol (mint, auto pool, refund)
                 TianmingToken.sol (fixed supply, 2% trade fee)
                 mocks/ (local + testnet only)
-test/           12 unit tests
-test-fork/      7 tests against real BSC mainnet contracts (fork)
+test/           13 unit tests + 5 audit property tests
+test-fork/      7 tests against real BSC mainnet contracts (fork) + Agent ID transfer probe
 scripts/        deploy-testnet.js · grant-testnet.js · deploy-mainnet.js · verify.js
 web/            website (GitHub Pages) + deployments.json
-tools/          build_web.py (builds web/index.html from the design file)
+site/           source.html (website source)
+tools/          build_web.py (builds web/index.html from site/source.html)
 ```
 
 ## Develop
 
 ```bash
 npm install
-npm test                       # 12 tests
+npm test                       # 18 tests
 
 # full flow on a local chain
 npm run node                   # terminal 1

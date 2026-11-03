@@ -680,21 +680,21 @@ html{overflow-x:hidden}
       <div class="panel sc"><span class="pill code" data-i="pCode">In the code</span><h3 data-i="sc1h">No owner, no admin keys</h3><p data-i="sc1p">There is no function the team can call to pause, change fees or withdraw.</p></div>
       <div class="panel sc"><span class="pill code" data-i="pCode">In the code</span><h3 data-i="sc7h">Agent-only presale</h3><p data-i="sc7p">Only wallets with a .ai Agent ID can mint. The contract checks it on every mint. After listing, trading is open to everyone.</p></div>
       <div class="panel sc"><span class="pill code" data-i="pCode">In the code</span><h3 data-i="sc2h">LP burned at listing</h3><p data-i="sc2p">The listing transaction sends every LP token to 0x…dEaD.</p></div>
-      <div class="panel sc"><span class="pill done" data-i="pDone">Done</span><h3 data-i="sc3h">Test suite passing</h3><p data-i="sc3p">12 unit tests and 7 tests against the real BSC mainnet contracts cover the mint gate, pricing, quota, pool split, fee and refund.</p></div>
-      <div class="panel sc"><span class="pill" data-i="pDeploy">At deploy</span><h3 data-i="sc4h">Source verified</h3><p data-i="sc4p">Contracts will be verified on BscScan the moment they are deployed.</p></div>
-      <div class="panel sc"><span class="pill" data-i="pDeploy">At deploy</span><h3 data-i="sc5h">Public treasury wallet</h3><p data-i="sc5p">The treasury (5% of USDT at listing plus the 2% trade fee) is one public wallet, fixed in the contract forever. Anyone can follow it on BscScan, and every spend is posted with its tx hash.</p></div>
-      <div class="panel sc"><span class="pill" data-i="pPlanned">Planned</span><h3 data-i="sc6h">Independent review</h3><p data-i="sc6p">An outside review of the contracts before mainnet. The report will be linked here.</p></div>
-      <div class="panel sc"><span class="pill" data-i="pPlanned">Planned</span><h3 data-i="sc8h">Agentic Wallet test</h3><p data-i="sc8p">Mint, buy and sell tested with real Agentic Wallets on testnet before launch.</p></div>
-      <div class="panel sc"><span class="pill code" data-i="pCode">In the code</span><h3 data-i="sc9h">Refund if missed</h3><p data-i="sc9p">No listing within 10 days means every payer can pull 100% of their USDT back.</p></div>
+      <div class="panel sc"><span class="pill done" data-i="pDone">Done</span><h3 data-i="sc3h">Test suite passing</h3><p data-i="sc3p">18 unit and attack tests and 7 tests against the real BSC mainnet contracts cover the Agent ID gate, open time, quota, pool split, fee, refund and re-entrancy.</p></div>
+      <div class="panel sc"><span class="pill done" data-i="pDone">Done</span><h3 data-i="sc4h">Source verified</h3><p data-i="sc4p">The mint and token source code is verified on BscScan (Solidity 0.8.24), matching the tested code. Links are in the Contracts section below.</p></div>
+      <div class="panel sc"><span class="pill code" data-i="pCode">In the code</span><h3 data-i="sc5h">Public treasury wallet</h3><p data-i="sc5p">The treasury (5% of USDT at listing plus the 2% trade fee) is one public wallet, fixed in the contract forever. It is a single-key wallet, not a multisig. Anyone can follow it on BscScan.</p></div>
+      <div class="panel sc"><span class="pill" data-i="pNo">Not done</span><h3 data-i="sc6h">Third-party audit</h3><p data-i="sc6p">Not audited by an outside firm. The contracts went through internal reviews and attack tests (re-entrancy, refund, quota, pool-open DoS) with no critical or high findings. Read the verified source before you mint.</p></div>
+      <div class="panel sc"><span class="pill done" data-i="pDone">Done</span><h3 data-i="sc8h">Agent ID cannot move</h3><p data-i="sc8p">A test against the live registry tried to transfer a held Agent ID and the registry rejected it. One ID stays in one wallet, so it cannot be passed around to mint again. The quota is per wallet: someone with several Agent IDs in several wallets can mint in each.</p></div>
+      <div class="panel sc"><span class="pill code" data-i="pCode">In the code</span><h3 data-i="sc9h">Refund if missed</h3><p data-i="sc9p">If the target is not reached within 2 days of opening, every minter can pull 100% of their USDT back.</p></div>
     </div>
   </section>
 
   <section id="roadmap">
     <div class="sec-head"><span class="label" data-i="roadEyebrow">Roadmap</span><h2 data-i="roadTitle">What happens after the mint.</h2></div>
     <div class="road">
-      <div class="panel ph now"><span class="st" data-i="stNow">Live</span><h3 data-i="r1h">Presale</h3><ul><li data-i="r1a">Agent-only mint, 5,000 shares</li><li data-i="r1b">Equal 5-share quota for every agent</li><li data-i="r1c">Refund if missed in 10 days</li></ul></div>
+      <div class="panel ph now"><span class="st" data-i="stNow">Live</span><h3 data-i="r1h">Presale</h3><ul><li data-i="r1a">Agent-only mint, 5,000 shares</li><li data-i="r1b">5-share quota per wallet</li><li data-i="r1c">Refund if missed in 2 days</li></ul></div>
       <div class="panel ph"><span class="st" data-i="stNext">Next</span><h3 data-i="r2h">Listing</h3><ul><li data-i="r2a">Auto PancakeSwap pool</li><li data-i="r2b">LP burned, trading opens for everyone</li><li data-i="r2c">2% trade fee to treasury starts</li></ul></div>
-      <div class="panel ph"><span class="st" data-i="stLater">Planned</span><h3 data-i="r3h">Build</h3><ul><li data-i="r3a">Agent tools for $MING holders</li><li data-i="r3b">Details published before launch</li></ul></div>
+      <div class="panel ph"><span class="st" data-i="stLater">Planned</span><h3 data-i="r3h">Build</h3><ul><li data-i="r3a">Agent tools for $MING holders</li><li data-i="r3b">Details announced on X</li></ul></div>
       <div class="panel ph"><span class="st" data-i="stLater">Planned</span><h3 data-i="r4h">Airdrops</h3><ul><li data-i="r4a">Treasury airdrops to Agent ID holders</li><li data-i="r4b">Every spend posted with its tx hash</li></ul></div>
     </div>
   </section>
@@ -704,7 +704,7 @@ html{overflow-x:hidden}
     <div class="faq">
       <details class="panel" open><summary data-i="q1">Does the team own any $MING?</summary><p data-i="a1">No. Team allocation: 0%.
 There are no team tokens, no private allocation and no reserved supply. The team does not receive any of the minted $MING.
-$MING starts with the community.</p></details>
+The developer is paid only from the treasury: 5% of the mint USDT at listing (500 USDT) and the 2% trade fee.</p></details>
       <details class="panel"><summary data-i="q2">Where does the mint money go?</summary><p data-i="a2">95% goes directly into the liquidity pool, and the LP is burned.
 The other 5% goes to the treasury wallet for development, listings, community initiatives and ecosystem activity.
 The contract has no owner and no withdraw function, so nobody can touch the pool funds.</p></details>
@@ -712,19 +712,23 @@ The contract has no owner and no withdraw function, so nobody can touch the pool
 No team allocation. No private sale. No hidden wallet. No team unlock.
 The only $MING the treasury gets is the 2% trade fee. It may sell that to fund the project, and every treasury transaction is public on-chain.</p></details>
       <details class="panel"><summary data-i="q4">What if the mint doesn't sell out?</summary><p data-i="a4">Your money isn't trapped.
-If $MING does not list within 10 days, every participant can call refund() and get 100% of their USDT back.
+If the 5,000 shares are not minted within 2 days of opening (by 5 Nov 2026, 15:00 UTC / 23:00 UTC+8), every minter can call refund() and get 100% of their USDT back. Refunds open once that deadline passes; until then the USDT stays in the contract.
 If the launch fails, the treasury receives nothing.</p></details>
       <details class="panel"><summary data-i="q5">When do I receive my $MING?</summary><p data-i="a5">Immediately. Your $MING is sent to your wallet in the same transaction as your mint. No claim step.
 It stays locked until the pool exists, so nobody can create a market before the official launch. The moment share 5,000 is minted, it is yours to trade.</p></details>
       <details class="panel"><summary data-i="q6">What happens after listing?</summary><p data-i="a6">$MING is fully open to the market. Anyone can buy or sell on PancakeSwap, with or without an Agent ID.
 There is no special team trading window and no privileged exit.
-The market decides the price. The community owns the supply.</p></details>
+Know the risk: minters hold 80% of the supply, bought at 2 USDT per 16,000,000 $MING, about 3.8x below the listing price. If many minters sell after listing, the price can fall fast. If every minter sold, it would end below the mint price.</p></details>
       <details class="panel"><summary data-i="q7">What is the 2% trading fee?</summary><p data-i="a7">A 2% fee is charged on buys and sells through the pool. Wallet-to-wallet transfers are free.
 The full 2% goes to the treasury wallet and pays for development, the team building $MING, DEX listings, community initiatives and Agent ID holder rewards.
 The rate is fixed in the contract and can never be increased.</p></details>
       <details class="panel"><summary data-i="q8">Is $MING an investment?</summary><p data-i="a8">No. $MING is a community token with no promised returns.
 The price can go up or down, and you can lose everything you spend.
 Only participate with what you can afford to lose.</p></details>
+      <details class="panel"><summary data-i="q9">How do I sell $MING?</summary><p data-i="a9">Pool trades take a 2% fee, so a sell must use a fee-on-transfer swap.
+Agents: call swapExactTokensForTokensSupportingFeeOnTransferTokens on the PancakeSwap V2 router. A plain swapExactTokensForTokens sell reverts.
+In the PancakeSwap app, set slippage to 3% or more.
+Adding liquidity yourself also pays the 2% fee on the $MING side.</p></details>
     </div>
   </section>
 
@@ -803,19 +807,19 @@ en: {
   mConnectFirst:"Connect an Agent ID wallet first.",
   roadEyebrow:"Roadmap", roadTitle:"What happens after the mint.",
   stNow:"Live", stNext:"Next", stLater:"Planned",
-  r1h:"Presale", r1a:"Agent-only mint, 5,000 shares", r1b:"Equal 5-share quota for every agent", r1c:"Refund if missed in 10 days",
+  r1h:"Presale", r1a:"Agent-only mint, 5,000 shares", r1b:"5-share quota per wallet", r1c:"Refund if missed in 2 days",
   r2h:"Listing", r2a:"Auto PancakeSwap pool", r2b:"LP burned, trading opens for everyone", r2c:"2% trade fee to treasury starts",
-  r3h:"Build", r3a:"Agent tools for $MING holders", r3b:"Details published before launch",
+  r3h:"Build", r3a:"Agent tools for $MING holders", r3b:"Details announced on X",
   r4h:"Airdrops", r4a:"Treasury airdrops to Agent ID holders", r4b:"Every spend posted with its tx hash",
   faqTitle:"Questions before you join",
-  q1:"Does the team own any $MING?", a1:"No. Team allocation: 0%.\nThere are no team tokens, no private allocation and no reserved supply. The team does not receive any of the minted $MING.\n$MING starts with the community.",
+  q1:"Does the team own any $MING?", a1:"No. Team allocation: 0%.\nThere are no team tokens, no private allocation and no reserved supply. The team does not receive any of the minted $MING.\nThe developer is paid only from the treasury: 5% of the mint USDT at listing (500 USDT) and the 2% trade fee.",
   q2:"Where does the mint money go?", a2:"95% goes directly into the liquidity pool, and the LP is burned.\nThe other 5% goes to the treasury wallet for development, listings, community initiatives and ecosystem activity.\nThe contract has no owner and no withdraw function, so nobody can touch the pool funds.",
   q3:"Can the team dump on the community?", a3:"There are no team-held tokens to dump.\nNo team allocation. No private sale. No hidden wallet. No team unlock.\nThe only $MING the treasury gets is the 2% trade fee. It may sell that to fund the project, and every treasury transaction is public on-chain.",
-  q4:"What if the mint doesn't sell out?", a4:"Your money isn't trapped.\nIf $MING does not list within 10 days, every participant can call refund() and get 100% of their USDT back.\nIf the launch fails, the treasury receives nothing.",
+  q4:"What if the mint doesn't sell out?", a4:"Your money isn't trapped.\nIf the 5,000 shares are not minted within 2 days of opening (by 5 Nov 2026, 15:00 UTC / 23:00 UTC+8), every minter can call refund() and get 100% of their USDT back. Refunds open once that deadline passes; until then the USDT stays in the contract.\nIf the launch fails, the treasury receives nothing.",
   q5:"When do I receive my $MING?", a5:"Immediately. Your $MING is sent to your wallet in the same transaction as your mint. No claim step.\nIt stays locked until the pool exists, so nobody can create a market before the official launch. The moment share 5,000 is minted, it is yours to trade.",
-  q6:"What happens after listing?", a6:"$MING is fully open to the market. Anyone can buy or sell on PancakeSwap, with or without an Agent ID.\nThere is no special team trading window and no privileged exit.\nThe market decides the price. The community owns the supply.",
+  q6:"What happens after listing?", a6:"$MING is fully open to the market. Anyone can buy or sell on PancakeSwap, with or without an Agent ID.\nThere is no special team trading window and no privileged exit.\nKnow the risk: minters hold 80% of the supply, bought at 2 USDT per 16,000,000 $MING, about 3.8x below the listing price. If many minters sell after listing, the price can fall fast. If every minter sold, it would end below the mint price.",
   q7:"What is the 2% trading fee?", a7:"A 2% fee is charged on buys and sells through the pool. Wallet-to-wallet transfers are free.\nThe full 2% goes to the treasury wallet and pays for development, the team building $MING, DEX listings, community initiatives and Agent ID holder rewards.\nThe rate is fixed in the contract and can never be increased.",
-  q8:"Is $MING an investment?", a8:"No. $MING is a community token with no promised returns.\nThe price can go up or down, and you can lose everything you spend.\nOnly participate with what you can afford to lose.",
+  q8:"Is $MING an investment?", a8:"No. $MING is a community token with no promised returns.\nThe price can go up or down, and you can lose everything you spend.\nOnly participate with what you can afford to lose.", a9:"Pool trades take a 2% fee, so a sell must use a fee-on-transfer swap.\nAgents: call swapExactTokensForTokensSupportingFeeOnTransferTokens on the PancakeSwap V2 router. A plain swapExactTokensForTokens sell reverts.\nIn the PancakeSwap app, set slippage to 3% or more.\nAdding liquidity yourself also pays the 2% fee on the $MING side.", q9:"How do I sell $MING?",
   ctEyebrow:"Verify", ctTitle:"Read the contracts yourself.",
   ct1:"Mint contract", ct2:"$MING token", ct3:".ai Agent ID registry", ct4:"Treasury wallet (5% + 2% fee)", pending:"published at deploy",
   foot:"Independent project, not affiliated with Binance. Not an investment offer. Always check the contract address before you mint.",
@@ -833,16 +837,16 @@ en: {
   ag2b:"You confirm.", ag2:"Execution waits for your approval in the Binance app.",
   ag3b:"Machine-readable.", ag3:"The prompt carries the contract address and every step.",
   scEyebrow:"Security", scTitle:"What protects your USDT.", scSub:"Each item shows its real status. Nothing is marked done until it is.",
-  pCode:"In the code", pDone:"Done", pDeploy:"At deploy", pPlanned:"Planned",
+  pCode:"In the code", pDone:"Done", pDeploy:"At deploy", pPlanned:"Planned", pNo:"Not done",
   sc1h:"No owner, no admin keys", sc1p:"There is no function the team can call to pause, change fees or withdraw.",
   sc2h:"LP burned at listing", sc2p:"The listing transaction sends every LP token to 0x…dEaD.",
-  sc3h:"Test suite passing", sc3p:"12 unit tests and 7 tests against the real BSC mainnet contracts cover the mint gate, pricing, quota, pool split, fee and refund.",
-  sc4h:"Source verified", sc4p:"Contracts will be verified on BscScan the moment they are deployed.",
-  sc5h:"Public treasury wallet", sc5p:"The treasury (5% of USDT at listing plus the 2% trade fee) is one public wallet, fixed in the contract forever. Anyone can follow it on BscScan, and every spend is posted with its tx hash.",
+  sc3h:"Test suite passing", sc3p:"18 unit and attack tests and 7 tests against the real BSC mainnet contracts cover the Agent ID gate, open time, quota, pool split, fee, refund and re-entrancy.",
+  sc4h:"Source verified", sc4p:"The mint and token source code is verified on BscScan (Solidity 0.8.24), matching the tested code. Links are in the Contracts section below.",
+  sc5h:"Public treasury wallet", sc5p:"The treasury (5% of USDT at listing plus the 2% trade fee) is one public wallet, fixed in the contract forever. It is a single-key wallet, not a multisig. Anyone can follow it on BscScan.",
   sc7h:"Agent-only presale", sc7p:"Only wallets with a .ai Agent ID can mint. The contract checks it on every mint. After listing, trading is open to everyone.",
-  sc6h:"Independent review", sc6p:"An outside review of the contracts before mainnet. The report will be linked here.",
-  sc8h:"Agentic Wallet test", sc8p:"Mint, buy and sell tested with real Agentic Wallets on testnet before launch.",
-  sc9h:"Refund if missed", sc9p:"No listing within 10 days means every payer can pull 100% of their USDT back.",
+  sc6h:"Third-party audit", sc6p:"Not audited by an outside firm. The contracts went through internal reviews and attack tests (re-entrancy, refund, quota, pool-open DoS) with no critical or high findings. Read the verified source before you mint.",
+  sc8h:"Agent ID cannot move", sc8p:"A test against the live registry tried to transfer a held Agent ID and the registry rejected it. One ID stays in one wallet, so it cannot be passed around to mint again. The quota is per wallet: someone with several Agent IDs in several wallets can mint in each.",
+  sc9h:"Refund if missed", sc9p:"If the target is not reached within 2 days of opening, every minter can pull 100% of their USDT back.",
   bdEyebrow:"Builder", bdTitle:"Who is building this.", bdP:"Independent developer building AI agents and on-chain tooling for BNB Chain. Contracts are verified on-chain (BscScan).",
   fProject:"Project", fDev:"Developers", fComm:"Community", fDocs:"Docs · soon", fContracts:"Contracts",
   
@@ -914,19 +918,19 @@ zh: {
   mConnectFirst:"请先连接持有 Agent ID 的钱包。",
   roadEyebrow:"路线图", roadTitle:"铸造之后会发生什么。",
   stNow:"进行中", stNext:"下一步", stLater:"计划中",
-  r1h:"预售", r1a:"仅限 Agent 铸造 5,000 份", r1b:"每个 Agent 额度相同，均为 5 份", r1c:"10 天未达标即退款",
+  r1h:"预售", r1a:"仅限 Agent 铸造 5,000 份", r1b:"每个钱包 5 份额度", r1c:"2 天未达标即退款",
   r2h:"上线", r2a:"自动创建 PancakeSwap 资金池", r2b:"销毁 LP，向所有人开放交易", r2c:"开始收取 2% 手续费（进入金库）",
-  r3h:"建设", r3a:"为 $MING 持有者打造 Agent 工具", r3b:"上线前公布详情",
+  r3h:"建设", r3a:"为 $MING 持有者打造 Agent 工具", r3b:"细节将在 X 上公布",
   r4h:"空投", r4a:"金库向 Agent ID 持有者空投", r4b:"每笔支出公布交易哈希",
   faqTitle:"参与前的常见问题",
-  q1:"团队持有 $MING 吗？", a1:"不持有。团队分配：0%。\n没有团队代币、没有私募分配、没有预留供应。团队不获得任何铸造出的 $MING。\n$MING 从社区开始。",
+  q1:"团队持有 $MING 吗？", a1:"不持有。团队分配：0%。\n没有团队代币、没有私募分配、没有预留供应。团队不获得任何铸造出的 $MING。\n开发者的收入只来自金库：上线时铸造 USDT 的 5%（500 USDT）以及 2% 交易手续费。",
   q2:"铸造资金去哪里？", a2:"95% 直接进入流动性池，LP 永久销毁。\n其余 5% 进入金库钱包，用于开发、上架、社区活动和生态建设。\n合约没有 owner，也没有提款函数，任何人都无法动用池中资金。",
   q3:"团队会砸盘吗？", a3:"团队没有持币可砸。\n无团队分配、无私募、无隐藏钱包、无团队解锁。\n金库唯一获得的 $MING 是 2% 交易手续费，可能卖出以资助项目，金库的每笔交易都在链上公开。",
-  q4:"如果没卖完怎么办？", a4:"你的资金不会被锁死。\n若 10 天内未上线，每位参与者都可调用 refund() 取回 100% 的 USDT。\n若发行失败，金库不获得任何资金。",
+  q4:"如果没卖完怎么办？", a4:"你的资金不会被锁死。\n若开放后 2 天内（截至 2026 年 11 月 5 日 15:00 UTC / UTC+8 23:00）未铸满 5,000 份，每位铸造者都可调用 refund() 取回 100% 的 USDT。截止时间过后才可退款，在此之前 USDT 留在合约中。\n若发行失败，金库不获得任何资金。",
   q5:"什么时候拿到 $MING？", a5:"立即到账。$MING 在铸造的同一笔交易中直接发到你的钱包，无需领取。\n资金池建立前代币处于锁定状态，任何人都无法在正式上线前建立市场。第 5,000 份铸造完成的那一刻即可交易。",
-  q6:"上线后会怎样？", a6:"$MING 完全向市场开放。无论是否持有 Agent ID，任何人都可以在 PancakeSwap 买卖。\n没有团队专属交易窗口，也没有特权退出。\n价格由市场决定，供应归社区所有。",
+  q6:"上线后会怎样？", a6:"$MING 完全向市场开放。无论是否持有 Agent ID，任何人都可以在 PancakeSwap 买卖。\n没有团队专属交易窗口，也没有特权退出。\n请了解风险：铸造者持有 80% 的供应，成本为每 16,000,000 $MING 2 USDT，约为上线价格的 1/3.8。若大量铸造者在上线后卖出，价格可能快速下跌；若全部铸造者卖出，价格会低于铸造价。",
   q7:"2% 交易手续费是什么？", a7:"通过资金池买入和卖出时收取 2%，钱包间转账免费。\n全部 2% 进入金库钱包，用于开发、建设 $MING 的团队、DEX 上架、社区活动和 Agent ID 持有者奖励。\n费率写死在合约中，永远无法上调。",
-  q8:"$MING 是投资吗？", a8:"不是。$MING 是社区代币，不承诺任何收益。\n价格可涨可跌，你可能损失全部投入。\n请只用你能承受损失的金额参与。",
+  q8:"$MING 是投资吗？", a8:"不是。$MING 是社区代币，不承诺任何收益。\n价格可涨可跌，你可能损失全部投入。\n请只用你能承受损失的金额参与。", a9:"资金池交易收取 2% 手续费，因此卖出必须使用支持转账手续费的兑换方法。\nAgent：调用 PancakeSwap V2 路由的 swapExactTokensForTokensSupportingFeeOnTransferTokens。普通的 swapExactTokensForTokens 卖出会失败。\n在 PancakeSwap 应用中，请把滑点设为 3% 或以上。\n自行添加流动性时，$MING 一侧同样收取 2% 手续费。", q9:"如何卖出 $MING？",
   ctEyebrow:"核查", ctTitle:"亲自阅读合约。",
   ct1:"铸造合约", ct2:"$MING 代币", ct3:".ai Agent ID 注册表", ct4:"金库钱包（5% + 2% 手续费）", pending:"部署时公布",
   foot:"界面与流程演示。页面上的数字、钱包和交易均在浏览器中模拟。独立项目，与币安无关。不构成投资要约。",
@@ -944,16 +948,16 @@ zh: {
   ag2b:"由你确认。", ag2:"执行前需在币安 App 中批准。",
   ag3b:"机器可读。", ag3:"提示词包含合约地址和每一个步骤。",
   scEyebrow:"安全", scTitle:"保护你 USDT 的机制。", scSub:"每一项都显示真实状态，未完成的不会标为完成。",
-  pCode:"已写入代码", pDone:"已完成", pDeploy:"部署时", pPlanned:"计划中",
+  pCode:"已写入代码", pDone:"已完成", pDeploy:"部署时", pPlanned:"计划中", pNo:"未完成",
   sc1h:"无 owner，无管理员密钥", sc1p:"团队没有任何可调用的暂停、改费率或提款函数。",
   sc2h:"上线时销毁 LP", sc2p:"上线交易会把所有 LP 代币发送到 0x…dEaD。",
-  sc3h:"测试全部通过", sc3p:"12 项单元测试和 7 项基于 BSC 主网真实合约的测试，覆盖铸造资格、定价、额度、资金池分配、手续费和退款。",
-  sc4h:"源码验证", sc4p:"合约部署后会立即在 BscScan 上验证源码。",
-  sc5h:"公开金库钱包", sc5p:"金库（上线时 5% 的 USDT 加 2% 交易手续费）是一个公开钱包，地址永久写入合约。任何人都可在 BscScan 上查看，每笔支出公布交易哈希。",
+  sc3h:"测试全部通过", sc3p:"18 项单元与攻击测试，以及 7 项基于 BSC 主网真实合约的测试，覆盖 Agent ID 资格、开放时间、额度、资金池分配、手续费、退款和重入攻击。",
+  sc4h:"源码验证", sc4p:"铸造合约与代币合约源码已在 BscScan 验证（Solidity 0.8.24），与测试代码一致。链接见下方合约部分。",
+  sc5h:"公开金库钱包", sc5p:"金库（上线时 5% 的 USDT 加 2% 交易手续费）是一个公开钱包，地址永久写入合约。这是单私钥钱包，不是多签。任何人都可在 BscScan 上查看。",
   sc7h:"仅限 Agent 预售", sc7p:"只有持有 .ai Agent ID 的钱包可以铸造，合约每次铸造都会检查。上线后交易向所有人开放。",
-  sc6h:"独立审查", sc6p:"主网上线前进行外部合约审查，报告将在此链接。",
-  sc8h:"Agentic Wallet 测试", sc8p:"上线前在测试网用真实 Agentic Wallet 测试铸造、买入和卖出。",
-  sc9h:"未达标即退款", sc9p:"10 天内未上线，所有付款人都可取回 100% 的 USDT。",
+  sc6h:"第三方审计", sc6p:"尚未经过外部机构审计。合约已完成内部审查与攻击测试（重入、退款、额度、开池 DoS），未发现严重或高危问题。铸造前请阅读已验证的源码。",
+  sc8h:"Agent ID 无法转移", sc8p:"针对真实注册表的测试尝试转移已持有的 Agent ID，被注册表拒绝。一个 ID 永久留在一个钱包，无法转给他人再次铸造。额度按钱包计算：在多个钱包各持有 Agent ID 的人可以在每个钱包铸造。",
+  sc9h:"未达标即退款", sc9p:"若开放后 2 天内未达标，每位铸造者都可取回 100% 的 USDT。",
   bdEyebrow:"开发者", bdTitle:"谁在构建。", bdP:"独立开发者，为 BNB 链构建 AI Agent 与链上工具。合约已在链上验证（BscScan）。",
   fProject:"项目", fDev:"开发者", fComm:"社区", fDocs:"文档 · 即将推出", fContracts:"合约",
   
@@ -1418,6 +1422,7 @@ Minting opens 2026-11-03 15:00 UTC (23:00 UTC+8). Before that every mint reverts
 2. n = min(${o.n}, quota - paid, target - minted from overview()). Stop if n is 0.
 3. cost = costOf(n). Stop if cost is above ${o.max} USDT.
 4. USDT approve(mint contract, cost), then mint(n).
+If these are the last shares, the same transaction also opens the pool and needs several million gas: use the estimated gas, do not cap it lower.
 Preview every transaction before sending, then send me the tx hash.`,
   zh: (o) => `用我的币安 Agentic Wallet 在 BNB Chain（chainId 56）上铸造 ${o.n} 份 $MING。
 铸造合约：${o.mint}
@@ -1427,6 +1432,7 @@ USDT：${USDT_BSC}
 2. n = min(${o.n}, quota - paid, overview() 中的 target - minted)，若 n 为 0 则停止。
 3. cost = costOf(n)，若超过 ${o.max} USDT 则停止。
 4. 对 USDT 执行 approve(铸造合约, cost)，然后调用 mint(n)。
+若这是最后几份，同一笔交易还会开启资金池，需要数百万 gas：请使用估算的 gas，不要设更低的上限。
 每笔交易发送前先预览，完成后把交易哈希发给我。`
 };
 function promptOpts(lang) {
